@@ -1,5 +1,5 @@
 # Precision-Drawing-Tools
-Precision drawing Tools (PDT) Add-on for Blender 2.8
+Precision Drawing Tools (PDT) Add-on for Blender 2.8
 
 # Installation
 Download and install in the usual Blender way using User Preferences Dialogue
