@@ -438,9 +438,12 @@ class PDT_OT_PlacementPer(Operator):
             elif obj.mode == 'OBJECT':
                 scene.pdt_pivotloc = vector_delta
         elif data == 'MV':
-            bm.select_history[-1].co = vector_delta
-            bmesh.update_edit_mesh(obj.data)
-            bm.select_history.clear()
+            if obj.mode == 'EDIT':
+                bm.select_history[-1].co = vector_delta
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+            elif obj.mode == 'OBJECT':
+                obj.location = vector_delta
         elif data == 'SE' and obj.mode == 'EDIT':
             edges = [e for e in bm.edges if e.select]
             if len (edges) != 1:
