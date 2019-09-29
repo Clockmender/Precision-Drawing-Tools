@@ -705,26 +705,16 @@ class PDT_OT_PlacementInt(Operator):
                     "Select Only 4 Objects")
                 return {"FINISHED"}
             else:
-                order = scene.pdt_oborder
+                order = scene.pdt_oborder.split(',')
                 objs = sorted([ob for ob in context.view_layer.objects.selected], key=lambda x: x.name)
                 message = 'Original Object Order was: '+objs[0].name+', '+objs[1].name+', '+objs[2].name+', '+objs[3].name
                 self.report({'INFO'},
                     message)
-                if ',' not in order:
-                    self.report({'ERROR'},
-                        "Order should be of the form 1,2,3,4")
-                    return {"FINISHED"}
-                order_l = order.split(',')
-                good =  all(elem in order_l for elem in ['1','2','3','4'])
-                if len(order_l) != 4 or not good:
-                    self.report({'ERROR'},
-                        "List order does not contain Only Integers 1,2,3,4 in any order")
-                    return {"FINISHED"}
-                else:
-                    actV = objs[int(order_l[0])-1].matrix_world.decompose()[0]
-                    othV = objs[int(order_l[1])-1].matrix_world.decompose()[0]
-                    lstV = objs[int(order_l[2])-1].matrix_world.decompose()[0]
-                    fstV = objs[int(order_l[3])-1].matrix_world.decompose()[0]
+
+                actV = objs[int(order[0])-1].matrix_world.decompose()[0]
+                othV = objs[int(order[1])-1].matrix_world.decompose()[0]
+                lstV = objs[int(order[2])-1].matrix_world.decompose()[0]
+                fstV = objs[int(order[3])-1].matrix_world.decompose()[0]
             vector_delta,done = intersection(actV,othV,lstV,fstV,plane)
             if not done:
                 self.report({'ERROR'},
@@ -911,7 +901,7 @@ class PDT_OT_Angle2(Operator):
                     "Select 2 Vertices Individually")
                 return {"FINISHED"}
         elif obj.mode == 'OBJECT':
-            objs = [ob for ob in context.view_layer.objects if ob.select_set]
+            objs = context.view_layer.objects.selected
             if len(objs) < 2:
                 self.report({'ERROR'},
                     "Select 2 Objects")
@@ -980,7 +970,7 @@ class PDT_OT_Angle3(Operator):
                     "Select 3 Vertices Individually")
                 return {"FINISHED"}
         elif obj.mode == 'OBJECT':
-            objs = [ob for ob in context.view_layer.objects if ob.select_set]
+            objs = context.view_layer.objects.selected
             if len(objs) < 2:
                 self.report({'ERROR'},
                     "Select 3 Objects")

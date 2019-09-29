@@ -272,8 +272,15 @@ def register():
     Scene.pdt_xrot = FloatProperty(name="X Rot",default=0, unit='ROTATION')
     Scene.pdt_yrot = FloatProperty(name="Y Rot",default=0, unit='ROTATION')
     Scene.pdt_zrot = FloatProperty(name="Z Rot",default=0, unit='ROTATION')
-    Scene.pdt_oborder = StringProperty(name="Order",default='1,2,3,4',
-                                    description = "Object List Sort Order, first two are First Line, Objects are sorted by Name")
+    Scene.pdt_oborder = EnumProperty(items=(('1,2,3,4', "1,2,3,4",
+                                               "Objects 1 & 2 are First Line"),
+                                          ('1,3,2,4', "1,3,2,4",
+                                               "Objects 1 & 3 are First Line"),
+                                          ('1,4,2,3', "1,4,2,3",
+                                               "Objects 1 & 4 are First Line")),
+                                               name="Order",
+                                               default='1,2,3,4',
+                                               description="Object Order to Lines")
     Scene.pdt_vrotangle = FloatProperty(name='View Rotate Angle', default=10,max=180,min=-180)
     Scene.pdt_command = StringProperty(name='Command',default='CA0,0,0',update=command_run,
                                         description='Valid 1st letters; C D E G N P S V, Valid 2nd letters: A D I P')
