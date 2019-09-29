@@ -68,9 +68,9 @@ class PDT_OT_PlacementAbs(Operator):
             if obj.mode == 'EDIT':
                 for v in verts:
                     v.co = vector_delta - obj_loc
+                bm.select_history.clear()
                 bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
                 bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
             elif obj.mode == 'OBJECT':
                 for ob in context.view_layer.objects.selected:
                     ob.location = vector_delta
@@ -101,9 +101,9 @@ class PDT_OT_PlacementAbs(Operator):
                 nEdge = bm.edges.new([v,nVert])
                 v.select_set(False)
             nVert.select_set(True)
+            bm.select_history.clear()
             bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
             bmesh.update_edit_mesh(obj.data)
-            bm.select_history.clear()
         else:
             self.report({'ERROR'},
                 "Not a Valid, or Sensible, Option!")
@@ -528,9 +528,15 @@ class PDT_OT_PlacementNormal(Operator):
                 scene.pdt_pivotloc = vector_delta
         elif data == 'MV':
             if obj.mode == 'EDIT':
-                bm.select_history[-1].co = vector_delta
+                if ext_a:
+                    for v in [v for v in bm.verts if v.select]:
+                        v.co = vector_delta
+                    bm.select_history.clear()
+                    bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
+                else:
+                    bm.select_history[-1].co = vector_delta
+                    bm.select_history.clear()
                 bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
             elif obj.mode == 'OBJECT':
                 context.view_layer.objects.active.location = vector_delta
         elif data == 'NV' and obj.mode == 'EDIT':
@@ -565,7 +571,6 @@ class PDT_OT_PlacementInt(Operator):
         scene = context.scene
         data = scene.pdt_operate
         plane = scene.pdt_plane
-        ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
@@ -574,21 +579,38 @@ class PDT_OT_PlacementInt(Operator):
         if obj.mode == 'EDIT':
             obj_loc = obj.matrix_world.decompose()[0]
             bm = bmesh.from_edit_mesh(obj.data)
-            if len(bm.select_history) == 4:
+            edges = [e for e in bm.edges if e.select]
+            if len(edges) == 2:
+                ext_a = True
+                va = edges[0].verts[0]
+                actV = va.co
+                vo = edges[0].verts[1]
+                othV = vo.co
+                vl = edges[1].verts[0]
+                lstV = vl.co
+                vf = edges[1].verts[1]
+                fstV = vf.co
+            elif len(bm.select_history) == 4:
+                ext_a = scene.pdt_extend
+                va = bm.select_history[-1]
+                vo = bm.select_history[-2]
+                vl = bm.select_history[-3]
+                vf = bm.select_history[-4]
                 actV,othV,lstV,fstV = checkSelection(4, bm, obj)
                 if actV == None:
                     self.report({'ERROR'},
-                        "Work in Vertex Mode")
+                        "Work in Vertex Mode to Select Vertices")
                     return {"FINISHED"}
             else:
                 self.report({'ERROR'},
-                    "Select 4 Vertices Individually")
+                    "Select 4 Vertices Individually, or 2 Edges")
                 return {"FINISHED"}
             vector_delta,done = intersection(actV,othV,lstV,fstV,plane)
             if not done:
                 self.report({'ERROR'},
                     "Lines Do Not Intersect in "+plane+" Plane")
                 return {"FINISHED"}
+
             if data == 'CU':
                 scene.cursor.location = obj_loc + vector_delta
             elif data == 'PP':
@@ -598,7 +620,6 @@ class PDT_OT_PlacementInt(Operator):
                 nVert = bm.verts.new(vNew)
                 for v in [v for v in bm.verts if v.select]:
                     v.select_set(False)
-
                 for f in bm.faces:
                     f.select_set(False)
                 for e in bm.edges:
@@ -609,48 +630,50 @@ class PDT_OT_PlacementInt(Operator):
             elif data in ['MV','EV']:
                 nVert = None
                 proc = False
-                x1 = bm.select_history[-1].co[0]
-                x2 = bm.select_history[-2].co[0]
+                x1 = actV[0]
+                x2 = othV[0]
                 x3 = vector_delta[0]
-                y1 = bm.select_history[-1].co[1]
-                y2 = bm.select_history[-2].co[1]
+                y1 = actV[1]
+                y2 = othV[1]
                 y3 = vector_delta[1]
-                z1 = bm.select_history[-1].co[2]
-                z2 = bm.select_history[-2].co[2]
+                z1 = actV[2]
+                z2 = othV[2]
                 z3 = vector_delta[2]
                 # only affect active vertex unless ext_a is True
                 if sqrt((x1-x3)**2+(y1-y3)**2+(z1-z3)**2) < sqrt((x2-x3)**2+(y2-y3)**2+(z2-z3)**2):
                     if data == 'MV':
-                        bm.select_history[-1].co = vector_delta
+                        va.co = vector_delta
                         proc = True
                     elif data == 'EV':
                         nVert = bm.verts.new(vector_delta)
-                        nEdge = bm.edges.new([bm.select_history[-1],nVert])
+                        nEdge = bm.edges.new([va,nVert])
+                        proc = True
                 else:
                     if data == 'MV' and ext_a:
-                        bm.select_history[-2].co = vector_delta
+                        vo.co = vector_delta
                     elif data == 'EV' and ext_a:
                         nVert = bm.verts.new(vector_delta)
-                        nEdge = bm.edges.new([bm.select_history[-2],nVert])
+                        nEdge = bm.edges.new([vo,nVert])
 
                 # Second edge
-                x1 = bm.select_history[-3].co[0]
-                x2 = bm.select_history[-4].co[0]
-                y1 = bm.select_history[-3].co[1]
-                y2 = bm.select_history[-4].co[1]
-                z1 = bm.select_history[-3].co[2]
-                z2 = bm.select_history[-4].co[2]
+                x1 = lstV[0]
+                x2 = fstV[0]
+                y1 = lstV[1]
+                y2 = fstV[1]
+                z1 = lstV[2]
+                z2 = fstV[2]
                 # only affect active vertex unless ext_a is True
                 if sqrt((x1-x3)**2+(y1-y3)**2+(z1-z3)**2) < sqrt((x2-x3)**2+(y2-y3)**2+(z2-z3)**2):
                     if data == 'MV' and ext_a:
-                        bm.select_history[-3].co = vector_delta
+                        vl.co = vector_delta
                     elif data == 'EV' and ext_a:
-                        nEdge = bm.edges.new([bm.select_history[-3],nVert])
+                        nEdge = bm.edges.new([vl,nVert])
                 else:
                     if data == 'MV' and ext_a:
-                        bm.select_history[-4].co = vector_delta
+                        vf.co = vector_delta
                     elif data == 'EV' and ext_a:
-                        nEdge = bm.edges.new([bm.select_history[-4],nVert])
+                        nEdge = bm.edges.new([vf,nVert])
+                bm.select_history.clear()
                 bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
 
                 if not proc and not ext_a:
@@ -672,7 +695,6 @@ class PDT_OT_PlacementInt(Operator):
                         if v is not None:
                             v.select_set(True)
                     bmesh.update_edit_mesh(obj.data)
-                    bm.select_history.clear()
             else:
                 self.report({'ERROR'},
                     "Not a Valid, or Sensible, Option!")
@@ -768,9 +790,18 @@ class PDT_OT_PlacementCen(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             elif data == 'MV':
-                bm.select_history[-1].co = vector_delta
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
+                if obj.mode == 'EDIT':
+                    if ext_a:
+                        for v in [v for v in bm.verts if v.select]:
+                            v.co = vector_delta
+                        bm.select_history.clear()
+                        bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
+                    else:
+                        bm.select_history[-1].co = vector_delta
+                        bm.select_history.clear()
+                    bmesh.update_edit_mesh(obj.data)
+                elif obj.mode == 'OBJECT':
+                    context.view_layer.objects.active.location = vector_delta
             elif data == 'EV':
                 nVert = bm.verts.new(vector_delta)
                 if ext_a:
@@ -778,9 +809,9 @@ class PDT_OT_PlacementCen(Operator):
                         nEdge = bm.edges.new([v,nVert])
                         v.select_set(False)
                     nVert.select_set(True)
+                    bm.select_history.clear()
                     bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
                     bmesh.update_edit_mesh(obj.data)
-                    bm.select_history.clear()
                 else:
                     nEdge = bm.edges.new([bm.select_history[-1],nVert])
                     bmesh.update_edit_mesh(obj.data)
@@ -880,6 +911,7 @@ class PDT_OT_Angle2(Operator):
                     "Select 2 Vertices Individually")
                 return {"FINISHED"}
         elif obj.mode == 'OBJECT':
+            objs = [ob for ob in context.view_layer.objects if ob.select_set]
             if len(objs) < 2:
                 self.report({'ERROR'},
                     "Select 2 Objects")
@@ -948,6 +980,7 @@ class PDT_OT_Angle3(Operator):
                     "Select 3 Vertices Individually")
                 return {"FINISHED"}
         elif obj.mode == 'OBJECT':
+            objs = [ob for ob in context.view_layer.objects if ob.select_set]
             if len(objs) < 2:
                 self.report({'ERROR'},
                     "Select 3 Objects")

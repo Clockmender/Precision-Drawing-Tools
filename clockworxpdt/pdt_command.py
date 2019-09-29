@@ -26,7 +26,7 @@ from bpy.types import Operator, Panel, PropertyGroup
 from mathutils import Vector
 import bmesh
 import numpy as np
-from math import sin, cos, tan, acos, pi, sqrt
+from math import * #sin, cos, tan, acos, pi, sqrt
 from mathutils.geometry import intersect_point_line
 from .pdt_functions import (setMode, checkSelection, setAxis, updateSel, viewCoords, viewCoordsI,
                             viewDir, euler_to_quaternion, arcCentre, intersection, getPercent)
@@ -112,15 +112,41 @@ def command_run(self,context):
         return
     else:
         data = comm[0]
-        if data not in ['c','C','d','D','e','E','g','G','n','N','p','P','v','V','s','S']:
-            scene.pdt_error = "Bad Operator (1st Letter); C D E G N P S or V only"
+        if data not in ['c','C','d','D','e','E','g','G','n','N','m','M','p','P','v','V','s','S']:
+            scene.pdt_error = "Bad Operator (1st Letter); C D E G N M P S or V only"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
             return
         mode = comm[1]
-        if mode not in ['a','A','d','D','i','I','p','P']:
-            scene.pdt_error = "Bad Mode (2nd Letter); A C or I only"
+        if mode not in ['a','A','d','D','i','I','p','P','x','X','y','Y','z','Z']:
+            scene.pdt_error = "Bad Mode (2nd Letter); A D I or P only (+ X Y & Z for Maths Operations)"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
             return
+        if data in ['m','M']:
+            exp = comm[2:]
+            try:
+                num = eval(exp)
+            except ValueError:
+                scene.pdt_error = "Not a Valid Mathematical Expression!"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+                return
+            if mode in ['x','X']:
+                scene.pdt_delta_x = num
+            elif mode in ['y','Y']:
+                scene.pdt_delta_y = num
+            elif mode in ['z','Z']:
+                scene.pdt_delta_z = num
+            elif mode in ['d','D']:
+                scene.pdt_distance = num
+            elif mode in ['a','A']:
+                scene.pdt_angle = num
+            elif mode in ['p','P']:
+                scene.pdt_percent = num
+            return
+        else:
+            if mode in ['x','X','y','Y','z','Z']:
+                scene.pdt_error = "X Y & Z Not permitted in anything other than Maths Operations"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+                return
         vals = comm[2:].split(',')
         ind = 0
         for r in vals:

@@ -28,7 +28,7 @@
 bl_info = {
     "name": "Precision Drawing Tools (PDT)",
     "author": "Alan Odom (Clockmender)",
-    "version": (1, 1, 2),
+    "version": (1, 1, 3),
     "blender": (2, 80, 0),
     "location": "View3D > UI > PDT",
     "description": "Precision Drawing Tools for Acccurate Modelling",
@@ -202,11 +202,11 @@ def register():
     Scene.pdt_percent = FloatProperty(name='Percent', default=0.0,
                                                precision=5,
                                                description="Percentage Offset")
-    Scene.pdt_plane = EnumProperty(items=(('XZ', "Front",
+    Scene.pdt_plane = EnumProperty(items=(('XZ', "Front(X-Z)",
                                                "Use X-Z Plane"),
-                                          ('XY', "Top",
+                                          ('XY', "Top(X-Y)",
                                                "Use X-Y Plane"),
-                                          ('YZ', "Right",
+                                          ('YZ', "Right(Y-Z)",
                                                "Use Y-Z Plane"),
                                           ('LO', "View",
                                                "Use View Plane")),
