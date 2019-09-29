@@ -139,7 +139,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
 
             return {'FINISHED'}
         else:
-            self.report({'WARNING'},
+            self.report({'ERROR'},
                         "View3D not found, cannot run operator")
 
         return {'CANCELLED'}
