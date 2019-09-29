@@ -212,7 +212,7 @@ class PDT_OT_PlacementDelta(Operator):
                     nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == 'DG':
+            elif data == 'DG' and obj.mode == 'EDIT':
                 ret = bmesh.ops.duplicate(bm, geom = (
                     [f for f in bm.faces if f.select]+
                     [e for e in bm.edges if e.select]+
@@ -229,7 +229,7 @@ class PDT_OT_PlacementDelta(Operator):
                 updateSel(bm,verts_dupe,edges_dupe,faces_dupe)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == 'EG':
+            elif data == 'EG' and obj.mode == 'EDIT':
                 ret = bmesh.ops.extrude_face_region(bm, geom = (
                     [f for f in bm.faces if f.select]+
                     [e for e in bm.edges if e.select]+
@@ -364,7 +364,7 @@ class PDT_OT_PlacementDis(Operator):
                     nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == 'DG':
+            elif data == 'DG' and obj.mode == 'EDIT':
                 ret = bmesh.ops.duplicate(bm, geom = (
                     [f for f in bm.faces if f.select]+
                     [e for e in bm.edges if e.select]+
@@ -381,7 +381,7 @@ class PDT_OT_PlacementDis(Operator):
                 updateSel(bm,verts_dupe,edges_dupe,faces_dupe)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == 'EG':
+            elif data == 'EG' and obj.mode == 'EDIT':
                 ret = bmesh.ops.extrude_face_region(bm, geom = (
                     [f for f in bm.faces if f.select]+
                     [e for e in bm.edges if e.select]+
