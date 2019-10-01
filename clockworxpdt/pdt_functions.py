@@ -268,7 +268,7 @@ def intersection(actV,othV,lstV,fstV,plane):
 def getPercent(obj, flip_p, per_v, data, scene):
     """ Calculates a Percentage Distance between 2 Vectors.
 
-    Takes: Object & pdt_flip, pdt_percent scene variables Operational Mode as 'data' & Context Scene
+    Takes: Object & pdt_flip, pdt_percent scene variables & Operational Mode as 'data' & Context Scene
     Calculates a point that lies a set percentage between two given points
     using standard Numpy Routines, pdt_flip causes percentage to be measured from second vector
     Works for either 2 vertices for an object in Edit mode
