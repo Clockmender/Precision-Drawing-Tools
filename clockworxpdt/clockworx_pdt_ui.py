@@ -39,6 +39,15 @@ class PDT_OT_PlacementAbs(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Valid Options for pdt_operate; CU PP MV NV EV SE.
+
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
+        and to add a New vertex(NV).
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         data = scene.pdt_operate
         x_loc = scene.pdt_delta_x
