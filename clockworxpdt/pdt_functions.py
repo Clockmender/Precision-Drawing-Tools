@@ -21,6 +21,8 @@
 # ----------------------------------------------------------
 # Author: Alan Odom (Clockmender)
 # ----------------------------------------------------------
+#
+# Common Functions used in more than one place in PDT Operations
 
 import bpy
 import bmesh
@@ -28,13 +30,20 @@ from mathutils import Vector, Quaternion
 from math import cos, sin, pi
 import numpy as np
 
-# Routine to Display Error Messages.
-#
 def oops(self, context):
+    """Error Routine.
+
+    Uses pdt_error scene variable
+    Displays error message in a popup."""
     scene = context.scene
     self.layout.label(text=scene.pdt_error)
 
 def setMode(mode_pl):
+    """Sets Active Axes for View Orientation.
+
+    Takes: Plane Selector variable as input
+    Sets indices of axes for locational vectors
+    Returns: 3 Integer Indicies."""
     if mode_pl == 'XY':
         # a1 = x a2 = y a3 = z
         return 0, 1, 2
@@ -46,7 +55,12 @@ def setMode(mode_pl):
         return 1, 2, 0
 
 def setAxis(mode_pl):
-    # Rotate Axis, Move Axis, Height Axis
+    """Sets Active Axes for View Orientation.
+
+    Takes: Taper Axis Selector variable as input
+    Sets indices for axes from taper vectors
+    Axis order: Rotate Axis, Move Axis, Height Axis
+    Returns: 3 Integer Indicies."""
     if mode_pl == 'RX-MY':
         return 0, 1, 2
     elif mode_pl == 'RX-MZ':
@@ -61,6 +75,12 @@ def setAxis(mode_pl):
         return 2, 1, 0
 
 def checkSelection(num, bm, obj):
+    """Check that the Object's select_history has suffuceint entries.
+
+    Takes: number of entries required for each operation,
+    the Bmesh from the Object and the Object
+    If selection history is not Verts, clears selection and history
+    Returns: list of 3D points as Vectors."""
     if len(bm.select_history) < num:
         return None
     else:
@@ -93,6 +113,10 @@ def checkSelection(num, bm, obj):
         return None
 
 def updateSel(bm,verts,edges,faces):
+    """Updates Vertex, Edge and Face Selections following a function.
+
+    Takes: Object Bmesh, New Selection for Vertices, Edges and Faces
+    Returns: Nothing."""
     for f in bm.faces:
         f.select_set(False)
     for e in bm.edges:
@@ -108,6 +132,10 @@ def updateSel(bm,verts,edges,faces):
     return
 
 def viewCoords(x_loc,y_loc,z_loc):
+    """Converts input Vector values to new Screen Oriented Vector.
+
+    Takes: X, Y & Z values from a vector
+    Returns: Vector adjusted to View's Inverted Tranformation Matrix."""
     areas = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
     if len(areas) > 0:
         vm = areas[0].spaces.active.region_3d.view_matrix
@@ -119,6 +147,11 @@ def viewCoords(x_loc,y_loc,z_loc):
         return Vector((0,0,0))
 
 def viewCoordsI(x_loc,y_loc,z_loc):
+    """Converts Screen Oriented input Vector values to new World Vector.
+
+    Takes: X, Y & Z values from a Vector
+    Converts View tranformation Matrix to Rotational Matrix
+    Returns: Vector adjusted to View's Transformation Matrix."""
     areas = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
     if len(areas) > 0:
         vm = areas[0].spaces.active.region_3d.view_matrix
@@ -130,6 +163,13 @@ def viewCoordsI(x_loc,y_loc,z_loc):
         return Vector((0,0,0))
 
 def viewDir(dis_v,ang_v):
+    """Converts Distance and Angle to View Oriented Vector.
+
+    Takes: scene distance and angle variables and
+    converts them to View Oriented Vector
+    Converts View Transformation Matrix to Rotational Matrix (3x3)
+    Angles are converted to Radians from degrees
+    Returns: World Vector."""
     areas = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
     if len(areas) > 0:
         vm = areas[0].spaces.active.region_3d.view_matrix
@@ -143,14 +183,24 @@ def viewDir(dis_v,ang_v):
         return Vector((0,0,0))
 
 def euler_to_quaternion(roll, pitch, yaw):
-        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
-        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
-        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+    """Converts Euler Rotation to Quaternion Rotation.
 
-        return Quaternion((qw, qx, qy, qz))
+    Takes: 3 rotational values from Euler Rotation
+    and converts to Quaternion Rotation
+    Returns: Quaternion Rotation."""
+    qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+    qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+    qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+    qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+
+    return Quaternion((qw, qx, qy, qz))
 
 def arcCentre(actV,othV,lstV):
+    """Calculates Centre of Arc from 3 Vector Locations.
+
+    Takes: 3 Vector Locations that lie upon an Arc using
+    standard Numpy Routines
+    Returns: Vector representing Arc Centre and Float representing Arc Radius."""
     A = np.array([actV.x, actV.y, actV.z])
     B = np.array([othV.x, othV.y, othV.z])
     C = np.array([lstV.x, lstV.y, lstV.z])
@@ -167,6 +217,12 @@ def arcCentre(actV,othV,lstV):
     return Vector((P[0],P[1],P[2])), R
 
 def intersection(actV,othV,lstV,fstV,plane):
+    """Calculates Intersection Point of 2 Imagined Lines from 4 Vectors.
+
+    Takes: 4 Vector Locations representing 2 lines and Working Plane
+    calculates Converging Intersect Location and indication of
+    whether the lines are convergent using standard Numpy Routines
+    Returns: Intersection Vector and Boolean for convergent state."""
     if plane == 'LO':
         disV = othV-actV
         othV = viewCoordsI(disV.x,disV.y,disV.z)
@@ -210,6 +266,14 @@ def intersection(actV,othV,lstV,fstV,plane):
     return vector_delta,True
 
 def getPercent(obj, flip_p, per_v, data, scene):
+    """ Calculates a Percentage Distance between 2 Vectors.
+
+    Takes: Object & pdt_flip, pdt_percent scene variables Operational Mode as 'data' & Context Scene
+    Calculates a point that lies a set percentage between two given points
+    using standard Numpy Routines, pdt_flip causes percentage to be measured from second vector
+    Works for either 2 vertices for an object in Edit mode
+    or 2 selected objects in Object mode
+    Returns: World Vector."""
     if obj.mode == 'EDIT':
         bm = bmesh.from_edit_mesh(obj.data)
         verts = [v for v in bm.verts if v.select]
