@@ -58,7 +58,7 @@ def draw_3d(coords, type, rgba, context):
 def draw_callback_3d(self, context):
     """Create Coordinate List for Pivot Point Graphic.
 
-    Takes: slf and context
+    Takes: self and context
     Creates coordinates for Pivot Point Graphic consisting of 6 Tris
     and one Point colour coded Red; X axis, Green; Y axis, Blue; Z axis
     and a yellow point
