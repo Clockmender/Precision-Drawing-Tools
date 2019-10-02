@@ -26,7 +26,11 @@
 
 import bpy
 import bmesh
+import bgl
+import blf
+import gpu
 from mathutils import Vector, Quaternion
+from gpu_extras.batch import batch_for_shader
 from math import cos, sin, pi
 import numpy as np
 
@@ -316,3 +320,135 @@ def getPercent(obj, flip_p, per_v, data, scene):
         else:
             tst = ((p4 + p3) * ((100 - per_v) / 100)) + p1
     return Vector((tst[0],tst[1],tst[2]))
+
+def objCheck(obj,scene,data):
+    """Check Object & Selection Validity.
+
+    Args:
+        Active Object, Scene & Operation as 'data'
+    Returns:
+        Object Bmesh and Validity Boolean."""
+    if obj == None:
+        scene.pdt_error = "Select at least 1 Object"
+        bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+        return None,False
+    if obj.mode == 'EDIT':
+        bm = bmesh.from_edit_mesh(obj.data)
+        if data in ['s','S']:
+            if len([e for e in bm.edges]) < 1:
+                scene.pdt_error = "Select at Least 1 Edge"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+                return None,False
+            else:
+                return bm,True
+        if len(bm.select_history) >= 1:
+            if data not in ['e','E','g','G','d','D','s','S']:
+                actV = checkSelection(1, bm, obj)
+            else:
+                verts = [v for v in bm.verts if v.select]
+                if len(verts) > 0:
+                    actV = verts[0]
+                else:
+                    actV = None
+            if actV == None:
+                scene.pdt_error = "Work in Vertex Mode"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+                return None,False
+        elif data in ['c','C','n','N']:
+            scene.pdt_error = "Select at least 1 Vertex Individually"
+            bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+            return None,False
+        return bm,True
+    elif obj.mode == 'OBJECT':
+        return None,True
+
+def disAng(vals,flip_a,plane,scene):
+    """Set Working Axes when using Direction command.
+
+    Args:
+        Inpt Arguments (Values), Angle Flip Boolean, Working Plane & Scene
+    Returns:
+        Directional Offset as a Vector."""
+    dis_v = float(vals[0])
+    ang_v = float(vals[1])
+    if flip_a:
+        if ang_v > 0:
+            ang_v = ang_v - 180
+        else:
+            ang_v = ang_v + 180
+        scene.pdt_angle = ang_v
+    if plane == 'LO':
+        vector_delta = viewDir(dis_v,ang_v)
+    else:
+        a1,a2,a3 = setMode(plane)
+        vector_delta = Vector((0,0,0))
+        vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v*pi/180))
+        vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v*pi/180))
+    return vector_delta
+
+# Shader for displaying the Pivot Point as Graphics.
+#
+shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR') if not bpy.app.background else None
+
+def draw3D(coords, type, rgba, context):
+    """Draw Pivot Point Graphics.
+
+    Takes: Input Coordinates List, Graphic Type, Colour and Context
+    Draws either Lines Points, or Tris using defined shader
+    Returns: Nothing."""
+    scene = context.scene
+    batch = batch_for_shader(shader, type, {"pos": coords})
+
+    try:
+        if coords is not None:
+            bgl.glEnable(bgl.GL_BLEND)
+            shader.bind()
+            shader.uniform_float("color", rgba)
+            batch.draw(shader)
+    except:
+        pass
+
+def drawCallback3D(self, context):
+    """Create Coordinate List for Pivot Point Graphic.
+
+    Takes: self and context
+    Creates coordinates for Pivot Point Graphic consisting of 6 Tris
+    and one Point colour coded Red; X axis, Green; Y axis, Blue; Z axis
+    and a yellow point based upon screen scale
+    Returns: Nothing."""
+    scene = context.scene
+    w = context.region.width
+    x = scene.pdt_pivotloc.x
+    y = scene.pdt_pivotloc.y
+    z = scene.pdt_pivotloc.z
+    # Scale it from view
+    areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
+    if len(areas) > 0:
+        sf = abs(areas[0].spaces.active.region_3d.window_matrix.decompose()[2][1])
+    a = w/sf/10000 * scene.pdt_pivotsize
+    b = a * 0.65
+    c = a * 0.05 + (scene.pdt_pivotwidth * a * 0.02)
+    o = c / 3
+
+    # X Axis
+    coords = [(x,y,z), (x+b,y-o,z), (x+b,y+o,z), (x+a,y,z), (x+b,y+c,z), (x+b,y-c,z)]
+    colour = (1.0, 0.0, 0.0, scene.pdt_pivotalpha)
+    draw3D(coords, 'TRIS', colour, context)
+    coords = [(x,y,z),(x+a,y,z)]
+    draw3D(coords, 'LINES', colour, context)
+    # Y Axis
+    coords = [(x,y,z), (x-o,y+b,z), (x+o,y+b,z), (x,y+a,z), (x+c,y+b,z), (x-c,y+b,z)]
+    colour = (0.0, 1.0, 0.0, scene.pdt_pivotalpha)
+    draw3D(coords, 'TRIS', colour, context)
+    coords = [(x,y,z),(x,y+a,z)]
+    draw3D(coords, 'LINES', colour, context)
+    # Z Axis
+    coords = [(x,y,z), (x-o,y,z+b), (x+o,y,z+b), (x,y,z+a), (x+c,y,z+b), (x-c,y,z+b)]
+    colour = (0.2, 0.5, 1.0, scene.pdt_pivotalpha)
+    draw3D(coords, 'TRIS', colour, context)
+    coords = [(x,y,z),(x,y,z+a)]
+    draw3D(coords, 'LINES', colour, context)
+    # Centre
+    coords = [(x,y,z)]
+    colour = (1.0, 1.0, 0.0, scene.pdt_pivotalpha)
+    draw3D(coords, 'POINTS', colour, context)

@@ -950,7 +950,7 @@ class PDT_OT_JoinVerts(Operator):
             return {"FINISHED"}
 
 class PDT_OT_Angle2(Operator):
-    """Measure Distance and Angle in Working Plane"""
+    """Measure Distance and Angle in Working Plane, Also sets Deltas"""
     bl_idname = 'pdt.angle2'
     bl_label = 'Measure 2D'
     bl_options = {"REGISTER","UNDO"}
@@ -1030,7 +1030,7 @@ class PDT_OT_Angle3(Operator):
     bl_options = {"REGISTER","UNDO"}
 
     def execute(self,context):
-        """Measures Angle and Offsets between 3 Points in World Space.
+        """Measures Angle and Offsets between 3 Points in World Space, Also sets Deltas.
 
         Uses 3 Selected Vertices to set pdt_angle and pdt_distance scene variables
         also sets delta offset from these 3 points using standard Numpy Routines
