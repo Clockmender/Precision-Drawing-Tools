@@ -21,84 +21,11 @@
 # Author: Alan Odom (Clockmender)
 # ----------------------------------------------------------
 #
-
 import bpy
-import bgl
-import blf
-import gpu
-import bmesh
-from gpu_extras.batch import batch_for_shader
 from bpy.types import Operator, Panel, PropertyGroup, SpaceView3D
 from mathutils import Vector, Matrix
 from math import pi
-from .pdt_functions import viewCoords
-
-# Shader for displaying the Pivot Point as Graphics.
-#
-shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR') if not bpy.app.background else None
-
-def draw_3d(coords, type, rgba, context):
-    """Draw Pivot Point Graphics.
-
-    Takes: Input Coordinates List, Graphic Type, Colour and Context
-    Draws either Lines Points, or Tris using defined shader
-    Returns: Nothing."""
-    scene = context.scene
-    batch = batch_for_shader(shader, type, {"pos": coords})
-
-    try:
-        if coords is not None:
-            bgl.glEnable(bgl.GL_BLEND)
-            shader.bind()
-            shader.uniform_float("color", rgba)
-            batch.draw(shader)
-    except:
-        pass
-
-def draw_callback_3d(self, context):
-    """Create Coordinate List for Pivot Point Graphic.
-
-    Takes: self and context
-    Creates coordinates for Pivot Point Graphic consisting of 6 Tris
-    and one Point colour coded Red; X axis, Green; Y axis, Blue; Z axis
-    and a yellow point based upon screen scale
-    Returns: Nothing."""
-    scene = context.scene
-    w = context.region.width
-    x = scene.pdt_pivotloc.x
-    y = scene.pdt_pivotloc.y
-    z = scene.pdt_pivotloc.z
-    # Scale it from view
-    areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
-    if len(areas) > 0:
-        sf = abs(areas[0].spaces.active.region_3d.window_matrix.decompose()[2][1])
-    a = w/sf/10000 * scene.pdt_pivotsize
-    b = a * 0.65
-    c = a * 0.05 + (scene.pdt_pivotwidth * a * 0.02)
-    o = c / 3
-
-    # X Axis
-    coords = [(x,y,z), (x+b,y-o,z), (x+b,y+o,z), (x+a,y,z), (x+b,y+c,z), (x+b,y-c,z)]
-    colour = (1.0, 0.0, 0.0, scene.pdt_pivotalpha)
-    draw_3d(coords, 'TRIS', colour, context)
-    coords = [(x,y,z),(x+a,y,z)]
-    draw_3d(coords, 'LINES', colour, context)
-    # Y Axis
-    coords = [(x,y,z), (x-o,y+b,z), (x+o,y+b,z), (x,y+a,z), (x+c,y+b,z), (x-c,y+b,z)]
-    colour = (0.0, 1.0, 0.0, scene.pdt_pivotalpha)
-    draw_3d(coords, 'TRIS', colour, context)
-    coords = [(x,y,z),(x,y+a,z)]
-    draw_3d(coords, 'LINES', colour, context)
-    # Z Axis
-    coords = [(x,y,z), (x-o,y,z+b), (x+o,y,z+b), (x,y,z+a), (x+c,y,z+b), (x-c,y,z+b)]
-    colour = (0.2, 0.5, 1.0, scene.pdt_pivotalpha)
-    draw_3d(coords, 'TRIS', colour, context)
-    coords = [(x,y,z),(x,y,z+a)]
-    draw_3d(coords, 'LINES', colour, context)
-    # Centre
-    coords = [(x,y,z)]
-    colour = (1.0, 1.0, 0.0, scene.pdt_pivotalpha)
-    draw_3d(coords, 'POINTS', colour, context)
+from .pdt_functions import viewCoords, draw3D, drawCallback3D
 
 class PDT_OT_ModalDrawOperator(bpy.types.Operator):
     """Show/Hide Pivot Point"""
@@ -115,7 +42,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Draws 7 element Pivot Point Graphic
         Return: Nothing."""
         if PDT_OT_ModalDrawOperator._handle is None:
-            PDT_OT_ModalDrawOperator._handle = SpaceView3D.draw_handler_add(draw_callback_3d, (self, context),
+            PDT_OT_ModalDrawOperator._handle = SpaceView3D.draw_handler_add(drawCallback3D, (self, context),
                                                                         'WINDOW',
                                                                         'POST_VIEW')
             context.window_manager.pdt_run_opengl = True

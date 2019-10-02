@@ -29,82 +29,8 @@ import numpy as np
 from math import *
 from mathutils.geometry import intersect_point_line
 from .pdt_functions import (setMode, checkSelection, setAxis, updateSel, viewCoords, viewCoordsI,
-                            viewDir, euler_to_quaternion, arcCentre, intersection, getPercent)
-
-def oops(self, context):
-    """Error Routine.
-
-    Uses pdt_error scene variable
-    Displays error message in a popup."""
-    scene = context.scene
-    self.layout.label(text=scene.pdt_error)
-
-# Function to check for Valid Object and Selection History.
-#
-def obj_check(obj,scene,data):
-    """Check Object & Selection Validity.
-
-    Args:
-        Active Object, Scene & Operation as 'data'
-    Returns:
-        Object Bmesh and Validity Boolean."""
-    if obj == None:
-        scene.pdt_error = "Select at least 1 Object"
-        bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-        return None,False
-    if obj.mode == 'EDIT':
-        bm = bmesh.from_edit_mesh(obj.data)
-        if data in ['s','S']:
-            if len([e for e in bm.edges]) < 1:
-                scene.pdt_error = "Select at Least 1 Edge"
-                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-                return None,False
-            else:
-                return bm,True
-        if len(bm.select_history) >= 1:
-            if data not in ['e','E','g','G','d','D','s','S']:
-                actV = checkSelection(1, bm, obj)
-            else:
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) > 0:
-                    actV = verts[0]
-                else:
-                    actV = None
-            if actV == None:
-                scene.pdt_error = "Work in Vertex Mode"
-                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-                return None,False
-        elif data in ['c','C','n','N']:
-            scene.pdt_error = "Select at least 1 Vertex Individually"
-            bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-            return None,False
-        return bm,True
-    elif obj.mode == 'OBJECT':
-        return None,True
-
-def disAng(vals,flip_a,plane,scene):
-    """Set Working Axes when using Direction command.
-
-    Args:
-        Inpt Arguments (Values), Angle Flip Boolean, Working Plane & Scene
-    Returns:
-        Directional Offset as a Vector."""
-    dis_v = float(vals[0])
-    ang_v = float(vals[1])
-    if flip_a:
-        if ang_v > 0:
-            ang_v = ang_v - 180
-        else:
-            ang_v = ang_v + 180
-        scene.pdt_angle = ang_v
-    if plane == 'LO':
-        vector_delta = viewDir(dis_v,ang_v)
-    else:
-        a1,a2,a3 = setMode(plane)
-        vector_delta = Vector((0,0,0))
-        vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v*pi/180))
-        vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v*pi/180))
-    return vector_delta
+                            viewDir, euler_to_quaternion, arcCentre, intersection, getPercent, oops,
+                            disAng, objCheck)
 
 def command_run(self,context):
     """Run Command String as input into Command Line.
@@ -202,7 +128,7 @@ def command_run(self,context):
         # This bit needs looking at.
         if mode not in ['a','A'] or (data in ['s','S'] and mode in ['a','A']):
             obj = bpy.context.view_layer.objects.active
-            bm,good = obj_check(obj,scene,data)
+            bm,good = objCheck(obj,scene,data)
             if obj.mode == 'EDIT':
                 if len(bm.select_history) < 1 and data in ['c','C','n','N','p','P']:
                     scene.pdt_error = "No Active Vertex - Not a Good Idea!"
