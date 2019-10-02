@@ -16,14 +16,14 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ***** END GPL LICENCE BLOCK *****
-
+#
 # ----------------------------------------------------------
 # Author: Alan Odom (Clockmender)
 # ----------------------------------------------------------
-
+#
 import bpy
 from bpy.types import Operator, Panel, PropertyGroup
-from mathutils import Vector
+from mathutils import Vector, Quaternion
 from bpy.props import FloatProperty
 import bmesh
 import numpy as np
@@ -39,8 +39,9 @@ class PDT_OT_PlacementAbs(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        """Valid Options for pdt_operate; CU PP MV NV EV SE.
+        """Manipulates Geometry, or Objects by Absolute (World) Coordinates.
 
+        Valid Options for pdt_operate; CU PP MV NV EV SE
         Reads pdt_operate from Operation Mode Selector as 'data'
         Reads pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables
         to set position of Cursor(CU), & Pivot Point(PP)
@@ -125,6 +126,17 @@ class PDT_OT_PlacementDelta(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Manipulates Geometry, or Objects by Delta Offset (Increment).
+
+        Valid Options for pdt_operate; CU PP MV NV EV SE DG EG
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_select, pdt_plane, pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
+        and to add a New vertex(NV)
+        and to Duplcate(DG) geometry, or Extrude(EG) geometry
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         x_loc = scene.pdt_delta_x
         y_loc = scene.pdt_delta_y
@@ -267,6 +279,17 @@ class PDT_OT_PlacementDis(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Manipulates Geometry, or Objects by Distance at Angle (Direction).
+
+        Valid Options for pdt_operate; CU PP MV NV EV SE DG EG
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_select, pdt_distance, pdt_angle, pdt_plane & pdt_flipangle scene variables
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
+        and to add a New vertex(NV)
+        and to Duplcate(DG) geometry, or Extrude(EG) geometry
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         dis_v = scene.pdt_distance
         ang_v = scene.pdt_angle
@@ -419,6 +442,16 @@ class PDT_OT_PlacementPer(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Manipulates Geometry, or Objects by Percentage between 2 points.
+
+        Valid Options for pdt_operate; CU PP MV NV EV SE
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_percent, pdt_extend & pdt_flippercent scene variables
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
+        and to add a New vertex(NV)
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         per_v = scene.pdt_percent
         data = scene.pdt_operate
@@ -495,6 +528,16 @@ class PDT_OT_PlacementNormal(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Manipulates Geometry, or Objects by Normal Intersection between 3 points.
+
+        Valid Options for pdt_operate; CU PP MV NV EV SE
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_extend scene variable
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
+        and to add a New vertex(NV)
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         data = scene.pdt_operate
         ext_a = scene.pdt_extend
@@ -580,6 +623,16 @@ class PDT_OT_PlacementInt(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Manipulates Geometry, or Objects by Convergance Intersection between 4 points, or 2 Edges.
+
+        Valid Options for pdt_operate; CU PP MV NV EV
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_plane scene variable - operates in Working Plane
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV)
+        and to add a New vertex(NV)
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         data = scene.pdt_operate
         plane = scene.pdt_plane
@@ -752,6 +805,16 @@ class PDT_OT_PlacementCen(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Manipulates Geometry, or Objects to an Arc Centre defined by 3 points on an Imaginary Arc.
+
+        Valid Options for pdt_operate; CU PP MV NV EV
+        Reads pdt_operate from Operation Mode Selector as 'data'
+        Reads pdt_extend scene variable
+        to set position of Cursor(CU), & Pivot Point(PP)
+        and to Move(MV) geometry/objects, Extrude vertices(EV)
+        and to add a New vertex(NV)
+        Invalid Options result in self.report Error
+        local vector variable 'vector_delta' used to reposition features."""
         scene = context.scene
         data = scene.pdt_operate
         ext_a = scene.pdt_extend
@@ -851,6 +914,13 @@ class PDT_OT_JoinVerts(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Joins 2 Free Vertices that do not form part of a Face.
+
+        Takes: self, context
+        Joins two vertices that do not form part of a single face
+        It is designed to close open Edge Loops, where a face is not required
+        or to join two disconnected Edges.
+        Returns: Status Set."""
         scene = context.scene
         obj = context.view_layer.objects.active
         if obj == None:
@@ -886,6 +956,11 @@ class PDT_OT_Angle2(Operator):
     bl_options = {"REGISTER","UNDO"}
 
     def execute(self,context):
+        """Measures Angle and Offsets between 2 Points in View Plane.
+
+        Uses 2 Selected Vertices to set pdt_angle and pdt_distance scene variables
+        also sets delta offset from these 2 points using standard Numpy Routines
+        Works in Edit and Oject Modes."""
         scene = context.scene
         plane = scene.pdt_plane
         flip_a = scene.pdt_flipangle
@@ -955,6 +1030,11 @@ class PDT_OT_Angle3(Operator):
     bl_options = {"REGISTER","UNDO"}
 
     def execute(self,context):
+        """Measures Angle and Offsets between 3 Points in World Space.
+
+        Uses 3 Selected Vertices to set pdt_angle and pdt_distance scene variables
+        also sets delta offset from these 3 points using standard Numpy Routines
+        Works in Edit and Oject Modes."""
         scene = context.scene
         plane = scene.pdt_plane
         flip_a = scene.pdt_flipangle
@@ -1015,6 +1095,11 @@ class PDT_OT_Origin(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Sets Object Origin in Edit Mode to Cursor Location.
+
+        Keeps geometry static in World Space whilst moving Object Origin
+        Requires cursor location
+        Works in Edit and Object Modes."""
         scene = context.scene
         obj = context.view_layer.objects.active
         if obj == None:
@@ -1047,6 +1132,14 @@ class PDT_OT_Taper(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Taper Geometry along World Axes.
+
+        Takes: self, context
+        Uses: pdt_taper & pdt_angle scene variables
+        Similar to Shear command except that it shears by angle rather than displacement
+        Rotates about World Axes and displaces along World Axes, angle must not exceed +-80 degrees
+        Rotation axis is centred on Active Vertex
+        Works only in Edit mode."""
         scene = context.scene
         tap_ax = scene.pdt_taper
         ang_v = scene.pdt_angle
@@ -1095,6 +1188,12 @@ class PDT_OT_Append(Operator):
 
     def execute(self, context):
         scene = context.scene
+        """Appends Objects from PDT Library file.
+
+        Takes: self, context
+        Uses: pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+        Appended Objects are placed at Cursor Location
+        Returns: Status Set."""
         obj_names = [o.name for o in context.view_layer.objects]
         path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
         if scene.pdt_lib_mode == 'OBJECTS':
@@ -1122,6 +1221,12 @@ class PDT_OT_Link(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """Links Objects from PDT Library file.
+
+        Takes: self, context
+        Uses: pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+        Linked Objects are placed at Cursor Location
+        Returns: Status Set."""
         scene = context.scene
         path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
         if scene.pdt_lib_mode == 'OBJECTS':
@@ -1147,6 +1252,13 @@ class PDT_OT_ViewRot(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """View Rotation by Absolute Values.
+
+        Takes: self, context
+        Uses: pdt_xrot, pdt_yrot, pdt_zrot scene variables
+        Rotations are converted to 3x3 Quaternion Rotation Matrix
+        This is an Absolute Rotation, not an Incremental Orbit
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1161,6 +1273,12 @@ class PDT_OT_vRotL(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """View Orbit Left by Delta Value.
+
+        Takes: self, context
+        Uses: pdt_vrotangle scene variable
+        Orbits view to the left about its vertical axis
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1174,6 +1292,12 @@ class PDT_OT_vRotR(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """View Orbit Right by Delta Value.
+
+        Takes: self, context
+        Uses: pdt_vrotangle scene variable
+        Orbits view to the right about its vertical axis
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1187,6 +1311,12 @@ class PDT_OT_vRotU(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """View Orbit Up by Delta Value.
+
+        Takes: self, context
+        Uses: pdt_vrotangle scene variable
+        Orbits view up about its horizontal axis
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1200,6 +1330,12 @@ class PDT_OT_vRotD(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """View Orbit Down by Delta Value.
+
+        Takes: self, context
+        Uses: pdt_vrotangle scene variable
+        Orbits view down about its horizontal axis
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1213,6 +1349,12 @@ class PDT_OT_vRoll(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
+        """View Roll by Delta Value.
+
+        Takes: self, context
+        Uses: pdt_vrotangle scene variable
+        Rolls view about its normal axis
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1226,16 +1368,20 @@ class PDT_OT_viso(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        # This is not working properly so is commented out on menu
+        """Set Isometric View.
+
+        Takes: self, context
+        Set view orientation to Isometric
+        Returns: Status Set."""
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
-            bpy.ops.view3d.view_axis(type='FRONT')
-            bpy.ops.view3d.view_orbit(angle=(45*pi/180),type='ORBITLEFT')
-            bpy.ops.view3d.view_orbit(angle=(35.2644*pi/180),type='ORBITUP')
-            bpy.ops.view3d.view_persportho()
+            # Try working this out in your head!
+            areas[0].spaces.active.region_3d.view_rotation = Quaternion((0.8205,0.4247,-0.1759,-0.3399))
         return {"FINISHED"}
 
+# PDT Panel menus
+#
 class PDT_PT_Panel1(Panel):
     bl_idname = "PDT_PT_panel1"
     bl_label = "PDT Drawing Tools"
@@ -1343,6 +1489,8 @@ class PDT_PT_Panel1(Panel):
         col.operator('pdt.viewdown', text="", icon='TRIA_DOWN')
         col = row.column()
         col.operator('pdt.viewroll', text="", icon='RECOVER_LAST')
+        row = box.row()
+        row.operator('pdt.viewiso', text="Isometric View")
         box = layout.box()
         row = box.row()
         row.label(text = "Comand Line, uses Plane & Mode Options")
