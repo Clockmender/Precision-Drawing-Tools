@@ -19,7 +19,7 @@
 # <pep8 compliant>
 #
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender)
+# Author: Alan Odom (Clockmender) Copyright © 2019
 # ----------------------------------------------------------
 #
 # ----------------------------------------------
@@ -76,11 +76,14 @@ panels = (
 
 
 def update_panel(self, context):
-    """Uodate Panels if parameters change.
-
-    Takes: self, context
+    """Update Panels if parameters change.
     This routine is required if the panel layouts are changed by the application
-    Returns: Nothing."""
+    Args:
+        context: FIXME
+    Returns:
+        Nothing.
+    """
+
     message = "PDT: Updating Panel locations has failed"
     try:
         for panel in panels:
@@ -135,11 +138,14 @@ classes = (
 
 def enumlist_objects(self,context):
     """Populate Objects List from Parts Library.
-
-    Takes, self, context
     Creates list of objects that optionally have search string contained in them
-    to populate variable pdt_lib_objects enumerator
-    Returns: Object Names List."""
+    to populate variable pdt_lib_objects enumerator.
+    Args:
+        context: FIXME
+    Returns:
+        list of Object Names.
+    """
+
     scene = context.scene
     path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
     with bpy.data.libraries.load(path) as (data_from, data_to):
@@ -154,11 +160,14 @@ def enumlist_objects(self,context):
 
 def enumlist_collections(self,context):
     """Populate Collections List from Parts Library.
-
-    Takes, self, context
     Creates list of collections that optionally have search string contained in them
     to populate variable pdt_lib_collections enumerator
-    Returns: Collections Names List."""
+    Args:
+        context: Fixme
+    Returns:
+        list of Collections Names.
+    """
+
     scene = context.scene
     path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
     with bpy.data.libraries.load(path) as (data_from, data_to):
@@ -173,11 +182,14 @@ def enumlist_collections(self,context):
 
 def enumlist_materials(self,context):
     """Populate Materials List from Parts Library.
-
-    Takes, self, context
     Creates list of materials that optionally have search string contained in them
-    to populate variable pdt_lib_materials enumerator
-    Returns: Object Names List."""
+    to populate variable pdt_lib_materials enumerator.
+    Args:
+        context: FIXME
+    Returns:
+        list of Object Names.
+    """
+
     scene = context.scene
     path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
     with bpy.data.libraries.load(path) as (data_from, data_to):
@@ -192,9 +204,9 @@ def enumlist_materials(self,context):
 
 def register():
     """Register Classes and Create Scene Variables.
+    Operates on the Classes list defined above.
+    """
 
-    Takes: Classes List defined above
-    Returns: Nothing."""
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
@@ -324,9 +336,9 @@ def register():
 
 def unregister():
     """Unregister Classes and Delete Scene Variables.
+    Operates on the Classes List defined above.
+    """
 
-    Takes: Classes List defined above
-    Returns: Nothing."""
     from bpy.utils import unregister_class
     for cls in reversed(classes):
         unregister_class(cls)
