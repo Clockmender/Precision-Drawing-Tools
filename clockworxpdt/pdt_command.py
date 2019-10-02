@@ -122,7 +122,7 @@ def command_run(self,context):
 
         Valid First Letters (as 'data' - pdt_command[0])
             C = Cursor, G = Grab(move), N = New Vertex, V = Extrude Vertices Only, E = Extrude geometry
-            P = Move Pivot Point, D = Duplicate geometry, S = Split Edges, P = Pivot Point
+            P = Move Pivot Point, D = Duplicate geometry, S = Split Edges
             Capitals and Lower case letters are both allowed
 
         Valid Second Letters (as 'mode' - pdt_command[1])
