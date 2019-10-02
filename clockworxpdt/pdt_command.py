@@ -16,30 +16,38 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ***** END GPL LICENCE BLOCK *****
-
+#
 # ----------------------------------------------------------
 # Author: Alan Odom (Clockmender)
 # ----------------------------------------------------------
-
+#
 import bpy
 from bpy.types import Operator, Panel, PropertyGroup
 from mathutils import Vector
 import bmesh
 import numpy as np
-from math import * #sin, cos, tan, acos, pi, sqrt
+from math import *
 from mathutils.geometry import intersect_point_line
 from .pdt_functions import (setMode, checkSelection, setAxis, updateSel, viewCoords, viewCoordsI,
                             viewDir, euler_to_quaternion, arcCentre, intersection, getPercent)
 
-# Routine to Display Error Messages.
-#
 def oops(self, context):
+    """Error Routine.
+
+    Uses pdt_error scene variable
+    Displays error message in a popup."""
     scene = context.scene
     self.layout.label(text=scene.pdt_error)
 
 # Function to check for Valid Object and Selection History.
 #
 def obj_check(obj,scene,data):
+    """Check Object & Selection Validity.
+
+    Args:
+        Active Object, Scene & Operation as 'data'
+    Returns:
+        Object Bmesh and Validity Boolean."""
     if obj == None:
         scene.pdt_error = "Select at least 1 Object"
         bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
@@ -74,9 +82,13 @@ def obj_check(obj,scene,data):
     elif obj.mode == 'OBJECT':
         return None,True
 
-# Function to set Working Axes when using Distance Command.
-#
 def disAng(vals,flip_a,plane,scene):
+    """Set Working Axes when using Direction command.
+
+    Args:
+        Inpt Arguments (Values), Angle Flip Boolean, Working Plane & Scene
+    Returns:
+        Directional Offset as a Vector."""
     dis_v = float(vals[0])
     ang_v = float(vals[1])
     if flip_a:
@@ -94,18 +106,44 @@ def disAng(vals,flip_a,plane,scene):
         vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v*pi/180))
     return vector_delta
 
-# Function to Run the Command Line Interpreter.
-#
 def command_run(self,context):
-    # Execute for Command line
+    """Run Command String as input into Command Line.
+
+    Args:
+        self, context
+
+    Uses:
+        pdt_command, pdt_error & many other 'scene.pdt_' variables are used to set PDT menu items, or alter functions
+
+    Notes:
+        Command Format; Operation(single letter) Mode(single letter) Values(up to 3 values separated by commas)
+        Example; CD0.4,0.6,1.1 - Moves Cursor Delta XYZ = 0.4,0.6,1.1 from Current Position/Active Vertex/Object Origin
+        Example; SP35 - Splits active Edge at 35% of separation between edge's vertices
+
+        Valid First Letters (as 'data' - pdt_command[0])
+            C = Cursor, G = Grab(move), N = New Vertex, V = Extrude Vertices Only, E = Extrude geometry
+            P = Move Pivot Point, D = Duplicate geometry, S = Split Edges, P = Pivot Point
+            Capitals and Lower case letters are both allowed
+
+        Valid Second Letters (as 'mode' - pdt_command[1])
+            A = Absolute XYZ, D = Delta XYZ, I = Distance at Angle, P = Percent
+            X = X Delta, Y = Y, Delta Z, = Z Delta (Maths Operation only)
+            Capitals and Lower case letters are both allowed
+
+        Valid Values (pdt_command[2:]) - Only Integers and Floats, missing values are set to 0,
+            appropriate length checks are performed as Values is split by commas
+            Example; CA,,3 - Cursor to Absolute, is re-interpreted as CA0,0,3
+
+            Exception for Maths Operation, Values section is evaluated as Maths command
+            Example; madegrees(atan(3/4)) - sets PDT Angle to smallest angle of 3,4,5 Triangle; (36.8699 degrees)
+            This is why all Math functions are imported
+
+    Returns:
+        Nothing."""
+
     scene = context.scene
     scene.pdt_error = "All is Good!"
     comm = scene.pdt_command
-    # First Letter
-    # C = Cursor G = Grab(move) N = New Vertex V = Extrude Vertices Only E = Extrude geometry
-    # P = Move Pivot Point D = Duplicate geometry, S = Split Edges
-    # Second Letter
-    # A = Absolute D = Delta XYZ I = Distance at Angle
     if len(comm) < 3:
         scene.pdt_error = "Bad Command Format, not enough Characters"
         bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
