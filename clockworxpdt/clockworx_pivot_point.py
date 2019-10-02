@@ -20,7 +20,7 @@
 # ----------------------------------------------------------
 # Author: Alan Odom (Clockmender)
 # ----------------------------------------------------------
-# 
+#
 
 import bpy
 import bgl
@@ -61,7 +61,7 @@ def draw_callback_3d(self, context):
     Takes: self and context
     Creates coordinates for Pivot Point Graphic consisting of 6 Tris
     and one Point colour coded Red; X axis, Green; Y axis, Blue; Z axis
-    and a yellow point
+    and a yellow point based upon screen scale
     Returns: Nothing."""
     scene = context.scene
     w = context.region.width

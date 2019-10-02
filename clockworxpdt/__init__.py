@@ -15,16 +15,17 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
-
+#
 # <pep8 compliant>
-
+#
 # ----------------------------------------------------------
 # Author: Alan Odom (Clockmender)
 # ----------------------------------------------------------
-
+#
 # ----------------------------------------------
 # Define Addon info
 # ----------------------------------------------
+#
 bl_info = {
     "name": "Precision Drawing Tools (PDT)",
     "author": "Alan Odom (Clockmender)",
@@ -65,13 +66,8 @@ from bpy.props import (
 
 from .pdt_command import command_run
 
-# --------------------------------------------------------------
-# Set up, Registration and Functions
-# --------------------------------------------------------------
-
-# Add-ons Preferences Update Panel
-
 # Define Panel classes for updating
+#
 panels = (
         clockworx_pdt_ui.PDT_PT_Panel1,
         clockworx_pivot_point.PDT_PT_Panel2,
@@ -80,6 +76,11 @@ panels = (
 
 
 def update_panel(self, context):
+    """Uodate Panels if parameters change.
+
+    Takes: self, context
+    This routine is required if the panel layouts are changed by the application
+    Returns: Nothing."""
     message = "PDT: Updating Panel locations has failed"
     try:
         for panel in panels:
@@ -94,7 +95,7 @@ def update_panel(self, context):
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
 
-# List of All Classes in the programme to register
+# List of All Classes in the Add-on to register
 #
 classes = (
     clockworx_pdt_ui.PDT_OT_PlacementAbs,
@@ -132,11 +133,13 @@ classes = (
     clockworx_pdt_ui.PDT_PT_Panel3
     )
 
-# -------------------------------------------------------------------
-# Build Enumerators for objects, collections and materials in library
-# -------------------------------------------------------------------
-
 def enumlist_objects(self,context):
+    """Populate Objects List from Parts Library.
+
+    Takes, self, context
+    Creates list of objects that optionally have search string contained in them
+    to populate variable pdt_lib_objects enumerator
+    Returns: Object Names List."""
     scene = context.scene
     path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
     with bpy.data.libraries.load(path) as (data_from, data_to):
@@ -150,6 +153,12 @@ def enumlist_objects(self,context):
     return items
 
 def enumlist_collections(self,context):
+    """Populate Collections List from Parts Library.
+
+    Takes, self, context
+    Creates list of collections that optionally have search string contained in them
+    to populate variable pdt_lib_collections enumerator
+    Returns: Collections Names List."""
     scene = context.scene
     path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
     with bpy.data.libraries.load(path) as (data_from, data_to):
@@ -163,6 +172,12 @@ def enumlist_collections(self,context):
     return items
 
 def enumlist_materials(self,context):
+    """Populate Materials List from Parts Library.
+
+    Takes, self, context
+    Creates list of materials that optionally have search string contained in them
+    to populate variable pdt_lib_materials enumerator
+    Returns: Object Names List."""
     scene = context.scene
     path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
     with bpy.data.libraries.load(path) as (data_from, data_to):
@@ -175,11 +190,11 @@ def enumlist_materials(self,context):
         items.append((ob,ob,""))
     return items
 
-# -------------------------------------------------------------------
-# Register and Unregister routines
-# -------------------------------------------------------------------
-
 def register():
+    """Register Classes and Create Scene Variables.
+
+    Takes: Classes List defined above
+    Returns: Nothing."""
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
@@ -301,16 +316,22 @@ def register():
     Scene.pdt_pivotshow = BoolProperty()
 
     # OpenGL flag
+    #
     wm = WindowManager
-    # register internal property
+    # Register Internal OpenGL Property
+    #
     wm.pdt_run_opengl = BoolProperty(default=False)
 
 def unregister():
+    """Unregister Classes and Delete Scene Variables.
+
+    Takes: Classes List defined above
+    Returns: Nothing."""
     from bpy.utils import unregister_class
     for cls in reversed(classes):
         unregister_class(cls)
 
-    # Remove properties
+    # Remove Properties
     del Scene.pdt_delta_x
     del Scene.pdt_delta_y
     del Scene.pdt_delta_z
