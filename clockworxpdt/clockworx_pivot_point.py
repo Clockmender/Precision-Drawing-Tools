@@ -115,8 +115,8 @@ class PDT_OT_ViewPlaneRotate(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_pivotloc, pdt_pivotang scene variables
+        Notes:
+            Uses pdt_pivotloc, pdt_pivotang scene variables
 
         Returns:
             Status Set.
@@ -158,8 +158,8 @@ class PDT_OT_ViewPlaneScale(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_pivotloc, pdt_pivotscale scene variables
+        Notes:
+            Uses pdt_pivotloc, pdt_pivotscale scene variables
 
         Returns:
             Status Set.
@@ -323,8 +323,8 @@ class PDT_OT_PivotWrite(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_pivotloc scene variable
+        Notes:
+            Uses pdt_pivotloc scene variable
 
         Returns:
             Status Set.
@@ -362,8 +362,8 @@ class PDT_OT_PivotRead(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_pivotloc scene variable
+        Notes:
+            Uses pdt_pivotloc scene variable
 
         Returns:
             Status Set.
