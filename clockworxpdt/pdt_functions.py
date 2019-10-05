@@ -41,7 +41,7 @@ def oops(self, context):
     Args:
         context: Current Blender bpy.context
 
-    Uses:
+    Notes:
         Uses pdt_error scene variable
     """
 
