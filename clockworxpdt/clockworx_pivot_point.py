@@ -27,8 +27,10 @@ from mathutils import Vector, Matrix
 from math import pi
 from .pdt_functions import viewCoords, draw3D, drawCallback3D
 
+
 class PDT_OT_ModalDrawOperator(bpy.types.Operator):
     """Show/Hide Pivot Point"""
+
     bl_idname = "pdt.modaldraw"
     bl_label = "PDT Modal Draw"
 
@@ -36,11 +38,17 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
 
     @staticmethod
     def handle_add(self, context):
-        """Draw Pivot Point Graphic if not diaplayed.
+        """Draw Pivot Point Graphic if not displayed.
 
-        Takes: self, context
         Draws 7 element Pivot Point Graphic
-        Return: Nothing."""
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Nothing.
+        """
+
         if PDT_OT_ModalDrawOperator._handle is None:
             PDT_OT_ModalDrawOperator._handle = SpaceView3D.draw_handler_add(drawCallback3D, (self, context),
                                                                         'WINDOW',
@@ -49,11 +57,17 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
 
     @staticmethod
     def handle_remove(self, context):
-        """Remove Pivot Point Graphic if diaplayed.
+        """Remove Pivot Point Graphic if displayed.
 
-        Takes: self, context
         Removes 7 element Pivot Point Graphic
-        Return: Nothing."""
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Nothing.
+        """
+
         if PDT_OT_ModalDrawOperator._handle is not None:
             SpaceView3D.draw_handler_remove(PDT_OT_ModalDrawOperator._handle, 'WINDOW')
         PDT_OT_ModalDrawOperator._handle = None
@@ -62,9 +76,14 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
     def execute(self, context):
         """Pivot Point Show/Hide Button Function.
 
-        Takes: self, context
         Operational execute function for Show/Hide Pivot Point function
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+        Returns:
+            Status Set.
+        """
+
         if context.area.type == 'VIEW_3D':
             if context.window_manager.pdt_run_opengl is False:
                 self.handle_add(self, context)
@@ -80,19 +99,29 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
 
         return {'CANCELLED'}
 
+
 class PDT_OT_ViewPlaneRotate(Operator):
     """Rotate Selected Vertices about Pivot Point in View Plane"""
+
     bl_idname = "pdt.viewplanerot"
     bl_label = "PDT View Rotate"
 
     def execute(self,context):
         """Rotate Selected Vertices about Pivot Point.
 
-        Takes: self, context
-        Uses: pdt_pivotloc, pdt_pivotang scene variables
         Rotates any selected vertices about the Pivot Point
-        in View Oriented coordinates, works in any view orientation
-        Returns: Status Set."""
+        in View Oriented coordinates, works in any view orientation.
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_pivotloc, pdt_pivotang scene variables
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
@@ -113,19 +142,29 @@ class PDT_OT_ViewPlaneRotate(Operator):
         bmesh.update_edit_mesh(obj.data)
         return {"FINISHED"}
 
+
 class PDT_OT_ViewPlaneScale(Operator):
     """Scale Selected Vertices about Pivot Point"""
+
     bl_idname = "pdt.viewscale"
     bl_label = "PDT View Scale"
 
     def execute(self,context):
         """Scales Selected Vertices about Pivot Point.
 
-        Takes: self, context
-        Uses: pdt_pivotloc, pdt_pivotscale scene variables
         Scales any selected vertices about the Pivot Point
         in View Oriented coordinates, works in any view orientation
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_pivotloc, pdt_pivotscale scene variables
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
@@ -147,35 +186,51 @@ class PDT_OT_ViewPlaneScale(Operator):
         bmesh.update_edit_mesh(obj.data)
         return {"FINISHED"}
 
+
 class PDT_OT_PivotToCursor(Operator):
-    """Set The Pivot Point to Curor Location"""
+    """Set The Pivot Point to Cursor Location"""
+
     bl_idname = "pdt.pivotcursor"
     bl_label = "PDT Pivot To Cursor"
 
     def execute(self,context):
         """Moves Pivot Point to Cursor Location.
 
-        Takes: self, context
-        Moves Pivot Point to Cursor location in active scene
-        Returns: Status Set."""
+        Moves Pivot Point to Cursor Location in active scene
+
+        Args:
+            context: FIXME
+
+        Returns:
+             Status Set.
+        """
+
         scene = context.scene
         scene.pdt_pivotloc = scene.cursor.location
         return {"FINISHED"}
 
 class PDT_OT_CursorToPivot(Operator):
-    """Set The Curor Location to Pivot Point"""
+    """Set The Cursor Location to Pivot Point"""
+
     bl_idname = "pdt.cursorpivot"
     bl_label = "PDT Cursor To Pivot"
 
     def execute(self,context):
         """Moves Cursor to Pivot Point Location.
 
-        Takes: self, context
         Moves Cursor to Pivot Point Location in active scene
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         scene.cursor.location = scene.pdt_pivotloc
         return {"FINISHED"}
+
 
 class PDT_OT_PivotSelected(Operator):
     """Set Pivot Point to Selected Geometry"""
@@ -185,10 +240,16 @@ class PDT_OT_PivotSelected(Operator):
     def execute(self,context):
         """Moves Pivot Point centroid of Selected Geometry.
 
-        Takes: self, context
         Moves Pivot Point centroid of Selected Geometry in active scene
-        using Snap_Cursor_To_Selected, then puts cursor back to original location
-        Returns: Status Set."""
+        using Snap_Cursor_To_Selected, then puts cursor back to original location.
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
@@ -213,17 +274,25 @@ class PDT_OT_PivotSelected(Operator):
                     "Nothing Selected!")
             return {"FINISHED"}
 
+
 class PDT_OT_PivotOrigin(Operator):
     """Set Pivot Point at Object Origin"""
+
     bl_idname = "pdt.pivotorigin"
     bl_label = "PDT Pivot to Object Origin"
 
     def execute(self,context):
         """Moves Pivot Point to Object Origin.
 
-        Takes: self, context
         Moves Pivot Point to Object Origin in active scene
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
@@ -234,8 +303,10 @@ class PDT_OT_PivotOrigin(Operator):
         scene.pdt_pivotloc = obj_loc
         return {"FINISHED"}
 
+
 class PDT_OT_PivotWrite(Operator):
     """Write Pivot Point Location to Object"""
+
     bl_idname = "pdt.pivotwrite"
     bl_label = "PDT Write PP to Object?"
 
@@ -246,11 +317,19 @@ class PDT_OT_PivotWrite(Operator):
     def execute(self,context):
         """Writes Pivot Point Location to Object's Custom Properties.
 
-        Takes: self, context
-        Uses: pdt_pivotloc scene variable
         Writes Pivot Point Location to Object's Custom Properties
         as Vector to 'PDT_PP_LOC' - Requires Confirmation through dialogue
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_pivotloc scene variable
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
@@ -267,19 +346,29 @@ class PDT_OT_PivotWrite(Operator):
         row = self.layout
         row.label(text="Are You Sure About This?")
 
+
 class PDT_OT_PivotRead(Operator):
     """Read Pivot Point Location from Object"""
+
     bl_idname = "pdt.pivotread"
     bl_label = "PDT Read PP"
 
     def execute(self,context):
         """Reads Pivot Point Location from Object's Custom Properties.
 
-        Takes: self, context
-        Uses: pdt_pivotloc scene variable
         Sets Pivot Point Location from Object's Custom Properties
         using 'PDT_PP_LOC'
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_pivotloc scene variable
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
