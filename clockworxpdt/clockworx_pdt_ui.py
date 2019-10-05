@@ -28,12 +28,24 @@ from bpy.props import FloatProperty
 import bmesh
 import numpy as np
 from math import sin, cos, tan, acos, pi, sqrt
+
 from mathutils.geometry import intersect_point_line
 from .pdt_functions import (setMode, checkSelection, setAxis, updateSel, viewCoords, viewCoordsI,
                             viewDir, euler_to_quaternion, arcCentre, intersection, getPercent)
 
+
+# FIXME
+# Since many of the error messages appear to be duplicates, maybe we should
+# add them as string constants such ERR_MSG_FACE_SELECTED = "(...)" ?
+#
+# For instance:
+#
+# ERR_MSG_FACE_SELECTED = "I'm afraid I can't do that, Dave: You have a have a Face selected; this would have ruined the Topology"
+# (this is a reference to HAL 9000 from Stanley Kubrick's '2001: A Space Odyssey')
+
 class PDT_OT_PlacementAbs(Operator):
     """Use Absolute, or Global Placement"""
+
     bl_idname = 'pdt.absolute'
     bl_label = 'Absolute Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -41,25 +53,32 @@ class PDT_OT_PlacementAbs(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Absolute (World) Coordinates.
 
-        Valid Options for pdt_operate; CU PP MV NV EV SE
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
-        and to add a New vertex(NV).
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables to:
+        -- set position of CUrsor      (CU)
+        -- set postion of Pivot Point  (PP)
+        -- MoVe geometry/objects       (MV)
+        -- Extrude Vertices            (EV)
+        -- Split Edges                 (SE)
+        -- add a New Vertex            (NV)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' is used to reposition features.
+        """
+
         scene = context.scene
         data = scene.pdt_operate
         x_loc = scene.pdt_delta_x
         y_loc = scene.pdt_delta_y
         z_loc = scene.pdt_delta_z
+
         vector_delta = Vector((x_loc,y_loc,z_loc))
         if data not in ['CU','PP','NV']:
             obj = context.view_layer.objects.active
             if obj == None:
                 self.report({'ERROR'},
-                        "Select at least 1 Object")
+                        "Select at least 1 Object") #FIXME
                 return {"FINISHED"}
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == 'EDIT':
@@ -67,7 +86,7 @@ class PDT_OT_PlacementAbs(Operator):
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
                 self.report({'ERROR'},
-                        "Nothing Selected!")
+                        "Nothing Selected!") #FIXME
                 return {"FINISHED"}
         if data == 'CU':
             scene.cursor.location = vector_delta
@@ -88,7 +107,7 @@ class PDT_OT_PlacementAbs(Operator):
             edges = [e for e in bm.edges if e.select]
             if len (edges) != 1:
                 self.report({'ERROR'},
-                        "Select Only One Edge")
+                        "Select Only One Edge") #FIXME
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm,edges=edges,cuts=1)
             new_verts = [v for v in geom['geom_split'] if isinstance(v, bmesh.types.BMVert)]
@@ -116,11 +135,13 @@ class PDT_OT_PlacementAbs(Operator):
             bmesh.update_edit_mesh(obj.data)
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!")
+                "Not a Valid, or Sensible, Option!") #FIXME
         return {"FINISHED"}
+
 
 class PDT_OT_PlacementDelta(Operator):
     """Use Delta, or Incremental Placement"""
+
     bl_idname = 'pdt.delta'
     bl_label = 'Delta Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -128,21 +149,29 @@ class PDT_OT_PlacementDelta(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Delta Offset (Increment).
 
-        Valid Options for pdt_operate; CU PP MV NV EV SE DG EG
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_select, pdt_plane, pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
-        and to add a New vertex(NV)
-        and to Duplcate(DG) geometry, or Extrude(EG) geometry
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_select, pdt_plane, pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables to:
+        -- set position of CUrsor       (CU)
+        -- set position of Pivot Point  (PP)
+        -- MoVe geometry/objects        (MV)
+        -- Extrude Vertices             (EV)
+        -- Split Edges                  (SE)
+        -- add a New Vertex             (NV)
+        -- Duplicate Geometry           (DG)
+        -- Extrude Geometry             (EG)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' used to reposition features.
+        """
+
         scene = context.scene
         x_loc = scene.pdt_delta_x
         y_loc = scene.pdt_delta_y
         z_loc = scene.pdt_delta_z
         mode_s = scene.pdt_select
         data = scene.pdt_operate
+
         if scene.pdt_plane == 'LO':
             vector_delta = viewCoords(x_loc,y_loc,z_loc)
         else:
@@ -155,7 +184,7 @@ class PDT_OT_PlacementDelta(Operator):
             obj = context.view_layer.objects.active
             if obj == None:
                 self.report({'ERROR'},
-                        "Select at least 1 Object")
+                        "Select at least 1 Object") #FIXME
                 return {"FINISHED"}
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == 'EDIT':
@@ -165,11 +194,11 @@ class PDT_OT_PlacementDelta(Operator):
                         actV = checkSelection(1, bm, obj)
                         if actV == None:
                             self.report({'ERROR'},
-                                "Work in Vertex Mode")
+                                "Work in Vertex Mode") #FIXME
                             return {"FINISHED"}
                     else:
                         self.report({'ERROR'},
-                            "Select at least 1 Vertex Individually")
+                            "Select at least 1 Vertex Individually") #FIXME
                         return {"FINISHED"}
             if data not in ['CU','PP','NV']:
                 verts = [v for v in bm.verts if v.select]
@@ -202,7 +231,7 @@ class PDT_OT_PlacementDelta(Operator):
                 faces = [f for f in bm.faces if f.select]
                 if len (faces) != 0:
                     self.report({'ERROR'},
-                            "You have a Face Selected, this would have ruined the Topology")
+                            "You have a Face Selected, this would have ruined the Topology") #FIXME
                     return {"FINISHED"}
                 if len (edges) < 1:
                     self.report({'ERROR'},
@@ -269,11 +298,13 @@ class PDT_OT_PlacementDelta(Operator):
                 bm.select_history.clear()
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")
+                    "Not a Valid, or Sensible, Option!")  #FIXME: "%s is not a (...)"
         return {"FINISHED"}
+
 
 class PDT_OT_PlacementDis(Operator):
     """Use Directional, or Distance @ Angle Placement"""
+
     bl_idname = 'pdt.distance'
     bl_label = 'Distance@Angle Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -281,15 +312,22 @@ class PDT_OT_PlacementDis(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Distance at Angle (Direction).
 
-        Valid Options for pdt_operate; CU PP MV NV EV SE DG EG
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_select, pdt_distance, pdt_angle, pdt_plane & pdt_flipangle scene variables
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
-        and to add a New vertex(NV)
-        and to Duplcate(DG) geometry, or Extrude(EG) geometry
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_select, pdt_distance, pdt_angle, pdt_plane & pdt_flipangle scene variables to:
+        -- set position of CUrsor       (CU)
+        -- set position of Pivot Point  (PP)
+        -- MoVe geometry/objects        (MV)
+        -- Extrude Vertices             (EV)
+        -- Split Edges                  (SE)
+        -- add a New Vertex             (NV)
+        -- Duplicate Geometry           (DG)
+        -- Extrude Geometry             (EG)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' used to reposition features.
+        """
+
         scene = context.scene
         dis_v = scene.pdt_distance
         ang_v = scene.pdt_angle
@@ -318,7 +356,7 @@ class PDT_OT_PlacementDis(Operator):
             obj = context.view_layer.objects.active
             if obj == None:
                 self.report({'ERROR'},
-                        "Select at least 1 Object")
+                        "Select at least 1 Object") #FIXME
                 return {"FINISHED"}
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == 'EDIT':
@@ -332,13 +370,13 @@ class PDT_OT_PlacementDis(Operator):
                             return {"FINISHED"}
                     else:
                         self.report({'ERROR'},
-                            "Select at least 1 Vertex Individually")
+                            "Select at least 1 Vertex Individually") #FIXME
                         return {"FINISHED"}
             if data not in ['CU','PP','NV']:
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     self.report({'ERROR'},
-                            "Nothing Selected!")
+                            "Nothing Selected?")
                     return {"FINISHED"}
             if data == 'CU':
                 if obj.mode == 'EDIT':
@@ -365,11 +403,11 @@ class PDT_OT_PlacementDis(Operator):
                 faces = [f for f in bm.faces if f.select]
                 if len (faces) != 0:
                     self.report({'ERROR'},
-                            "You have a Face Selected, this would have ruined the Topology")
+                            "You have a Face Selected, this would have ruined the Topology") #FIXME
                     return {"FINISHED"}
                 if len (edges) < 1:
                     self.report({'ERROR'},
-                            "Select at least 1 Edge")
+                            "Select at least 1 Edge") #FIXME
                     return {"FINISHED"}
                 geom = bmesh.ops.subdivide_edges(bm,edges=edges,cuts=1)
                 new_verts = [v for v in geom['geom_split'] if isinstance(v, bmesh.types.BMVert)]
@@ -432,11 +470,12 @@ class PDT_OT_PlacementDis(Operator):
                 bm.select_history.clear()
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")
+                    "Not a Valid, or Sensible, Option!")  # FIXME "%s is not a (...)"
         return {"FINISHED"}
 
 class PDT_OT_PlacementPer(Operator):
     """Use Percentage Placement"""
+
     bl_idname = 'pdt.percent'
     bl_label = 'Percentage Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -444,14 +483,20 @@ class PDT_OT_PlacementPer(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Percentage between 2 points.
 
-        Valid Options for pdt_operate; CU PP MV NV EV SE
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_percent, pdt_extend & pdt_flippercent scene variables
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
-        and to add a New vertex(NV)
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_percent, pdt_extend & pdt_flippercent scene variables to:
+        -- set position of CUrsor       (CU)
+        -- set position of Pivot Point  (PP)
+        -- MoVe geometry/objects        (MV)
+        -- Extrude Vertices             (EV)
+        -- Split edges                  (SE)
+        -- add a New vertex             (NV)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' used to reposition features.
+        """
+
         scene = context.scene
         per_v = scene.pdt_percent
         data = scene.pdt_operate
@@ -460,7 +505,7 @@ class PDT_OT_PlacementPer(Operator):
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select at least 1 Object")
+                    "Select at least 1 Object")  #FIXME add "You didn't select anything?"
             return {"FINISHED"}
         if obj.mode == 'EDIT':
             bm = bmesh.from_edit_mesh(obj.data)
@@ -490,7 +535,7 @@ class PDT_OT_PlacementPer(Operator):
             edges = [e for e in bm.edges if e.select]
             if len (edges) != 1:
                 self.report({'ERROR'},
-                        "Select Only One Edge")
+                        "Select Only One Edge")  # FIXME: add "(You selected x edges)"
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm,edges=edges,cuts=1)
             new_verts = [v for v in geom['geom_split'] if isinstance(v, bmesh.types.BMVert)]
@@ -518,11 +563,12 @@ class PDT_OT_PlacementPer(Operator):
             bm.select_history.clear()
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!")
+                "Not a Valid, or Sensible, Option!")  #FIXME: Include wrong option as string
         return {"FINISHED"}
 
 class PDT_OT_PlacementNormal(Operator):
     """Use Normal, or Perpendicular Placement"""
+
     bl_idname = 'pdt.normal'
     bl_label = 'Normal Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -530,21 +576,27 @@ class PDT_OT_PlacementNormal(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Normal Intersection between 3 points.
 
-        Valid Options for pdt_operate; CU PP MV NV EV SE
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_extend scene variable
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV), or Split edges(SE)
-        and to add a New vertex(NV)
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_extend scene variable to:
+        -- set position of CUrsor       (CU)
+        -- set position of Pivot Point  (PP)
+        -- MoVe geometry/objects        (MV)
+        -- Extrude Vertices             (EV)
+        -- Split Edges                  (SE)
+        -- add a New Vertex             (NV)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' used to reposition features.
+        """
+
         scene = context.scene
         data = scene.pdt_operate
         ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select at least 1 Object")
+                    "Select at least 1 Object") #FIXME
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
         if obj.mode == 'EDIT':
@@ -553,7 +605,7 @@ class PDT_OT_PlacementNormal(Operator):
                 actV,othV,lstV = checkSelection(3, bm, obj)
                 if actV == None:
                     self.report({'ERROR'},
-                        "Work in Vertex Mode")
+                        "Work in Vertex Mode") #FIXME
                     return {"FINISHED"}
             else:
                 self.report({'ERROR'},
@@ -563,7 +615,7 @@ class PDT_OT_PlacementNormal(Operator):
             objs = context.view_layer.objects.selected
             if len(objs) != 3:
                 self.report({'ERROR'},
-                    "Select Only 3 Objects")
+                    "Select Only 3 Objects") #FIXME: "Select exactly 3 objects (you selected x objects)
                 return {"FINISHED"}
             else:
                 objs_s = [ob for ob in objs if ob.name != obj.name]
@@ -613,11 +665,12 @@ class PDT_OT_PlacementNormal(Operator):
             bm.select_history.clear()
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!")
+                "Not a Valid, or Sensible, Option!") #FIXME
         return {"FINISHED"}
 
 class PDT_OT_PlacementInt(Operator):
-    """Use Intersection, or Convergance Placement"""
+    """Use Intersection, or Convergence Placement"""
+
     bl_idname = 'pdt.intersect'
     bl_label = 'Intersect Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -625,21 +678,26 @@ class PDT_OT_PlacementInt(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Convergance Intersection between 4 points, or 2 Edges.
 
-        Valid Options for pdt_operate; CU PP MV NV EV
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_plane scene variable - operates in Working Plane
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV)
-        and to add a New vertex(NV)
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_plane scene variable and operates in Working Plane to:
+        -- set position of CUrsor       (CU)
+        -- set position of Pivot Point  (PP)
+        -- MoVe geometry/objects        (MV)
+        -- Extrude Vertices             (EV)
+        -- add a New vertex             (NV)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' used to reposition features.
+        """
+
         scene = context.scene
         data = scene.pdt_operate
         plane = scene.pdt_plane
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select an Object")
+                    "Select an Object") #FIXME
             return {"FINISHED"}
         if obj.mode == 'EDIT':
             obj_loc = obj.matrix_world.decompose()[0]
@@ -664,16 +722,16 @@ class PDT_OT_PlacementInt(Operator):
                 actV,othV,lstV,fstV = checkSelection(4, bm, obj)
                 if actV == None:
                     self.report({'ERROR'},
-                        "Work in Vertex Mode to Select Vertices")
+                        "Work in Vertex Mode to Select Vertices") #FIXME
                     return {"FINISHED"}
             else:
                 self.report({'ERROR'},
-                    "Select 4 Vertices Individually, or 2 Edges")
+                    "Select 4 Vertices Individually, or 2 Edges") #FIXME
                 return {"FINISHED"}
             vector_delta,done = intersection(actV,othV,lstV,fstV,plane)
             if not done:
                 self.report({'ERROR'},
-                    "Lines Do Not Intersect in "+plane+" Plane")
+                    "Lines Do Not Intersect in "+plane+" Plane") #FIXME
                 return {"FINISHED"}
 
             if data == 'CU':
@@ -743,7 +801,7 @@ class PDT_OT_PlacementInt(Operator):
 
                 if not proc and not ext_a:
                     self.report({'ERROR'},
-                        "Active Vertex was not Closest to Intersection and All/Act was not Selected")
+                        "Active Vertex was not Closest to Intersection and All/Act was not Selected") #FIXME
                     bmesh.update_edit_mesh(obj.data)
                     return {"FINISHED"}
                 else:
@@ -762,12 +820,12 @@ class PDT_OT_PlacementInt(Operator):
                     bmesh.update_edit_mesh(obj.data)
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")
+                    "Not a Valid, or Sensible, Option!") #FIXME
             return {"FINISHED"}
         elif obj.mode == 'OBJECT':
             if len(context.view_layer.objects.selected) != 4:
                 self.report({'ERROR'},
-                    "Select Only 4 Objects")
+                    "Select Only 4 Objects") #FIXME
                 return {"FINISHED"}
             else:
                 order = scene.pdt_oborder.split(',')
@@ -783,7 +841,7 @@ class PDT_OT_PlacementInt(Operator):
             vector_delta,done = intersection(actV,othV,lstV,fstV,plane)
             if not done:
                 self.report({'ERROR'},
-                    "Lines Between Objects Do Not Intersect in "+plane+" Plane")
+                    "Lines Between Objects Do Not Intersect in "+plane+" Plane") #FIXME
                 return {"FINISHED"}
             if data == 'CU':
                 scene.cursor.location = vector_delta
@@ -795,11 +853,13 @@ class PDT_OT_PlacementInt(Operator):
                     "Active Object Moved to Intersection, "+message)
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")
+                    "Not a Valid, or Sensible, Option!") #FIXME
             return {"FINISHED"}
+
 
 class PDT_OT_PlacementCen(Operator):
     """Use Placement at Arc Centre"""
+
     bl_idname = 'pdt.centre'
     bl_label = 'Centre Mode'
     bl_options = {"REGISTER", "UNDO"}
@@ -808,20 +868,27 @@ class PDT_OT_PlacementCen(Operator):
         """Manipulates Geometry, or Objects to an Arc Centre defined by 3 points on an Imaginary Arc.
 
         Valid Options for pdt_operate; CU PP MV NV EV
-        Reads pdt_operate from Operation Mode Selector as 'data'
-        Reads pdt_extend scene variable
-        to set position of Cursor(CU), & Pivot Point(PP)
-        and to Move(MV) geometry/objects, Extrude vertices(EV)
-        and to add a New vertex(NV)
-        Invalid Options result in self.report Error
-        local vector variable 'vector_delta' used to reposition features."""
+        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_extend scene variable to:
+        -- set position of CUrsor       (CU)
+        -- set position of Pivot Point  (PP)
+        -- MoVe geometry/objects        (MV)
+        -- Extrude Vertices             (EV)
+        -- add a New vertex             (NV)
+
+        Invalid Options result in self.report Error.
+
+        Local vector variable 'vector_delta' used to reposition features.
+        """
+
         scene = context.scene
         data = scene.pdt_operate
         ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
+
         if obj == None:
             self.report({'ERROR'},
-                    "Select 1 Object to work in Edit Mode, or 3 to work in Object Mode")
+                    "Select 1 Object to work in Edit Mode, or 3 to work in Object Mode") #FIXME
             return {"FINISHED"}
         if obj.mode == 'EDIT':
             obj = context.view_layer.objects.active
@@ -834,12 +901,12 @@ class PDT_OT_PlacementCen(Operator):
                 lstV = verts[2].co
             else:
                 self.report({'ERROR'},
-                    "Select Only 3 Vertices")
+                    "Select Exactly 3 Vertices") #FIXME
                 return {"FINISHED"}
             vector_delta,radius = arcCentre(actV,othV,lstV)
             if str(radius) == 'inf':
                 self.report({'ERROR'},
-                    "Points all lie in a Straight Line")
+                    "Points all lie in a Straight Line") #FIXME
                 return {"FINISHED"}
             scene.pdt_distance = radius
             if data == 'CU':
@@ -883,7 +950,7 @@ class PDT_OT_PlacementCen(Operator):
                     bm.select_history.clear()
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")
+                    "Not a Valid, or Sensible, Option!") #FIXME
             return {"FINISHED"}
         elif obj.mode == 'OBJECT':
             if len(context.view_layer.objects.selected) != 3:
@@ -904,11 +971,13 @@ class PDT_OT_PlacementCen(Operator):
                     context.view_layer.objects.active.location = vector_delta
                 else:
                     self.report({'ERROR'},
-                        "Not a Valid, or Sensible, Option!")
+                        "Not a Valid, or Sensible, Option!") #FIXME
                 return {"FINISHED"}
+
 
 class PDT_OT_JoinVerts(Operator):
     """Join 2 Free Vertices into an Edge"""
+
     bl_idname = 'pdt.join'
     bl_label = 'Join 2 Vertices'
     bl_options = {"REGISTER", "UNDO"}
@@ -916,16 +985,22 @@ class PDT_OT_JoinVerts(Operator):
     def execute(self, context):
         """Joins 2 Free Vertices that do not form part of a Face.
 
-        Takes: self, context
         Joins two vertices that do not form part of a single face
         It is designed to close open Edge Loops, where a face is not required
         or to join two disconnected Edges.
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select an Object")
+                    "Select an Object") #FIXME
             return {"FINISHED"}
         if obj.mode == 'EDIT':
             bm = bmesh.from_edit_mesh(obj.data)
@@ -938,19 +1013,21 @@ class PDT_OT_JoinVerts(Operator):
                     return {"FINISHED"}
                 except ValueError:
                     self.report({'ERROR'},
-                        "Vertices are already connected")
+                        "Vertices are already connected") #FIXME
                     return {"FINISHED"}
             else:
                 self.report({'ERROR'},
-                        "Select only 2 Vertices")
+                        "Select exactly 2 Vertices") #FIXME
                 return {"FINISHED"}
         else:
             self.report({'ERROR'},
                 "Only works in Edit Mode")
             return {"FINISHED"}
 
+
 class PDT_OT_Angle2(Operator):
     """Measure Distance and Angle in Working Plane, Also sets Deltas"""
+
     bl_idname = 'pdt.angle2'
     bl_label = 'Measure 2D'
     bl_options = {"REGISTER","UNDO"}
@@ -960,14 +1037,16 @@ class PDT_OT_Angle2(Operator):
 
         Uses 2 Selected Vertices to set pdt_angle and pdt_distance scene variables
         also sets delta offset from these 2 points using standard Numpy Routines
-        Works in Edit and Oject Modes."""
+        Works in Edit and Oject Modes.
+        """
+
         scene = context.scene
         plane = scene.pdt_plane
         flip_a = scene.pdt_flipangle
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select an Object")
+                    "Select an Object") #FIXME
             return {"FINISHED"}
         if obj.mode == 'EDIT':
             bm = bmesh.from_edit_mesh(obj.data)
@@ -977,21 +1056,21 @@ class PDT_OT_Angle2(Operator):
                     actV,othV = checkSelection(2, bm, obj)
                     if actV == None:
                         self.report({'ERROR'},
-                            "Work in Vertex Mode")
+                            "Work in Vertex Mode") #FIXME
                         return {"FINISHED"}
                 else:
                     self.report({'ERROR'},
-                        "Select 2 Vertices Individually")
+                        "Select 2 Vertices Individually") #FIXME
                     return {"FINISHED"}
             else:
                 self.report({'ERROR'},
-                    "Select 2 Vertices Individually")
+                    "Select 2 Vertices Individually") #FIXME
                 return {"FINISHED"}
         elif obj.mode == 'OBJECT':
             objs = context.view_layer.objects.selected
             if len(objs) < 2:
                 self.report({'ERROR'},
-                    "Select 2 Objects")
+                    "Select 2 Objects") #FIXME
                 return {"FINISHED"}
             objs_s = [ob for ob in objs if ob.name != obj.name]
             actV = obj.matrix_world.decompose()[0]
@@ -1023,8 +1102,10 @@ class PDT_OT_Angle2(Operator):
         scene.pdt_delta_z = othV.z-actV.z
         return {"FINISHED"}
 
+
 class PDT_OT_Angle3(Operator):
     """Measure Distance and Angle in 3D Space"""
+
     bl_idname = 'pdt.angle3'
     bl_label = 'Measure 3D'
     bl_options = {"REGISTER","UNDO"}
@@ -1034,7 +1115,9 @@ class PDT_OT_Angle3(Operator):
 
         Uses 3 Selected Vertices to set pdt_angle and pdt_distance scene variables
         also sets delta offset from these 3 points using standard Numpy Routines
-        Works in Edit and Oject Modes."""
+        Works in Edit and Oject Modes.
+        """
+
         scene = context.scene
         plane = scene.pdt_plane
         flip_a = scene.pdt_flipangle
@@ -1088,8 +1171,10 @@ class PDT_OT_Angle3(Operator):
         scene.pdt_delta_z = othV.z-actV.z
         return {"FINISHED"}
 
+
 class PDT_OT_Origin(Operator):
     """Move Object Origin to Cursor Location"""
+
     bl_idname = 'pdt.origin'
     bl_label = 'Move Origin'
     bl_options = {"REGISTER", "UNDO"}
@@ -1099,12 +1184,14 @@ class PDT_OT_Origin(Operator):
 
         Keeps geometry static in World Space whilst moving Object Origin
         Requires cursor location
-        Works in Edit and Object Modes."""
+        Works in Edit and Object Modes.
+        """
+
         scene = context.scene
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select an Object")
+                    "Select an Object") #FIXME
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
         cur_loc = scene.cursor.location
@@ -1122,11 +1209,12 @@ class PDT_OT_Origin(Operator):
             obj.location = cur_loc
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!")
+                "Not a Valid, or Sensible, Option!") #FIXME
         return {"FINISHED"}
 
 class PDT_OT_Taper(Operator):
     """Taper Vertices at Angle in Chosen Axis Mode"""
+
     bl_idname = 'pdt.taper'
     bl_label = 'Taper'
     bl_options = {"REGISTER", "UNDO"}
@@ -1134,23 +1222,28 @@ class PDT_OT_Taper(Operator):
     def execute(self, context):
         """Taper Geometry along World Axes.
 
-        Takes: self, context
+        Similar to Shear command except that it shears by angle rather than displacement.
+        Rotates about World Axes and displaces along World Axes, angle must not exceed +-80 degrees.
+        Rotation axis is centred on Active Vertex.
+        Works only in Edit mode.
+
+        Args:
+            context: FIXME
+
         Uses: pdt_taper & pdt_angle scene variables
-        Similar to Shear command except that it shears by angle rather than displacement
-        Rotates about World Axes and displaces along World Axes, angle must not exceed +-80 degrees
-        Rotation axis is centred on Active Vertex
-        Works only in Edit mode."""
+        """
+
         scene = context.scene
         tap_ax = scene.pdt_taper
         ang_v = scene.pdt_angle
         obj = context.view_layer.objects.active
         if ang_v > 80 or ang_v < -80:
             self.report({'ERROR'},
-                    "Angle must be in Range -80 to +80")
+                    "Angle must be in Range -80 to +80") #FIXME
             return {"FINISHED"}
         if obj == None:
             self.report({'ERROR'},
-                    "Select an Object")
+                    "Select an Object") #FIXME
             return {"FINISHED"}
         a1,a2,a3 = setAxis(tap_ax)
         if obj.mode == 'EDIT':
@@ -1160,7 +1253,7 @@ class PDT_OT_Taper(Operator):
                 viewV = viewCoords(rotV.co.x,rotV.co.y,rotV.co.z)
             else:
                 self.report({'ERROR'},
-                    "Select at Least 2 Vertices Individually - Active is Rotation Point")
+                    "Select at Least 2 Vertices Individually - Active is Rotation Point") #FIXME
                 return {"FINISHED"}
             for v in [v for v in bm.verts if v.select]:
                 if scene.pdt_plane == 'LO':
@@ -1177,23 +1270,30 @@ class PDT_OT_Taper(Operator):
             return {"FINISHED"}
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!")
+                "Not a Valid, or Sensible, Option!") #FIXME
             return {"FINISHED"}
 
 class PDT_OT_Append(Operator):
     """Append from Library at cursor Location"""
+
     bl_idname = 'pdt.append'
     bl_label = 'Append'
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        scene = context.scene
         """Appends Objects from PDT Library file.
 
-        Takes: self, context
+        Appended Objects are placed at Cursor Location.
+
+        Args:
+            context: FIXME
+
         Uses: pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
-        Appended Objects are placed at Cursor Location
-        Returns: Status Set."""
+
+        Returns: Status Set.
+        """
+
+        scene = context.scene
         obj_names = [o.name for o in context.view_layer.objects]
         path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
         if scene.pdt_lib_mode == 'OBJECTS':
@@ -1214,8 +1314,10 @@ class PDT_OT_Append(Operator):
             bpy.ops.wm.append(filepath=path,directory=path+'/Material',filename=scene.pdt_lib_materials)
             return {"FINISHED"}
 
+
 class PDT_OT_Link(Operator):
     """Link from Library at Object's Origin"""
+
     bl_idname = 'pdt.link'
     bl_label = 'Link'
     bl_options = {"REGISTER", "UNDO"}
@@ -1223,10 +1325,18 @@ class PDT_OT_Link(Operator):
     def execute(self, context):
         """Links Objects from PDT Library file.
 
-        Takes: self, context
-        Uses: pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
         Linked Objects are placed at Cursor Location
-        Returns: Status Set."""
+
+        Args:
+            context
+
+        Uses:
+            pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
         if scene.pdt_lib_mode == 'OBJECTS':
@@ -1245,8 +1355,10 @@ class PDT_OT_Link(Operator):
             bpy.ops.wm.link(filepath=path,directory=path+'/Material',filename=scene.pdt_lib_materials)
             return {"FINISHED"}
 
+
 class PDT_OT_ViewRot(Operator):
     """Rotate View using X Y Z Absolute Rotations"""
+
     bl_idname = 'pdt.viewrot'
     bl_label = 'Rotate View'
     bl_options = {"REGISTER", "UNDO"}
@@ -1254,11 +1366,19 @@ class PDT_OT_ViewRot(Operator):
     def execute(self, context):
         """View Rotation by Absolute Values.
 
-        Takes: self, context
-        Uses: pdt_xrot, pdt_yrot, pdt_zrot scene variables
-        Rotations are converted to 3x3 Quaternion Rotation Matrix
-        This is an Absolute Rotation, not an Incremental Orbit
-        Returns: Status Set."""
+        Rotations are converted to 3x3 Quaternion Rotation Matrix.
+        This is an Absolute Rotation, not an Incremental Orbit.
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_xrot, pdt_yrot, pdt_zrot scene variables
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1266,8 +1386,10 @@ class PDT_OT_ViewRot(Operator):
             areas[0].spaces.active.region_3d.view_rotation = roll_value
         return {"FINISHED"}
 
+
 class PDT_OT_vRotL(Operator):
     """Orbit View to Left by Angle"""
+
     bl_idname = 'pdt.viewleft'
     bl_label = 'Rotate Left'
     bl_options = {"REGISTER", "UNDO"}
@@ -1275,18 +1397,27 @@ class PDT_OT_vRotL(Operator):
     def execute(self, context):
         """View Orbit Left by Delta Value.
 
-        Takes: self, context
-        Uses: pdt_vrotangle scene variable
         Orbits view to the left about its vertical axis
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_vrotangle scene variable
+
+        Returns: Status Set.
+        """
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
             bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle*pi/180),type='ORBITLEFT')
         return {"FINISHED"}
 
+
 class PDT_OT_vRotR(Operator):
     """Orbit View to Right by Angle"""
+
     bl_idname = 'pdt.viewright'
     bl_label = 'Rotate Right'
     bl_options = {"REGISTER", "UNDO"}
@@ -1294,18 +1425,27 @@ class PDT_OT_vRotR(Operator):
     def execute(self, context):
         """View Orbit Right by Delta Value.
 
-        Takes: self, context
-        Uses: pdt_vrotangle scene variable
         Orbits view to the right about its vertical axis
-        Returns: Status Set."""
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_vrotangle scene variable
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
             bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle*pi/180),type='ORBITRIGHT')
         return {"FINISHED"}
 
+
 class PDT_OT_vRotU(Operator):
     """Orbit View to Up by Angle"""
+
     bl_idname = 'pdt.viewup'
     bl_label = 'Rotate Up'
     bl_options = {"REGISTER", "UNDO"}
@@ -1313,18 +1453,28 @@ class PDT_OT_vRotU(Operator):
     def execute(self, context):
         """View Orbit Up by Delta Value.
 
-        Takes: self, context
-        Uses: pdt_vrotangle scene variable
         Orbits view up about its horizontal axis
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_vrotangle scene variable
+
+	Returns:
+    	    Status Set.
+    	"""
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
             bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle*pi/180),type='ORBITUP')
         return {"FINISHED"}
 
+
 class PDT_OT_vRotD(Operator):
     """Orbit View to Down by Angle"""
+
     bl_idname = 'pdt.viewdown'
     bl_label = 'Rotate Down'
     bl_options = {"REGISTER", "UNDO"}
@@ -1332,18 +1482,28 @@ class PDT_OT_vRotD(Operator):
     def execute(self, context):
         """View Orbit Down by Delta Value.
 
-        Takes: self, context
-        Uses: pdt_vrotangle scene variable
         Orbits view down about its horizontal axis
-        Returns: Status Set."""
+
+        Args:
+            contenxt: FIXME
+
+        Uses:
+            pdt_vrotangle scene variable
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
             bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle*pi/180),type='ORBITDOWN')
         return {"FINISHED"}
 
+
 class PDT_OT_vRoll(Operator):
     """Roll View by Angle"""
+
     bl_idname = 'pdt.viewroll'
     bl_label = 'Roll View'
     bl_options = {"REGISTER", "UNDO"}
@@ -1351,18 +1511,28 @@ class PDT_OT_vRoll(Operator):
     def execute(self, context):
         """View Roll by Delta Value.
 
-        Takes: self, context
-        Uses: pdt_vrotangle scene variable
         Rolls view about its normal axis
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Uses:
+            pdt_vrotangle scene variable
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
             bpy.ops.view3d.view_roll(angle=(scene.pdt_vrotangle*pi/180),type='ANGLE')
         return {"FINISHED"}
 
+
 class PDT_OT_viso(Operator):
     """Isometric View"""
+
     bl_idname = 'pdt.viewiso'
     bl_label = 'Isometric View'
     bl_options = {"REGISTER", "UNDO"}
@@ -1370,9 +1540,15 @@ class PDT_OT_viso(Operator):
     def execute(self, context):
         """Set Isometric View.
 
-        Takes: self, context
         Set view orientation to Isometric
-        Returns: Status Set."""
+
+        Args:
+            context: FIXME
+
+        Returns:
+            Status Set.
+        """
+
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
         if len(areas) > 0:
@@ -1496,6 +1672,7 @@ class PDT_PT_Panel1(Panel):
         row.label(text = "Comand Line, uses Plane & Mode Options")
         row = box.row()
         row.prop(scene, 'pdt_command', text = '')
+
 
 class PDT_PT_Panel3(Panel):
     bl_idname = "PDT_PT_panel3"
