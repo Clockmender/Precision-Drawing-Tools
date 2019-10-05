@@ -1230,7 +1230,8 @@ class PDT_OT_Taper(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses: pdt_taper & pdt_angle scene variables
+        Notes:
+            Uses pdt_taper & pdt_angle scene variables
         """
 
         scene = context.scene
@@ -1288,7 +1289,8 @@ class PDT_OT_Append(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses: pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+        Notes:
+            Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
 
         Returns: Status Set.
         """
@@ -1330,8 +1332,8 @@ class PDT_OT_Link(Operator):
         Args:
             context
 
-        Uses:
-            pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+        Notes:
+            Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
 
         Returns:
             Status Set.
@@ -1372,8 +1374,8 @@ class PDT_OT_ViewRot(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_xrot, pdt_yrot, pdt_zrot scene variables
+        Notes:
+            Uses pdt_xrot, pdt_yrot, pdt_zrot scene variables
 
         Returns:
             Status Set.
@@ -1402,8 +1404,8 @@ class PDT_OT_vRotL(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_vrotangle scene variable
+        Notes:
+            Uses pdt_vrotangle scene variable
 
         Returns: Status Set.
         """
@@ -1426,11 +1428,12 @@ class PDT_OT_vRotR(Operator):
         """View Orbit Right by Delta Value.
 
         Orbits view to the right about its vertical axis
+
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_vrotangle scene variable
+        Notes:
+            Uses pdt_vrotangle scene variable
 
         Returns:
             Status Set.
@@ -1458,8 +1461,8 @@ class PDT_OT_vRotU(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_vrotangle scene variable
+        Notes:
+            Uses pdt_vrotangle scene variable
 
 	Returns:
     	    Status Set.
@@ -1485,10 +1488,10 @@ class PDT_OT_vRotD(Operator):
         Orbits view down about its horizontal axis
 
         Args:
-            contenxt: FIXME
+            context: Current Blender bpy.context
 
-        Uses:
-            pdt_vrotangle scene variable
+        Notes:
+            Uses pdt_vrotangle scene variable
 
         Returns:
             Status Set.
@@ -1516,8 +1519,8 @@ class PDT_OT_vRoll(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Uses:
-            pdt_vrotangle scene variable
+        Notes:
+            Uses pdt_vrotangle scene variable
 
         Returns:
             Status Set.
