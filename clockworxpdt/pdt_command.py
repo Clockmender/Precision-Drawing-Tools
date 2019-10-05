@@ -38,10 +38,9 @@ def command_run(self,context):
     Args:
         context: Current Blender bpy.context
 
-    Uses:
-        pdt_command, pdt_error & many other 'scene.pdt_' variables are used to set PDT menu items, or alter functions
-
     Notes:
+        Uses pdt_command, pdt_error & many other 'scene.pdt_' variables to set PDT menu items, or alter functions
+
         Command Format; Operation(single letter) Mode(single letter) Values(up to 3 values separated by commas)
         Example; CD0.4,0.6,1.1 - Moves Cursor Delta XYZ = 0.4,0.6,1.1 from Current Position/Active Vertex/Object Origin
         Example; SP35 - Splits active Edge at 35% of separation between edge's vertices
