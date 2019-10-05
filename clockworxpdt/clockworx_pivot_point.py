@@ -43,7 +43,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Draws 7 element Pivot Point Graphic
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Nothing.
@@ -62,7 +62,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Removes 7 element Pivot Point Graphic
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Nothing.
@@ -79,7 +79,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Operational execute function for Show/Hide Pivot Point function
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
         Returns:
             Status Set.
         """
@@ -113,7 +113,7 @@ class PDT_OT_ViewPlaneRotate(Operator):
         in View Oriented coordinates, works in any view orientation.
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_pivotloc, pdt_pivotang scene variables
@@ -156,7 +156,7 @@ class PDT_OT_ViewPlaneScale(Operator):
         in View Oriented coordinates, works in any view orientation
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_pivotloc, pdt_pivotscale scene variables
@@ -199,7 +199,7 @@ class PDT_OT_PivotToCursor(Operator):
         Moves Pivot Point to Cursor Location in active scene
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
              Status Set.
@@ -221,7 +221,7 @@ class PDT_OT_CursorToPivot(Operator):
         Moves Cursor to Pivot Point Location in active scene
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -244,7 +244,7 @@ class PDT_OT_PivotSelected(Operator):
         using Snap_Cursor_To_Selected, then puts cursor back to original location.
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -287,7 +287,7 @@ class PDT_OT_PivotOrigin(Operator):
         Moves Pivot Point to Object Origin in active scene
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -321,7 +321,7 @@ class PDT_OT_PivotWrite(Operator):
         as Vector to 'PDT_PP_LOC' - Requires Confirmation through dialogue
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_pivotloc scene variable
@@ -360,7 +360,7 @@ class PDT_OT_PivotRead(Operator):
         using 'PDT_PP_LOC'
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_pivotloc scene variable

@@ -990,7 +990,7 @@ class PDT_OT_JoinVerts(Operator):
         or to join two disconnected Edges.
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -1228,7 +1228,7 @@ class PDT_OT_Taper(Operator):
         Works only in Edit mode.
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses: pdt_taper & pdt_angle scene variables
         """
@@ -1286,7 +1286,7 @@ class PDT_OT_Append(Operator):
         Appended Objects are placed at Cursor Location.
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses: pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
 
@@ -1370,7 +1370,7 @@ class PDT_OT_ViewRot(Operator):
         This is an Absolute Rotation, not an Incremental Orbit.
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_xrot, pdt_yrot, pdt_zrot scene variables
@@ -1400,7 +1400,7 @@ class PDT_OT_vRotL(Operator):
         Orbits view to the left about its vertical axis
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_vrotangle scene variable
@@ -1427,7 +1427,7 @@ class PDT_OT_vRotR(Operator):
 
         Orbits view to the right about its vertical axis
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_vrotangle scene variable
@@ -1456,7 +1456,7 @@ class PDT_OT_vRotU(Operator):
         Orbits view up about its horizontal axis
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_vrotangle scene variable
@@ -1514,7 +1514,7 @@ class PDT_OT_vRoll(Operator):
         Rolls view about its normal axis
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Uses:
             pdt_vrotangle scene variable
@@ -1543,7 +1543,7 @@ class PDT_OT_viso(Operator):
         Set view orientation to Isometric
 
         Args:
-            context: FIXME
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.

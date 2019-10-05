@@ -84,7 +84,7 @@ def update_panel(self, context):
     This routine is required if the panel layouts are changed by the application.
 
     Args:
-        context: FIXME
+        context: Current Blender bpy.context
 
     Returns:
         Nothing.
@@ -151,7 +151,7 @@ def enumlist_objects(self,context):
     to populate variable pdt_lib_objects enumerator.
 
     Args:
-        context: FIXME
+        context: Current Blender bpy.context
 
     Returns:
         list of Object Names.
@@ -177,7 +177,7 @@ def enumlist_collections(self,context):
     to populate variable pdt_lib_collections enumerator
 
     Args:
-        context: FIXME
+        context: Current Blender bpy.context
 
     Returns:
         list of Collections Names.
@@ -203,7 +203,7 @@ def enumlist_materials(self,context):
     to populate variable pdt_lib_materials enumerator.
 
     Args:
-        context: FIXME
+        context: Current Blender bpy.context
 
     Returns:
         list of Object Names.
