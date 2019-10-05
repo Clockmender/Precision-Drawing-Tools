@@ -38,6 +38,7 @@ bl_info = {
     "category": "3D View",
 }
 
+
 # ----------------------------------------------
 # Import modules
 # ----------------------------------------------
@@ -48,6 +49,7 @@ if "bpy" in locals():
 else:
     from . import clockworx_pdt_ui
     from . import clockworx_pivot_point
+
 import bpy
 from bpy.types import (
         AddonPreferences,
@@ -66,6 +68,7 @@ from bpy.props import (
 
 from .pdt_command import command_run
 
+
 # Define Panel classes for updating
 #
 panels = (
@@ -77,9 +80,12 @@ panels = (
 
 def update_panel(self, context):
     """Update Panels if parameters change.
-    This routine is required if the panel layouts are changed by the application
+
+    This routine is required if the panel layouts are changed by the application.
+
     Args:
         context: FIXME
+
     Returns:
         Nothing.
     """
@@ -97,6 +103,7 @@ def update_panel(self, context):
     except Exception as e:
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
+
 
 # List of All Classes in the Add-on to register
 #
@@ -136,12 +143,16 @@ classes = (
     clockworx_pdt_ui.PDT_PT_Panel3
     )
 
+
 def enumlist_objects(self,context):
     """Populate Objects List from Parts Library.
+
     Creates list of objects that optionally have search string contained in them
     to populate variable pdt_lib_objects enumerator.
+
     Args:
         context: FIXME
+
     Returns:
         list of Object Names.
     """
@@ -158,12 +169,16 @@ def enumlist_objects(self,context):
         items.append((ob,ob,""))
     return items
 
+
 def enumlist_collections(self,context):
     """Populate Collections List from Parts Library.
+
     Creates list of collections that optionally have search string contained in them
     to populate variable pdt_lib_collections enumerator
+
     Args:
         context: FIXME
+
     Returns:
         list of Collections Names.
     """
@@ -180,12 +195,16 @@ def enumlist_collections(self,context):
         items.append((ob,ob,""))
     return items
 
+
 def enumlist_materials(self,context):
     """Populate Materials List from Parts Library.
+    
     Creates list of materials that optionally have search string contained in them
     to populate variable pdt_lib_materials enumerator.
+
     Args:
         context: FIXME
+
     Returns:
         list of Object Names.
     """
@@ -202,8 +221,10 @@ def enumlist_materials(self,context):
         items.append((ob,ob,""))
     return items
 
+
 def register():
     """Register Classes and Create Scene Variables.
+    
     Operates on the classes list defined above.
     """
 
@@ -336,6 +357,7 @@ def register():
 
 def unregister():
     """Unregister Classes and Delete Scene Variables.
+    
     Operates on the classes list defined above.
     """
 
@@ -388,3 +410,4 @@ def unregister():
 
 if __name__ == '__main__':
     register()
+
