@@ -36,7 +36,7 @@ def command_run(self,context):
     """Run Command String as input into Command Line.
 
     Args:
-        self, context
+        context: FIXME
 
     Uses:
         pdt_command, pdt_error & many other 'scene.pdt_' variables are used to set PDT menu items, or alter functions
@@ -65,7 +65,8 @@ def command_run(self,context):
             This is why all Math functions are imported
 
     Returns:
-        Nothing."""
+        Nothing.
+    """
 
     scene = context.scene
     scene.pdt_error = "All is Good!"
