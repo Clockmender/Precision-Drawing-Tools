@@ -29,7 +29,7 @@
 bl_info = {
     "name": "Precision Drawing Tools (PDT)",
     "author": "Alan Odom (Clockmender)",
-    "version": (1, 1, 4),
+    "version": (1, 1, 5),
     "blender": (2, 80, 0),
     "location": "View3D > UI > PDT",
     "description": "Precision Drawing Tools for Acccurate Modelling",
@@ -46,10 +46,15 @@ if "bpy" in locals():
     import importlib
     importlib.reload(clockworx_pdt_ui)
     importlib.reload(clockworx_pivot_point)
+    importlib.reload(pdt_xall)
+    importlib.reload(pdt_bix)
+    importlib.reload(pdt_etof)
 else:
     from . import clockworx_pdt_ui
     from . import clockworx_pivot_point
-
+    from . import pdt_xall
+    from . import pdt_bix
+    from . import pdt_etof
 import bpy
 from bpy.types import (
         AddonPreferences,
@@ -80,12 +85,9 @@ panels = (
 
 def update_panel(self, context):
     """Update Panels if parameters change.
-
     This routine is required if the panel layouts are changed by the application.
-
     Args:
         context: Current Blender bpy.context
-
     Returns:
         Nothing.
     """
@@ -138,6 +140,9 @@ classes = (
     clockworx_pivot_point.PDT_OT_PivotOrigin,
     clockworx_pivot_point.PDT_OT_PivotWrite,
     clockworx_pivot_point.PDT_OT_PivotRead,
+    pdt_xall.PDT_OT_IntersectAllEdges,
+    pdt_bix.PDT_OT_LineOnBisection,
+    pdt_etof.PDT_OT_EdgeToFace,
     clockworx_pdt_ui.PDT_PT_Panel1,
     clockworx_pivot_point.PDT_PT_Panel2,
     clockworx_pdt_ui.PDT_PT_Panel3
@@ -152,7 +157,6 @@ def enumlist_objects(self,context):
 
     Args:
         context: Current Blender bpy.context
-
     Returns:
         list of Object Names.
     """
@@ -178,7 +182,6 @@ def enumlist_collections(self,context):
 
     Args:
         context: Current Blender bpy.context
-
     Returns:
         list of Collections Names.
     """
@@ -198,13 +201,12 @@ def enumlist_collections(self,context):
 
 def enumlist_materials(self,context):
     """Populate Materials List from Parts Library.
-    
+
     Creates list of materials that optionally have search string contained in them
     to populate variable pdt_lib_materials enumerator.
 
     Args:
         context: Current Blender bpy.context
-
     Returns:
         list of Object Names.
     """
@@ -224,7 +226,7 @@ def enumlist_materials(self,context):
 
 def register():
     """Register Classes and Create Scene Variables.
-    
+
     Operates on the classes list defined above.
     """
 
@@ -357,7 +359,7 @@ def register():
 
 def unregister():
     """Unregister Classes and Delete Scene Variables.
-    
+
     Operates on the classes list defined above.
     """
 
@@ -410,4 +412,3 @@ def unregister():
 
 if __name__ == '__main__':
     register()
-
