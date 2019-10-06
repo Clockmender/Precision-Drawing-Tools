@@ -391,7 +391,7 @@ def getPercent(obj, flip_p, per_v, data, scene):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
                 return None
         else:
-            scene.pdt_error = "Select 2 Vertices Individually"
+            "Select 2 Vertices Individually, or 1 Edge, you selected "+str(len(verts))+" Vertices"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
             return None
         p1 = np.array([actV.x,actV.y,actV.z])
