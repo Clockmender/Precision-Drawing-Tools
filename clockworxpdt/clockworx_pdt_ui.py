@@ -1010,6 +1010,35 @@ class PDT_OT_JoinVerts(Operator):
             return {"FINISHED"}
 
 
+class PDT_OT_Fillet(Operator):
+    """Fillet Edges by Vertex, Set Use Verts to False for Extruded Structure"""
+    bl_idname = 'pdt.fillet'
+    bl_label = 'Fillet'
+    bl_options = {"REGISTER","UNDO"}
+
+    def execute(self,context):
+        # FIXME docstring
+
+        scene = context.scene
+        obj = context.view_layer.objects.active
+        if obj == None:
+            self.report({'ERROR'},
+                    "Select an Object") #FIXME
+            return {"FINISHED"}
+        if obj.mode == 'EDIT':
+            bm = bmesh.from_edit_mesh(obj.data)
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                self.report({'ERROR'},
+                        "Select at least 1 vertex") #FIXME
+                return {"FINISHED"}
+            else:
+                bpy.ops.mesh.bevel(offset_type='OFFSET', offset=scene.pdt_filletrad,
+                                    segments=scene.pdt_filletnum, profile=scene.pdt_filletpro,
+                                    vertex_only=scene.pdt_filletbool)
+                return {"FINISHED"}
+
+
 class PDT_OT_Angle2(Operator):
     """Measure Distance and Angle in Working Plane, Also sets Deltas"""
 
@@ -1635,6 +1664,20 @@ class PDT_PT_Panel1(Panel):
         col.operator("pdt.linetobisect", text="Bisect")
         col = row.column()
         col.operator("pdt.edge_to_face", text="Edge-Face")
+        #
+        # Add Fillet Tool
+        row = box.row()
+        col = row.column()
+        col.operator("pdt.fillet", text="Fillet")
+        col = row.column()
+        col.prop(scene, 'pdt_filletnum', text='Segments')
+        col = row.column()
+        col.prop(scene, 'pdt_filletbool', text='Use Verts')
+        row = box.row()
+        col = row.column()
+        col.prop(scene, 'pdt_filletrad', text='Radius')
+        col = row.column()
+        col.prop(scene, 'pdt_filletpro', text='Profile')
         #
         box = layout.box()
         row = box.row()

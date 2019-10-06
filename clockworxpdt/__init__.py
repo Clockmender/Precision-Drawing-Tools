@@ -131,6 +131,7 @@ classes = (
     clockworx_pdt_ui.PDT_OT_vRotD,
     clockworx_pdt_ui.PDT_OT_vRoll,
     clockworx_pdt_ui.PDT_OT_viso,
+    clockworx_pdt_ui.PDT_OT_Fillet,
     clockworx_pivot_point.PDT_OT_ModalDrawOperator,
     clockworx_pivot_point.PDT_OT_ViewPlaneRotate,
     clockworx_pivot_point.PDT_OT_ViewPlaneScale,
@@ -349,6 +350,14 @@ def register():
     Scene.pdt_pivotalpha = FloatProperty(name="Alpha",min=0.2,max=1,default=0.6,precision=1,
                                         description='Pivot Point Transparency')
     Scene.pdt_pivotshow = BoolProperty()
+    Scene.pdt_filletrad = FloatProperty(name="Fillet Radius",min=0.0,default=1.0,
+                                        description='Fillet Radius')
+    Scene.pdt_filletnum = IntProperty(name="Fillet Segments",min=1,default=4,
+                                        description='Segments in Fillet')
+    Scene.pdt_filletpro = FloatProperty(name="Fillet Profile",min=0.0,max=1.0,default=0.5,
+                                        description='Fillet Profile')
+    Scene.pdt_filletbool = BoolProperty(name='Use Verts',default=True,
+                                        description='Use Vertices, or Edges, Set to False for Extruded Geometry')
 
     # OpenGL flag
     #
@@ -402,6 +411,10 @@ def unregister():
     del Scene.pdt_pivotwidth
     del Scene.pdt_pivotalpha
     del Scene.pdt_pivotshow
+    del Scene.pdt_filletrad
+    del Scene.pdt_filletnum
+    del Scene.pdt_filletpro
+    del Scene.pdt_filletbool
 
     # remove OpenGL data
     clockworx_pivot_point.PDT_OT_ModalDrawOperator.handle_remove(clockworx_pivot_point.PDT_OT_ModalDrawOperator, bpy.context)
