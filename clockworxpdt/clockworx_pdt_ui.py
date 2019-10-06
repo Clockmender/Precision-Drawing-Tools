@@ -1644,6 +1644,15 @@ class PDT_PT_Panel1(Panel):
         col.prop(scene, 'pdt_taper', text = '')
         col = row.column()
         col.operator("pdt.taper", text="Taper")
+        # New for 1.1.5
+        row = box.row()
+        col = row.column()
+        col.operator("pdt.intersectall", text="Intersect All")
+        col = row.column()
+        col.operator("pdt.linetobisect", text="Bisect")
+        col = row.column()
+        col.operator("pdt.edge_to_face", text="Edge-Face")
+        #
         box = layout.box()
         row = box.row()
         col = row.column()
