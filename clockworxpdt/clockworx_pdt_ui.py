@@ -42,6 +42,8 @@ from .pdt_functions import (setMode, checkSelection, setAxis, updateSel, viewCoo
 #
 # ERR_MSG_FACE_SELECTED = "I'm afraid I can't do that, Dave: You have a have a Face selected; this would have ruined the Topology"
 # (this is a reference to HAL 9000 from Stanley Kubrick's '2001: A Space Odyssey')
+#
+# To be included in v1.1.5 after more research.
 
 class PDT_OT_PlacementAbs(Operator):
     """Use Absolute, or Global Placement"""
@@ -135,7 +137,7 @@ class PDT_OT_PlacementAbs(Operator):
             bmesh.update_edit_mesh(obj.data)
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!") #FIXME
+                data+" is Not a Valid Absolute Option!") # FIXME
         return {"FINISHED"}
 
 
@@ -298,7 +300,7 @@ class PDT_OT_PlacementDelta(Operator):
                 bm.select_history.clear()
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")  #FIXME: "%s is not a (...)"
+                    data+" is Not a Valid Delta Option!") # FIXME
         return {"FINISHED"}
 
 
@@ -470,7 +472,7 @@ class PDT_OT_PlacementDis(Operator):
                 bm.select_history.clear()
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!")  # FIXME "%s is not a (...)"
+                    data+ " is Not a Valid Direction Option!")  # FIXME "%s is not a (...)
         return {"FINISHED"}
 
 class PDT_OT_PlacementPer(Operator):
@@ -505,7 +507,7 @@ class PDT_OT_PlacementPer(Operator):
         obj = context.view_layer.objects.active
         if obj == None:
             self.report({'ERROR'},
-                    "Select at least 1 Object")  #FIXME add "You didn't select anything?"
+                    "Select at least 1 Object, You didn't select anything")  #FIXME
             return {"FINISHED"}
         if obj.mode == 'EDIT':
             bm = bmesh.from_edit_mesh(obj.data)
@@ -535,7 +537,7 @@ class PDT_OT_PlacementPer(Operator):
             edges = [e for e in bm.edges if e.select]
             if len (edges) != 1:
                 self.report({'ERROR'},
-                        "Select Only One Edge")  # FIXME: add "(You selected x edges)"
+                        "Select Only One Edge, you selected "+str(len(edges))+" Edges")  # FIXME
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm,edges=edges,cuts=1)
             new_verts = [v for v in geom['geom_split'] if isinstance(v, bmesh.types.BMVert)]
@@ -563,7 +565,7 @@ class PDT_OT_PlacementPer(Operator):
             bm.select_history.clear()
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!")  #FIXME: Include wrong option as string
+                data+ " is Not a Valid Percent Option!")  #FIXME
         return {"FINISHED"}
 
 class PDT_OT_PlacementNormal(Operator):
@@ -615,7 +617,7 @@ class PDT_OT_PlacementNormal(Operator):
             objs = context.view_layer.objects.selected
             if len(objs) != 3:
                 self.report({'ERROR'},
-                    "Select Only 3 Objects") #FIXME: "Select exactly 3 objects (you selected x objects)
+                    "Select Exactly 3 Objects, you selected "+str(len(objs))+" Objects") #FIXME
                 return {"FINISHED"}
             else:
                 objs_s = [ob for ob in objs if ob.name != obj.name]
@@ -665,7 +667,7 @@ class PDT_OT_PlacementNormal(Operator):
             bm.select_history.clear()
         else:
             self.report({'ERROR'},
-                "Not a Valid, or Sensible, Option!") #FIXME
+                data+ " is Not a Valid Normal Option!") #FIXME
         return {"FINISHED"}
 
 class PDT_OT_PlacementInt(Operator):
@@ -853,7 +855,7 @@ class PDT_OT_PlacementInt(Operator):
                     "Active Object Moved to Intersection, "+message)
             else:
                 self.report({'ERROR'},
-                    "Not a Valid, or Sensible, Option!") #FIXME
+                    data+ " is Not a Valid Intersection Option!") #FIXME
             return {"FINISHED"}
 
 
