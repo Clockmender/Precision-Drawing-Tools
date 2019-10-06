@@ -755,17 +755,8 @@ class PDT_OT_PlacementInt(Operator):
             elif data in ['MV','EV']:
                 nVert = None
                 proc = False
-                x1 = actV[0]
-                x2 = othV[0]
-                x3 = vector_delta[0]
-                y1 = actV[1]
-                y2 = othV[1]
-                y3 = vector_delta[1]
-                z1 = actV[2]
-                z2 = othV[2]
-                z3 = vector_delta[2]
-                # only affect active vertex unless ext_a is True
-                if sqrt((x1-x3)**2+(y1-y3)**2+(z1-z3)**2) < sqrt((x2-x3)**2+(y2-y3)**2+(z2-z3)**2):
+
+                if (actV - vector_delta).length < (othV - vector_delta).length:
                     if data == 'MV':
                         va.co = vector_delta
                         proc = True
@@ -780,15 +771,7 @@ class PDT_OT_PlacementInt(Operator):
                         nVert = bm.verts.new(vector_delta)
                         nEdge = bm.edges.new([vo,nVert])
 
-                # Second edge
-                x1 = lstV[0]
-                x2 = fstV[0]
-                y1 = lstV[1]
-                y2 = fstV[1]
-                z1 = lstV[2]
-                z2 = fstV[2]
-                # only affect active vertex unless ext_a is True
-                if sqrt((x1-x3)**2+(y1-y3)**2+(z1-z3)**2) < sqrt((x2-x3)**2+(y2-y3)**2+(z2-z3)**2):
+                if (lstV - vector_delta).length < (fstV - vector_delta).length:
                     if data == 'MV' and ext_a:
                         vl.co = vector_delta
                     elif data == 'EV' and ext_a:
