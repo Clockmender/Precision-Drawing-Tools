@@ -85,9 +85,12 @@ panels = (
 
 def update_panel(self, context):
     """Update Panels if parameters change.
+
     This routine is required if the panel layouts are changed by the application.
+
     Args:
         context: Current Blender bpy.context
+
     Returns:
         Nothing.
     """
@@ -158,6 +161,7 @@ def enumlist_objects(self,context):
 
     Args:
         context: Current Blender bpy.context
+
     Returns:
         list of Object Names.
     """
@@ -183,6 +187,7 @@ def enumlist_collections(self,context):
 
     Args:
         context: Current Blender bpy.context
+
     Returns:
         list of Collections Names.
     """
@@ -208,6 +213,7 @@ def enumlist_materials(self,context):
 
     Args:
         context: Current Blender bpy.context
+
     Returns:
         list of Object Names.
     """
