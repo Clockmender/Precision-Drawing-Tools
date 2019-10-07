@@ -42,12 +42,12 @@ def add_line_to_bisection(self):
     edges = [e for e in bm.edges if e.select and not e.hide]
 
     if not len(edges) == 2:
-        msg = "Select 2 Coplanar Non-Parallel Edges"  #FIXME
+        msg = "Select 2 Coplanar Non-Parallel Edges"  # FIXME
         self.report({"ERROR"}, msg)
         return
 
     [[v1, v2], [v3, v4]] = [[v.co for v in e.verts] for e in edges]
-    #print('vectors found:\n', v1, '\n', v2, '\n', v3, '\n', v4)
+    # print('vectors found:\n', v1, '\n', v2, '\n', v3, '\n', v4)
 
     dist1 = (v1 - v2).length
     dist2 = (v3 - v4).length
@@ -56,7 +56,7 @@ def add_line_to_bisection(self):
     edge2 = (v3, v4)
 
     if not cm.test_coplanar(edge1, edge2):
-        msg = "Edges must be Coplanar Non-Parallel Edges"  #FIXME
+        msg = "Edges must be Coplanar Non-Parallel Edges"  # FIXME
         self.report({"ERROR"}, msg)
         return
 
@@ -84,15 +84,15 @@ def add_line_to_bisection(self):
 class PDT_OT_LineOnBisection(bpy.types.Operator):
     """Create Bisector between 2 Selected Edges"""
 
-    bl_idname = 'pdt.linetobisect'
-    bl_label = 'Add Edges Bisector'
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_idname = "pdt.linetobisect"
+    bl_label = "Add Edges Bisector"
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return all([obj is not None, obj.type == 'MESH', obj.mode == 'EDIT'])
+        return all([obj is not None, obj.type == "MESH", obj.mode == "EDIT"])
 
     def execute(self, context):
         add_line_to_bisection(self)
-        return {'FINISHED'}
+        return {"FINISHED"}
