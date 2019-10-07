@@ -262,18 +262,14 @@ def euler_to_quaternion(roll, pitch, yaw):
         Quaternion Rotation.
     """
 
-    qx = np.sin(roll / 2) * np.cos(pitch / 2) * np.cos(yaw / 2) - np.cos(roll / 2) * np.sin(
-        pitch / 2
-    ) * np.sin(yaw / 2)
-    qy = np.cos(roll / 2) * np.sin(pitch / 2) * np.cos(yaw / 2) + np.sin(roll / 2) * np.cos(
-        pitch / 2
-    ) * np.sin(yaw / 2)
-    qz = np.cos(roll / 2) * np.cos(pitch / 2) * np.sin(yaw / 2) - np.sin(roll / 2) * np.sin(
-        pitch / 2
-    ) * np.cos(yaw / 2)
-    qw = np.cos(roll / 2) * np.cos(pitch / 2) * np.cos(yaw / 2) + np.sin(roll / 2) * np.sin(
-        pitch / 2
-    ) * np.sin(yaw / 2)
+    qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) \
+         - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+    qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) \
+         + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+    qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) \
+         - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+    qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) \
+         + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
 
     return Quaternion((qw, qx, qy, qz))
 
@@ -296,11 +292,11 @@ def arcCentre(actV, othV, lstV):
     a = np.linalg.norm(C - B)
     b = np.linalg.norm(C - A)
     c = np.linalg.norm(B - A)
-    s = (a + b + c) / 2
-    R = a * b * c / 4 / np.sqrt(s * (s - a) * (s - b) * (s - c))
-    b1 = a * a * (b * b + c * c - a * a)
-    b2 = b * b * (a * a + c * c - b * b)
-    b3 = c * c * (a * a + b * b - c * c)
+    s = (a+b+c) / 2
+    R = a*b*c/4 / np.sqrt(s * (s-a) * (s-b) * (s-c))
+    b1 = a*a * (b*b + c*c - a*a)
+    b2 = b*b * (a*a + c*c - b*b)
+    b3 = c*c * (a*a + b*b - c*c)
     P = np.column_stack((A, B, C)).dot(np.hstack((b1, b2, b3)))
     P /= b1 + b2 + b3
     return Vector((P[0], P[1], P[2])), R
@@ -432,14 +428,14 @@ def getPercent(obj, flip_p, per_v, data, scene):
     p3 = p2 - p1
     if flip_p:
         if data != "MV":
-            tst = ((p4 + p3) * ((100 - per_v) / 100)) + p1
+            tst = ((p4+p3) * ((100-per_v) / 100)) + p1
         else:
-            tst = ((p4 + p3) * (per_v / 100)) + p1
+            tst = ((p4+p3) * (per_v / 100)) + p1
     else:
         if data != "MV":
-            tst = ((p4 + p3) * (per_v / 100)) + p1
+            tst = ((p4+p3) * (per_v / 100)) + p1
         else:
-            tst = ((p4 + p3) * ((100 - per_v) / 100)) + p1
+            tst = ((p4+p3) * ((100-per_v) / 100)) + p1
     return Vector((tst[0], tst[1], tst[2]))
 
 
@@ -516,8 +512,8 @@ def disAng(vals, flip_a, plane, scene):
     else:
         a1, a2, a3 = setMode(plane)
         vector_delta = Vector((0, 0, 0))
-        vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi / 180))
-        vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v * pi / 180))
+        vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi/180))
+        vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v * pi/180))
     return vector_delta
 
 
@@ -585,24 +581,24 @@ def drawCallback3D(self, context):
     # X Axis
     coords = [
         (x, y, z),
-        (x + b, y - o, z),
-        (x + b, y + o, z),
-        (x + a, y, z),
-        (x + b, y + c, z),
-        (x + b, y - c, z),
+        (x+b, y-o, z),
+        (x+b, y+o, z),
+        (x+a, y, z),
+        (x+b, y+c, z),
+        (x+b, y-c, z),
     ]
     colour = (1.0, 0.0, 0.0, scene.pdt_pivotalpha)
     draw3D(coords, "TRIS", colour, context)
-    coords = [(x, y, z), (x + a, y, z)]
+    coords = [(x, y, z), (x+a, y, z)]
     draw3D(coords, "LINES", colour, context)
     # Y Axis
     coords = [
         (x, y, z),
-        (x - o, y + b, z),
-        (x + o, y + b, z),
-        (x, y + a, z),
-        (x + c, y + b, z),
-        (x - c, y + b, z),
+        (x-o, y+b, z),
+        (x+o, y+b, z),
+        (x, y+a, z),
+        (x+c, y+b, z),
+        (x-c, y+b, z),
     ]
     colour = (0.0, 1.0, 0.0, scene.pdt_pivotalpha)
     draw3D(coords, "TRIS", colour, context)
@@ -611,11 +607,11 @@ def drawCallback3D(self, context):
     # Z Axis
     coords = [
         (x, y, z),
-        (x - o, y, z + b),
-        (x + o, y, z + b),
-        (x, y, z + a),
-        (x + c, y, z + b),
-        (x - c, y, z + b),
+        (x-o, y, z+b),
+        (x+o, y, z+b),
+        (x, y, z+a),
+        (x+c, y, z+b),
+        (x-c, y, z+b),
     ]
     colour = (0.2, 0.5, 1.0, scene.pdt_pivotalpha)
     draw3D(coords, "TRIS", colour, context)
