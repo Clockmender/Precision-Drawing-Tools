@@ -38,7 +38,7 @@ def command_run(self,context):
     Args:
         context: Current Blender bpy.context
 
-    Notes:
+    Note:
         Uses pdt_command, pdt_error & many other 'scene.pdt_' variables to set PDT menu items, or alter functions
 
         Command Format; Operation(single letter) Mode(single letter) Values(up to 3 values separated by commas)
