@@ -1012,6 +1012,7 @@ class PDT_OT_JoinVerts(Operator):
 
 class PDT_OT_Fillet(Operator):
     """Fillet Edges by Vertex, Set Use Verts to False for Extruded Structure"""
+
     bl_idname = 'pdt.fillet'
     bl_label = 'Fillet'
     bl_options = {"REGISTER","UNDO"}
@@ -1244,7 +1245,7 @@ class PDT_OT_Taper(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_taper & pdt_angle scene variables
         """
 
@@ -1303,7 +1304,7 @@ class PDT_OT_Append(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
 
         Returns: Status Set.
@@ -1346,7 +1347,7 @@ class PDT_OT_Link(Operator):
         Args:
             context
 
-        Notes:
+        Note:
             Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
 
         Returns:
@@ -1388,7 +1389,7 @@ class PDT_OT_ViewRot(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_xrot, pdt_yrot, pdt_zrot scene variables
 
         Returns:
@@ -1418,7 +1419,7 @@ class PDT_OT_vRotL(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_vrotangle scene variable
 
         Returns: Status Set.
@@ -1446,7 +1447,7 @@ class PDT_OT_vRotR(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_vrotangle scene variable
 
         Returns:
@@ -1475,7 +1476,7 @@ class PDT_OT_vRotU(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_vrotangle scene variable
 
 	Returns:
@@ -1504,7 +1505,7 @@ class PDT_OT_vRotD(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_vrotangle scene variable
 
         Returns:
@@ -1533,7 +1534,7 @@ class PDT_OT_vRoll(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_vrotangle scene variable
 
         Returns:
