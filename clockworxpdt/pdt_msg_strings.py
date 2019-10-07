@@ -57,16 +57,3 @@ PDT_ERR_TAPER_SEL     = "Select at Least 2 Vertices Individually - Active is Rot
 # Info messages
 #
 PDT_INF_OBJ_MOVED     = "Active Object Moved to Intersection, "
-
-# Descriptions
-#
-PDT_DES_XDELTA        = "X Coord Delta"
-PDT_DES_YDELTA        = "Y Coord Delta"
-PDT_DES_ZDELTA        = "Z Coord Delta"
-PDT_DES_OFFDIS        = "Offset Distance"
-PDT_DES_OFFANG        = "Offset Angle"
-PDT_DES_OFFPER        = "Offset Percentage"
-PDT_DES_WORPLANE      = "Choose Working Plane"
-PDT_DES_MOVESEL       = "Select Move Mode"
-PDT_DES_OPMODE        = "Select Operation Mode"
-PDT_DES_ROTMOVAX      = "Rotational Axis - Movement Axis"
