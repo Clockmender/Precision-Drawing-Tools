@@ -270,9 +270,7 @@ def euler_to_quaternion(roll, pitch, yaw):
 
 
 def arcCentre(actV,othV,lstV):
-    """Calculates Centre of Arc from 3 Vector Locations.
-
-    Uses standard Numpy routine.
+    """Calculates Centre of Arc from 3 Vector Locations using standard Numpy routine
 
     Args:
         actV: Active vector location
