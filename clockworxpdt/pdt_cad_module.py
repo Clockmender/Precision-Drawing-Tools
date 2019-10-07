@@ -28,6 +28,7 @@ from mathutils import Vector, geometry
 from mathutils.geometry import intersect_line_line as LineIntersect
 from mathutils.geometry import intersect_point_line as PtLineIntersect
 
+
 def point_on_edge(p, edge):
     """Find Point on Edge.
 
@@ -132,6 +133,7 @@ def vertex_indices_from_edges_tuple(bm, edge_tuple):
     > edge_tuple:   contains two edge indices.
     < returns the vertex indices of edge_tuple
     """
+
     def k(v, w):
         return bm.edges[edge_tuple[v]].verts[w].index
 
