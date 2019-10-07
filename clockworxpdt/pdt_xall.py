@@ -39,6 +39,7 @@ def order_points(edge, point_list):
 
     def dist(co):
         return (v1 - co).length
+
     point_list = sorted(point_list, key=dist)
     return [v1] + point_list + [v2]
 
@@ -121,15 +122,15 @@ def update_mesh(bm, d):
     new_verts = []
     collect = new_verts.extend
     for old_edge, point_list in d.items():
-        num_edges_to_add = len(point_list)-1
+        num_edges_to_add = len(point_list) - 1
         for i in range(num_edges_to_add):
             a = ov.new(point_list[i])
-            b = ov.new(point_list[i+1])
+            b = ov.new(point_list[i + 1])
             oe.new((a, b))
             bm.normal_update()
             collect([a, b])
 
-    bmesh.ops.delete(bm, geom=[edge for edge in bm.edges if edge.select], context='EDGES')
+    bmesh.ops.delete(bm, geom=[edge for edge in bm.edges if edge.select], context="EDGES")
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
 
 
@@ -138,19 +139,20 @@ def unselect_nonintersecting(bm, d_edges, edge_indices):
         reserved_edges = set(edge_indices) - set(d_edges)
         for edge in reserved_edges:
             bm.edges[edge].select = False
-        #print("unselected {}, non intersecting edges".format(reserved_edges)) # FIXME
+        # print("unselected {}, non intersecting edges".format(reserved_edges)) # FIXME
 
 
 class PDT_OT_IntersectAllEdges(bpy.types.Operator):
     """Cut Selected Edges at All Intersections"""
-    bl_idname = 'pdt.intersectall'
-    bl_label = 'Intersect All Edges'
-    bl_options = {'REGISTER', 'UNDO'}
+
+    bl_idname = "pdt.intersectall"
+    bl_label = "Intersect All Edges"
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj is not None and obj.type == 'MESH' and obj.mode == 'EDIT'
+        return obj is not None and obj.type == "MESH" and obj.mode == "EDIT"
 
     def execute(self, context):
         # must force edge selection mode here
@@ -173,4 +175,4 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
             msg = "Must be in Edit Mode"
             self.report({"ERROR"}, msg)
 
-        return {'FINISHED'}
+        return {"FINISHED"}
