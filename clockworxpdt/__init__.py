@@ -69,6 +69,7 @@ from bpy.props import (
 )
 
 from .pdt_command import command_run
+from .pdt_msg_strings import *
 
 
 # Define Panel classes for updating
@@ -240,22 +241,22 @@ def register():
         register_class(cls)
 
     Scene.pdt_delta_x = FloatProperty(
-        name="X Coord", default=0.0, precision=5, description="X Coord Delta", unit="LENGTH"
+        name="X Coord", default=0.0, precision=5, description=PDT_DES_XDELTA, unit="LENGTH"
     )
     Scene.pdt_delta_y = FloatProperty(
-        name="Y Coord", default=0.0, precision=5, description="Y Coord Delta", unit="LENGTH"
+        name="Y Coord", default=0.0, precision=5, description=PDT_DES_YDELTA, unit="LENGTH"
     )
     Scene.pdt_delta_z = FloatProperty(
-        name="Z Coord", default=0.0, precision=5, description="Z Coord Delta", unit="LENGTH"
+        name="Z Coord", default=0.0, precision=5, description=PDT_DES_ZDELTA, unit="LENGTH"
     )
     Scene.pdt_distance = FloatProperty(
-        name="Distance", default=0.0, precision=5, description="Offset Distance", unit="LENGTH"
+        name="Distance", default=0.0, precision=5, description=PDT_DES_OFFDIS, unit="LENGTH"
     )
     Scene.pdt_angle = FloatProperty(
-        name="Angle", min=-180, max=180, default=0.0, precision=5, description="Offset Angle"
+        name="Angle", min=-180, max=180, default=0.0, precision=5, description=PDT_DES_OFFANG
     )
     Scene.pdt_percent = FloatProperty(
-        name="Percent", default=0.0, precision=5, description="Percentage Offset"
+        name="Percent", default=0.0, precision=5, description=PDT_DES_OFFPER
     )
     Scene.pdt_plane = EnumProperty(
         items=(
