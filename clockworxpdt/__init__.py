@@ -44,6 +44,7 @@ bl_info = {
 # ----------------------------------------------
 if "bpy" in locals():
     import importlib
+
     importlib.reload(clockworx_pdt_ui)
     importlib.reload(clockworx_pivot_point)
     importlib.reload(pdt_xall)
@@ -56,20 +57,16 @@ else:
     from . import pdt_bix
     from . import pdt_etof
 import bpy
-from bpy.types import (
-        AddonPreferences,
-        Scene,
-        WindowManager,
-        )
+from bpy.types import AddonPreferences, Scene, WindowManager
 from bpy.props import (
-        FloatVectorProperty,
-        IntProperty,
-        BoolProperty,
-        StringProperty,
-        FloatProperty,
-        EnumProperty,
-        CollectionProperty
-        )
+    FloatVectorProperty,
+    IntProperty,
+    BoolProperty,
+    StringProperty,
+    FloatProperty,
+    EnumProperty,
+    CollectionProperty,
+)
 
 from .pdt_command import command_run
 
@@ -77,10 +74,10 @@ from .pdt_command import command_run
 # Define Panel classes for updating
 #
 panels = (
-        clockworx_pdt_ui.PDT_PT_Panel1,
-        clockworx_pivot_point.PDT_PT_Panel2,
-        clockworx_pdt_ui.PDT_PT_Panel3
-        )
+    clockworx_pdt_ui.PDT_PT_Panel1,
+    clockworx_pivot_point.PDT_PT_Panel2,
+    clockworx_pdt_ui.PDT_PT_Panel3,
+)
 
 
 def update_panel(self, context):
@@ -149,11 +146,11 @@ classes = (
     pdt_etof.PDT_OT_EdgeToFace,
     clockworx_pdt_ui.PDT_PT_Panel1,
     clockworx_pivot_point.PDT_PT_Panel2,
-    clockworx_pdt_ui.PDT_PT_Panel3
-    )
+    clockworx_pdt_ui.PDT_PT_Panel3,
+)
 
 
-def enumlist_objects(self,context):
+def enumlist_objects(self, context):
     """Populate Objects List from Parts Library.
 
     Creates list of objects that optionally have search string contained in them
@@ -167,7 +164,7 @@ def enumlist_objects(self,context):
     """
 
     scene = context.scene
-    path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
+    path = str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
     with bpy.data.libraries.load(path) as (data_from, data_to):
         if len(scene.pdt_obsearch) == 0:
             object_names = [ob for ob in data_from.objects]
@@ -175,11 +172,11 @@ def enumlist_objects(self,context):
             object_names = [ob for ob in data_from.objects if scene.pdt_obsearch in ob]
     items = []
     for ob in object_names:
-        items.append((ob,ob,""))
+        items.append((ob, ob, ""))
     return items
 
 
-def enumlist_collections(self,context):
+def enumlist_collections(self, context):
     """Populate Collections List from Parts Library.
 
     Creates list of collections that optionally have search string contained in them
@@ -193,7 +190,7 @@ def enumlist_collections(self,context):
     """
 
     scene = context.scene
-    path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
+    path = str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
     with bpy.data.libraries.load(path) as (data_from, data_to):
         if len(scene.pdt_cosearch) == 0:
             object_names = [ob for ob in data_from.collections]
@@ -201,11 +198,11 @@ def enumlist_collections(self,context):
             object_names = [ob for ob in data_from.collections if scene.pdt_cosearch in ob]
     items = []
     for ob in object_names:
-        items.append((ob,ob,""))
+        items.append((ob, ob, ""))
     return items
 
 
-def enumlist_materials(self,context):
+def enumlist_materials(self, context):
     """Populate Materials List from Parts Library.
 
     Creates list of materials that optionally have search string contained in them
@@ -219,7 +216,7 @@ def enumlist_materials(self,context):
     """
 
     scene = context.scene
-    path = str(bpy.utils.user_resource('SCRIPTS', "addons"))+'/clockworxpdt/parts_library.blend'
+    path = str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
     with bpy.data.libraries.load(path) as (data_from, data_to):
         if len(scene.pdt_masearch) == 0:
             object_names = [ob for ob in data_from.materials]
@@ -227,7 +224,7 @@ def enumlist_materials(self,context):
             object_names = [ob for ob in data_from.materials if scene.pdt_masearch in ob]
     items = []
     for ob in object_names:
-        items.append((ob,ob,""))
+        items.append((ob, ob, ""))
     return items
 
 
@@ -238,132 +235,185 @@ def register():
     """
 
     from bpy.utils import register_class
+
     for cls in classes:
         register_class(cls)
 
-    Scene.pdt_delta_x = FloatProperty(name='X Coord', default=0.0,
-                                               precision=5,
-                                               description="X Coord Delta", unit='LENGTH')
-    Scene.pdt_delta_y = FloatProperty(name='Y Coord', default=0.0,
-                                               precision=5,
-                                               description="Y Coord Delta", unit='LENGTH')
-    Scene.pdt_delta_z = FloatProperty(name='Z Coord', default=0.0,
-                                               precision=5,
-                                               description="Z Coord Delta", unit='LENGTH')
-    Scene.pdt_distance = FloatProperty(name='Distance', default=0.0,
-                                               precision=5,
-                                               description="Offset Distance", unit='LENGTH')
-    Scene.pdt_angle = FloatProperty(name='Angle', min=-180, max=180, default=0.0,
-                                               precision=5,
-                                               description="Offset Angle")
-    Scene.pdt_percent = FloatProperty(name='Percent', default=0.0,
-                                               precision=5,
-                                               description="Percentage Offset")
-    Scene.pdt_plane = EnumProperty(items=(('XZ', "Front(X-Z)",
-                                               "Use X-Z Plane"),
-                                          ('XY', "Top(X-Y)",
-                                               "Use X-Y Plane"),
-                                          ('YZ', "Right(Y-Z)",
-                                               "Use Y-Z Plane"),
-                                          ('LO', "View",
-                                               "Use View Plane")),
-                                               name="Working Plane",
-                                               default='XZ',
-                                               description="Choose Working Plane")
-    Scene.pdt_select = EnumProperty(items=(('REL', "Current",
-                                               "Moved Relative to Current Position"),
-                                           ('SEL', "Selected",
-                                               "Moved Relative to Selected Object, or Vertex, Cursor & Pivot Only")),
-                                               name="Move Mode",
-                                               default='SEL',
-                                               description="Select Move Mode")
-    Scene.pdt_operate = EnumProperty(items=(('CU', "Cursor",
-                                               "Ths Function will Move the Cursor"),
-                                            ('PP', "Pivot",
-                                                "Ths Function will Move the Pivot Point"),
-                                            ('MV', "Move",
-                                                "This function will Move Vertices, or Objects"),
-                                            ('NV', "New Vertex",
-                                                "This function will Add a New Vertex"),
-                                            ('EV', "Extrude Vertices",
-                                                "This function will Extrude Vertices Only in EDIT Mode"),
-                                            ('SE', "Split Edges",
-                                                "This function will Split Edges Only in EDIT Mode"),
-                                            ('DG', "Duplicate Geometry",
-                                                "This function will Duplicate Geometry in EDIT Mode (Delta & Direction Only)"),
-                                            ('EG', "Extrude Geometry",
-                                                "This function will Extrude Geometry in EDIT Mode (Delta & Direction Only)")),
-                                               name="Operation",
-                                               default='CU',
-                                               description="Select Operation Mode")
-    Scene.pdt_taper = EnumProperty(items=(('RX-MY','RotX-MovY', "Rotate X - Move Y"),
-                                          ('RX-MZ','RotX-MovZ', "Rotate X - Move Z"),
-                                          ('RY-MX','RotY-MovX', "Rotate Y - Move X"),
-                                          ('RY-MZ','RotY-MovZ', "Rotate Y - Move Z"),
-                                          ('RZ-MX','RotZ-MovX', "Rotate Z - Move X"),
-                                          ('RZ-MY','RotZ-MovY', "Rotate Z - Move Y")),
-                                               name='Axes',
-                                               default='RX-MY',
-                                               description="Rotational Axis - Movement Axis")
-    Scene.pdt_flipangle = BoolProperty(name='Flip Angle', default=False,
-                                        description="Flip Angle 180 degrees")
-    Scene.pdt_flippercent = BoolProperty(name='Flip %', default=False,
-                                        description="Flip Percent to 100 - %")
-    Scene.pdt_extend = BoolProperty(name='Trim/Extend All', default=False,
-                                        description="Trim/Extend only Active Vertex, or All")
-    Scene.pdt_lib_objects = EnumProperty(items=enumlist_objects,name="Objects",
-                                        description="Objects in Library")
-    Scene.pdt_lib_collections = EnumProperty(items=enumlist_collections,name="Collections",
-                                        description="Collections in Library")
-    Scene.pdt_lib_materials = EnumProperty(items=enumlist_materials,name="Materials",
-                                        description="Materials in Library")
-    Scene.pdt_lib_mode = EnumProperty(items=(('OBJECTS','Objects', "Use Objects"),
-                                          ('COLLECTIONS','Collections', "Use Collections"),
-                                          ('MATERIALS','Materials', "Use Materials"),),
-                                               name='Mode',
-                                               default='OBJECTS',
-                                               description="Library Mode")
-    Scene.pdt_obsearch = StringProperty(name='Search',default = "",description="Enter A Serch String (Contained)")
-    Scene.pdt_cosearch = StringProperty(name='Search',default = "",description="Enter A Serch String (Contained)")
-    Scene.pdt_masearch = StringProperty(name='Search',default = "",description="Enter A Serch String (Contained)")
-    Scene.pdt_xrot = FloatProperty(name="X Rot",default=0, unit='ROTATION')
-    Scene.pdt_yrot = FloatProperty(name="Y Rot",default=0, unit='ROTATION')
-    Scene.pdt_zrot = FloatProperty(name="Z Rot",default=0, unit='ROTATION')
-    Scene.pdt_oborder = EnumProperty(items=(('1,2,3,4', "1,2,3,4",
-                                               "Objects 1 & 2 are First Line"),
-                                          ('1,3,2,4', "1,3,2,4",
-                                               "Objects 1 & 3 are First Line"),
-                                          ('1,4,2,3', "1,4,2,3",
-                                               "Objects 1 & 4 are First Line")),
-                                               name="Order",
-                                               default='1,2,3,4',
-                                               description="Object Order to Lines")
-    Scene.pdt_vrotangle = FloatProperty(name='View Rotate Angle', default=10,max=180,min=-180)
-    Scene.pdt_command = StringProperty(name='Command',default='CA0,0,0',update=command_run,
-                                        description='Valid 1st letters; C D E G N P S V, Valid 2nd letters: A D I P')
-    Scene.pdt_error = StringProperty(name='Error',default="")
-    Scene.pdt_pivotloc = FloatVectorProperty(name="Pivot Location",default=(0.0,0.0,0.0),
-                                            subtype='XYZ',
-                                            description='Location of PivotPoint')
-    Scene.pdt_pivotscale = FloatVectorProperty(name="Pivot Scale",default=(1.0,1.0,1.0),
-                                            subtype='XYZ',
-                                            description='Scale Factors')
-    Scene.pdt_pivotsize = FloatProperty(name="Pivot Factor",min=0.4,max=2,default=1,precision=1,
-                                            description='Pivot Size Factor')
-    Scene.pdt_pivotwidth = IntProperty(name="Width",min=1,max=5,default=2,
-                                            description='Pivot Line Width in Pixels')
-    Scene.pdt_pivotang = FloatProperty(name="Pivot Angle",min=-180,max=180,default=0.0)
-    Scene.pdt_pivotalpha = FloatProperty(name="Alpha",min=0.2,max=1,default=0.6,precision=1,
-                                        description='Pivot Point Transparency')
+    Scene.pdt_delta_x = FloatProperty(
+        name="X Coord", default=0.0, precision=5, description="X Coord Delta", unit="LENGTH"
+    )
+    Scene.pdt_delta_y = FloatProperty(
+        name="Y Coord", default=0.0, precision=5, description="Y Coord Delta", unit="LENGTH"
+    )
+    Scene.pdt_delta_z = FloatProperty(
+        name="Z Coord", default=0.0, precision=5, description="Z Coord Delta", unit="LENGTH"
+    )
+    Scene.pdt_distance = FloatProperty(
+        name="Distance", default=0.0, precision=5, description="Offset Distance", unit="LENGTH"
+    )
+    Scene.pdt_angle = FloatProperty(
+        name="Angle", min=-180, max=180, default=0.0, precision=5, description="Offset Angle"
+    )
+    Scene.pdt_percent = FloatProperty(
+        name="Percent", default=0.0, precision=5, description="Percentage Offset"
+    )
+    Scene.pdt_plane = EnumProperty(
+        items=(
+            ("XZ", "Front(X-Z)", "Use X-Z Plane"),
+            ("XY", "Top(X-Y)", "Use X-Y Plane"),
+            ("YZ", "Right(Y-Z)", "Use Y-Z Plane"),
+            ("LO", "View", "Use View Plane"),
+        ),
+        name="Working Plane",
+        default="XZ",
+        description="Choose Working Plane",
+    )
+    Scene.pdt_select = EnumProperty(
+        items=(
+            ("REL", "Current", "Moved Relative to Current Position"),
+            (
+                "SEL",
+                "Selected",
+                "Moved Relative to Selected Object, or Vertex, Cursor & Pivot Only",
+            ),
+        ),
+        name="Move Mode",
+        default="SEL",
+        description="Select Move Mode",
+    )
+    Scene.pdt_operate = EnumProperty(
+        items=(
+            ("CU", "Cursor", "Ths Function will Move the Cursor"),
+            ("PP", "Pivot", "Ths Function will Move the Pivot Point"),
+            ("MV", "Move", "This function will Move Vertices, or Objects"),
+            ("NV", "New Vertex", "This function will Add a New Vertex"),
+            ("EV", "Extrude Vertices", "This function will Extrude Vertices Only in EDIT Mode"),
+            ("SE", "Split Edges", "This function will Split Edges Only in EDIT Mode"),
+            (
+                "DG",
+                "Duplicate Geometry",
+                "This function will Duplicate Geometry in EDIT Mode (Delta & Direction Only)",
+            ),
+            (
+                "EG",
+                "Extrude Geometry",
+                "This function will Extrude Geometry in EDIT Mode (Delta & Direction Only)",
+            ),
+        ),
+        name="Operation",
+        default="CU",
+        description="Select Operation Mode",
+    )
+    Scene.pdt_taper = EnumProperty(
+        items=(
+            ("RX-MY", "RotX-MovY", "Rotate X - Move Y"),
+            ("RX-MZ", "RotX-MovZ", "Rotate X - Move Z"),
+            ("RY-MX", "RotY-MovX", "Rotate Y - Move X"),
+            ("RY-MZ", "RotY-MovZ", "Rotate Y - Move Z"),
+            ("RZ-MX", "RotZ-MovX", "Rotate Z - Move X"),
+            ("RZ-MY", "RotZ-MovY", "Rotate Z - Move Y"),
+        ),
+        name="Axes",
+        default="RX-MY",
+        description="Rotational Axis - Movement Axis",
+    )
+    Scene.pdt_flipangle = BoolProperty(
+        name="Flip Angle", default=False, description="Flip Angle 180 degrees"
+    )
+    Scene.pdt_flippercent = BoolProperty(
+        name="Flip %", default=False, description="Flip Percent to 100 - %"
+    )
+    Scene.pdt_extend = BoolProperty(
+        name="Trim/Extend All", default=False, description="Trim/Extend only Active Vertex, or All"
+    )
+    Scene.pdt_lib_objects = EnumProperty(
+        items=enumlist_objects, name="Objects", description="Objects in Library"
+    )
+    Scene.pdt_lib_collections = EnumProperty(
+        items=enumlist_collections, name="Collections", description="Collections in Library"
+    )
+    Scene.pdt_lib_materials = EnumProperty(
+        items=enumlist_materials, name="Materials", description="Materials in Library"
+    )
+    Scene.pdt_lib_mode = EnumProperty(
+        items=(
+            ("OBJECTS", "Objects", "Use Objects"),
+            ("COLLECTIONS", "Collections", "Use Collections"),
+            ("MATERIALS", "Materials", "Use Materials"),
+        ),
+        name="Mode",
+        default="OBJECTS",
+        description="Library Mode",
+    )
+    Scene.pdt_obsearch = StringProperty(
+        name="Search", default="", description="Enter A Serch String (Contained)"
+    )
+    Scene.pdt_cosearch = StringProperty(
+        name="Search", default="", description="Enter A Serch String (Contained)"
+    )
+    Scene.pdt_masearch = StringProperty(
+        name="Search", default="", description="Enter A Serch String (Contained)"
+    )
+    Scene.pdt_xrot = FloatProperty(name="X Rot", default=0, unit="ROTATION")
+    Scene.pdt_yrot = FloatProperty(name="Y Rot", default=0, unit="ROTATION")
+    Scene.pdt_zrot = FloatProperty(name="Z Rot", default=0, unit="ROTATION")
+    Scene.pdt_oborder = EnumProperty(
+        items=(
+            ("1,2,3,4", "1,2,3,4", "Objects 1 & 2 are First Line"),
+            ("1,3,2,4", "1,3,2,4", "Objects 1 & 3 are First Line"),
+            ("1,4,2,3", "1,4,2,3", "Objects 1 & 4 are First Line"),
+        ),
+        name="Order",
+        default="1,2,3,4",
+        description="Object Order to Lines",
+    )
+    Scene.pdt_vrotangle = FloatProperty(name="View Rotate Angle", default=10, max=180, min=-180)
+    Scene.pdt_command = StringProperty(
+        name="Command",
+        default="CA0,0,0",
+        update=command_run,
+        description="Valid 1st letters; C D E G N P S V, Valid 2nd letters: A D I P",
+    )
+    Scene.pdt_error = StringProperty(name="Error", default="")
+    Scene.pdt_pivotloc = FloatVectorProperty(
+        name="Pivot Location",
+        default=(0.0, 0.0, 0.0),
+        subtype="XYZ",
+        description="Location of PivotPoint",
+    )
+    Scene.pdt_pivotscale = FloatVectorProperty(
+        name="Pivot Scale", default=(1.0, 1.0, 1.0), subtype="XYZ", description="Scale Factors"
+    )
+    Scene.pdt_pivotsize = FloatProperty(
+        name="Pivot Factor", min=0.4, max=2, default=1, precision=1, description="Pivot Size Factor"
+    )
+    Scene.pdt_pivotwidth = IntProperty(
+        name="Width", min=1, max=5, default=2, description="Pivot Line Width in Pixels"
+    )
+    Scene.pdt_pivotang = FloatProperty(name="Pivot Angle", min=-180, max=180, default=0.0)
+    Scene.pdt_pivotalpha = FloatProperty(
+        name="Alpha",
+        min=0.2,
+        max=1,
+        default=0.6,
+        precision=1,
+        description="Pivot Point Transparency",
+    )
     Scene.pdt_pivotshow = BoolProperty()
-    Scene.pdt_filletrad = FloatProperty(name="Fillet Radius",min=0.0,default=1.0,
-                                        description='Fillet Radius')
-    Scene.pdt_filletnum = IntProperty(name="Fillet Segments",min=1,default=4,
-                                        description='Segments in Fillet')
-    Scene.pdt_filletpro = FloatProperty(name="Fillet Profile",min=0.0,max=1.0,default=0.5,
-                                        description='Fillet Profile')
-    Scene.pdt_filletbool = BoolProperty(name='Use Verts',default=True,
-                                        description='Use Vertices, or Edges, Set to False for Extruded Geometry')
+    Scene.pdt_filletrad = FloatProperty(
+        name="Fillet Radius", min=0.0, default=1.0, description="Fillet Radius"
+    )
+    Scene.pdt_filletnum = IntProperty(
+        name="Fillet Segments", min=1, default=4, description="Segments in Fillet"
+    )
+    Scene.pdt_filletpro = FloatProperty(
+        name="Fillet Profile", min=0.0, max=1.0, default=0.5, description="Fillet Profile"
+    )
+    Scene.pdt_filletbool = BoolProperty(
+        name="Use Verts",
+        default=True,
+        description="Use Vertices, or Edges, Set to False for Extruded Geometry",
+    )
 
     # OpenGL flag
     #
@@ -372,6 +422,7 @@ def register():
     #
     wm.pdt_run_opengl = BoolProperty(default=False)
 
+
 def unregister():
     """Unregister Classes and Delete Scene Variables.
 
@@ -379,6 +430,7 @@ def unregister():
     """
 
     from bpy.utils import unregister_class
+
     for cls in reversed(classes):
         unregister_class(cls)
 
@@ -423,11 +475,14 @@ def unregister():
     del Scene.pdt_filletbool
 
     # remove OpenGL data
-    clockworx_pivot_point.PDT_OT_ModalDrawOperator.handle_remove(clockworx_pivot_point.PDT_OT_ModalDrawOperator, bpy.context)
+    clockworx_pivot_point.PDT_OT_ModalDrawOperator.handle_remove(
+        clockworx_pivot_point.PDT_OT_ModalDrawOperator, bpy.context
+    )
     wm = bpy.context.window_manager
-    p = 'pdt_run_opengl'
+    p = "pdt_run_opengl"
     if p in wm:
         del wm[p]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     register()
