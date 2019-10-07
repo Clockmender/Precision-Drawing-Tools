@@ -34,8 +34,7 @@ from . import pdt_cad_module as cm
 
 
 def order_points(edge, point_list):
-    ''' order these edges from distance to v1, then
-    sandwich the sorted list with v1, v2 '''
+    """"Order these edges from distance to v1, then sandwich the sorted list with v1, v2 """
     v1, v2 = edge
 
     def dist(co):
@@ -45,7 +44,7 @@ def order_points(edge, point_list):
 
 
 def remove_permutations_that_share_a_vertex(bm, permutations):
-    ''' Get useful Permutations '''
+    """Get useful Permutations"""
     final_permutations = []
     for edges in permutations:
         raw_vert_indices = cm.vertex_indices_from_edges_tuple(bm, edges)
@@ -65,8 +64,8 @@ def get_valid_permutations(bm, edge_indices):
 
 
 def can_skip(closest_points, vert_vectors):
-    '''this checks if the intersection lies on both edges, returns True
-    when criteria are not met, and thus this point can be skipped'''
+    """Check if the intersection lies on both edges and return True
+    when criteria are not met, and thus this point can be skipped"""
     if not closest_points:
         return True
     if not isinstance(closest_points[0].x, float):
@@ -80,7 +79,7 @@ def can_skip(closest_points, vert_vectors):
 
 
 def get_intersection_dictionary(bm, edge_indices):
-
+    """Return a dictionary of edge indices and points found on those edges."""
     bm.verts.ensure_lookup_table()
     bm.edges.ensure_lookup_table()
 
@@ -114,7 +113,7 @@ def get_intersection_dictionary(bm, edge_indices):
 
 
 def update_mesh(bm, d):
-    ''' Make new geometry (delete old first) '''
+    """Make new geometry (delete old first)"""
 
     oe = bm.edges
     ov = bm.verts
