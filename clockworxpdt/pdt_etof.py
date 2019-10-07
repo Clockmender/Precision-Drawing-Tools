@@ -31,7 +31,8 @@ from mathutils.geometry import intersect_line_plane
 
 
 def failure_message(self):
-    self.report({"WARNING"}, 'select 1 face and 1 detached edge')
+    self.report({"WARNING"}, "select 1 face and 1 detached edge")
+
 
 def failure_message_on_plane(self):
     msg2 = """\
@@ -39,10 +40,10 @@ Edge2Face expects the edge to intersect at one point on the plane of the selecte
 seeing this warning because mathutils.geometry.intersect_line_plane is being called on an edge/face
 combination that has no clear intersection point ( both points of the edge either touch the same
 plane as the face or they lie in a plane that is offset along the face's normal )"""
-    lines = msg2.split('\n')
+    lines = msg2.split("\n")
     for line in lines:
-        self.report({'INFO'}, line)
-    self.report({"ERROR"}, 'No intersection found, see the info panel for details')
+        self.report({"INFO"}, line)
+    self.report({"ERROR"}, "No intersection found, see the info panel for details")
 
 
 def extend_vertex(self):
@@ -91,18 +92,18 @@ def extend_vertex(self):
         failure_message_on_plane(self)
 
 
-
 class PDT_OT_EdgeToFace(bpy.types.Operator):
     """Extend Selected Edge to Projected Intersection with Selected Face"""
-    bl_idname = 'pdt.edge_to_face'
-    bl_label = 'Extend Edge to Face'
-    bl_options = {'REGISTER', 'UNDO'}
+
+    bl_idname = "pdt.edge_to_face"
+    bl_label = "Extend Edge to Face"
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         ob = context.object
-        return all([bool(ob), ob.type == 'MESH', ob.mode == 'EDIT'])
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
         extend_vertex(self)
-        return {'FINISHED'}
+        return {"FINISHED"}
