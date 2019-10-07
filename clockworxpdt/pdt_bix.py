@@ -23,7 +23,6 @@
 # Modified by: Alan Odom (Clockmender) & Rune Morling (ermo)
 # ----------------------------------------------------------
 #
-# FIXME - all docstrings
 #
 import bpy
 import bmesh
@@ -31,6 +30,7 @@ from . import pdt_cad_module as cm
 
 
 def add_line_to_bisection(self):
+    """FIXME"""
 
     obj = bpy.context.object
     me = obj.data
@@ -42,7 +42,7 @@ def add_line_to_bisection(self):
     edges = [e for e in bm.edges if e.select and not e.hide]
 
     if not len(edges) == 2:
-        msg = "Select 2 Coplanar Non-Parallel Edges"
+        msg = "Select 2 Coplanar Non-Parallel Edges"  #FIXME
         self.report({"ERROR"}, msg)
         return
 
@@ -56,7 +56,7 @@ def add_line_to_bisection(self):
     edge2 = (v3, v4)
 
     if not cm.test_coplanar(edge1, edge2):
-        msg = "Edges must be Coplanar Non-Parallel Edges"
+        msg = "Edges must be Coplanar Non-Parallel Edges"  #FIXME
         self.report({"ERROR"}, msg)
         return
 
@@ -83,6 +83,7 @@ def add_line_to_bisection(self):
 
 class PDT_OT_LineOnBisection(bpy.types.Operator):
     """Create Bisector between 2 Selected Edges"""
+
     bl_idname = 'pdt.linetobisect'
     bl_label = 'Add Edges Bisector'
     bl_options = {'REGISTER', 'UNDO'}
