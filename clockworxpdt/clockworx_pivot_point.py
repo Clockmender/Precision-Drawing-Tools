@@ -81,6 +81,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
 
         Args:
             context: Current Blender bpy.context
+
         Returns:
             Status Set.
         """
@@ -159,7 +160,7 @@ class PDT_OT_ViewPlaneScale(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_pivotloc, pdt_pivotscale scene variables
 
         Returns:
@@ -324,7 +325,7 @@ class PDT_OT_PivotWrite(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_pivotloc scene variable
 
         Returns:
@@ -363,7 +364,7 @@ class PDT_OT_PivotRead(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_pivotloc scene variable
 
         Returns:
