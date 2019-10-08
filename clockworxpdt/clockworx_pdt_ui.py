@@ -45,17 +45,6 @@ from .pdt_functions import (
 )
 from .pdt_msg_strings import *
 
-# FIXME
-# Since many of the error messages appear to be duplicates, maybe we should
-# add them as string constants such ERR_MSG_FACE_SELECTED = "(...)" ?
-#
-# For instance:
-#
-# ERR_MSG_FACE_SELECTED = "I'm afraid I can't do that, Dave: You have a have a Face selected; this would have ruined the Topology"
-# (this is a reference to HAL 9000 from Stanley Kubrick's '2001: A Space Odyssey')
-#
-# To be included in v1.1.5 after more research.
-
 
 class PDT_OT_PlacementAbs(Operator):
     """Use Absolute, or Global Placement"""
@@ -1754,7 +1743,19 @@ class PDT_PT_Panel1(Panel):
         col.prop(scene, "pdt_filletrad", text="Radius")
         col = row.column()
         col.prop(scene, "pdt_filletpro", text="Profile")
-        #
+
+
+class PDT_PT_Panel4(Panel):
+    bl_idname = "PDT_PT_panel4"
+    bl_label = "PDT View Control"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "PDT"
+
+    def draw(self, context):
+        layout = self.layout
+        cursor = context.scene.cursor
+        scene = context.scene
         box = layout.box()
         row = box.row()
         col = row.column()
