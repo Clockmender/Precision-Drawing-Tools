@@ -1459,7 +1459,7 @@ class PDT_OT_ViewRot(Operator):
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
             roll_value = euler_to_quaternion(
-                scene.pdt_xrot * pi / 180, scene.pdt_yrot * pi / 180, scene.pdt_zrot * pi / 180
+                scene.pdt_xrot, scene.pdt_yrot, scene.pdt_zrot
             )
             areas[0].spaces.active.region_3d.view_rotation = roll_value
         return {"FINISHED"}
