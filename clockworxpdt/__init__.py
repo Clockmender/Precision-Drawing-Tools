@@ -267,7 +267,7 @@ def register():
         ),
         name="Working Plane",
         default="XZ",
-        description="Choose Working Plane",
+        description=PDT_DES_WORPLANE,
     )
     Scene.pdt_select = EnumProperty(
         items=(
@@ -280,7 +280,7 @@ def register():
         ),
         name="Move Mode",
         default="SEL",
-        description="Select Move Mode",
+        description=PDT_DES_MOVESEL,
     )
     Scene.pdt_operate = EnumProperty(
         items=(
@@ -303,7 +303,7 @@ def register():
         ),
         name="Operation",
         default="CU",
-        description="Select Operation Mode",
+        description=PDT_DES_OPMODE,
     )
     Scene.pdt_taper = EnumProperty(
         items=(
@@ -316,25 +316,25 @@ def register():
         ),
         name="Axes",
         default="RX-MY",
-        description="Rotational Axis - Movement Axis",
+        description=PDT_DES_ROTMOVAX,
     )
     Scene.pdt_flipangle = BoolProperty(
-        name="Flip Angle", default=False, description="Flip Angle 180 degrees"
+        name="Flip Angle", default=False, description=PDT_DES_FLIPANG
     )
     Scene.pdt_flippercent = BoolProperty(
-        name="Flip %", default=False, description="Flip Percent to 100 - %"
+        name="Flip %", default=False, description=PDT_DES_FLIPPER
     )
     Scene.pdt_extend = BoolProperty(
-        name="Trim/Extend All", default=False, description="Trim/Extend only Active Vertex, or All"
+        name="Trim/Extend All", default=False, description=PDT_DES_TRIM
     )
     Scene.pdt_lib_objects = EnumProperty(
-        items=enumlist_objects, name="Objects", description="Objects in Library"
+        items=enumlist_objects, name="Objects", description=PDT_DES_LIBOBS
     )
     Scene.pdt_lib_collections = EnumProperty(
-        items=enumlist_collections, name="Collections", description="Collections in Library"
+        items=enumlist_collections, name="Collections", description=PDT_DES_LIBCOLS
     )
     Scene.pdt_lib_materials = EnumProperty(
-        items=enumlist_materials, name="Materials", description="Materials in Library"
+        items=enumlist_materials, name="Materials", description=PDT_DES_LIBMATS
     )
     Scene.pdt_lib_mode = EnumProperty(
         items=(
@@ -344,16 +344,16 @@ def register():
         ),
         name="Mode",
         default="OBJECTS",
-        description="Library Mode",
+        description=PDT_DES_LIBMODE,
     )
     Scene.pdt_obsearch = StringProperty(
-        name="Search", default="", description="Enter A Serch String (Contained)"
+        name="Search", default="", description=PDT_DES_LIBSER
     )
     Scene.pdt_cosearch = StringProperty(
-        name="Search", default="", description="Enter A Serch String (Contained)"
+        name="Search", default="", description=PDT_DES_LIBSER
     )
     Scene.pdt_masearch = StringProperty(
-        name="Search", default="", description="Enter A Serch String (Contained)"
+        name="Search", default="", description=PDT_DES_LIBSER
     )
     Scene.pdt_xrot = FloatProperty(name="X Rot", default=0, unit="ROTATION")
     Scene.pdt_yrot = FloatProperty(name="Y Rot", default=0, unit="ROTATION")
@@ -366,30 +366,30 @@ def register():
         ),
         name="Order",
         default="1,2,3,4",
-        description="Object Order to Lines",
+        description=PDT_DES_OBORDER,
     )
     Scene.pdt_vrotangle = FloatProperty(name="View Rotate Angle", default=10, max=180, min=-180)
     Scene.pdt_command = StringProperty(
         name="Command",
         default="CA0,0,0",
         update=command_run,
-        description="Valid 1st letters; C D E G N P S V, Valid 2nd letters: A D I P",
+        description=PDT_DES_VALIDLET,
     )
     Scene.pdt_error = StringProperty(name="Error", default="")
     Scene.pdt_pivotloc = FloatVectorProperty(
         name="Pivot Location",
         default=(0.0, 0.0, 0.0),
         subtype="XYZ",
-        description="Location of PivotPoint",
+        description=PDT_DES_PPLOC,
     )
     Scene.pdt_pivotscale = FloatVectorProperty(
-        name="Pivot Scale", default=(1.0, 1.0, 1.0), subtype="XYZ", description="Scale Factors"
+        name="Pivot Scale", default=(1.0, 1.0, 1.0), subtype="XYZ", description=PDT_DES_PPSCALEFAC
     )
     Scene.pdt_pivotsize = FloatProperty(
-        name="Pivot Factor", min=0.4, max=2, default=1, precision=1, description="Pivot Size Factor"
+        name="Pivot Factor", min=0.4, max=2, default=1, precision=1, description=PDT_DES_PPSIZE
     )
     Scene.pdt_pivotwidth = IntProperty(
-        name="Width", min=1, max=5, default=2, description="Pivot Line Width in Pixels"
+        name="Width", min=1, max=5, default=2, description=PDT_DES_PPWIDTH
     )
     Scene.pdt_pivotang = FloatProperty(name="Pivot Angle", min=-180, max=180, default=0.0)
     Scene.pdt_pivotalpha = FloatProperty(
@@ -398,22 +398,22 @@ def register():
         max=1,
         default=0.6,
         precision=1,
-        description="Pivot Point Transparency",
+        description=PDT_DES_PPTRANS,
     )
     Scene.pdt_pivotshow = BoolProperty()
     Scene.pdt_filletrad = FloatProperty(
-        name="Fillet Radius", min=0.0, default=1.0, description="Fillet Radius"
+        name="Fillet Radius", min=0.0, default=1.0, description=PDT_DES_FILLETRAD
     )
     Scene.pdt_filletnum = IntProperty(
-        name="Fillet Segments", min=1, default=4, description="Segments in Fillet"
+        name="Fillet Segments", min=1, default=4, description=PDT_DES_FILLETSEG
     )
     Scene.pdt_filletpro = FloatProperty(
-        name="Fillet Profile", min=0.0, max=1.0, default=0.5, description="Fillet Profile"
+        name="Fillet Profile", min=0.0, max=1.0, default=0.5, description=PDT_DES_FILLETPROF
     )
     Scene.pdt_filletbool = BoolProperty(
         name="Use Verts",
         default=True,
-        description="Use Vertices, or Edges, Set to False for Extruded Geometry",
+        description=PDT_DES_FILLETVERTS,
     )
 
     # OpenGL flag
