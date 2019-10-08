@@ -387,6 +387,38 @@ class PDT_OT_PivotRead(Operator):
             return {"FINISHED"}
 
 
+class PDT_OT_PivotDis(Operator):
+    """Set Scales by Measure (Pivot Distance / System Distance)"""
+
+    bl_idname = "pdt.pivotdis"
+    bl_label = "PDT Set Scales by Measure"
+
+    def execute(self, context):
+        """Sets Scale by dividing Pivot Distance by System Distance.
+
+        Sets Pivot Point Scale Factors by Measurement
+
+        Args:
+            context: Current Blender bpy.context
+
+        Note:
+            Uses pdt_pivotdis & pdt_distance scene variables
+
+        Returns:
+            Status Set.
+        """
+
+        scene = context.scene
+        sys_dis = scene.pdt_distance
+        scale_dis = scene.pdt_pivotdis
+        if scale_dis > 0:
+            scale_fac = scale_dis / sys_dis
+            scene.pdt_pivotscale = Vector((scale_fac, scale_fac, scale_fac))
+        else:
+            self.report({"ERROR"}, "Scale Distance is 0")
+        return {"FINISHED"}
+
+
 # Create the Panel Menu.
 #
 class PDT_PT_Panel2(Panel):
@@ -432,6 +464,11 @@ class PDT_PT_Panel2(Panel):
         col.operator("pdt.viewscale", icon="EMPTY_AXIS", text="Scale")
         col = row.column()
         col.operator("pdt.cursorpivot", icon="EMPTY_AXIS", text="Cursor To Pivot")
+        row = layout.row()
+        col = row.column()
+        col.prop(scene, "pdt_pivotdis", text="Scale Dis")
+        col = row.column()
+        col.operator("pdt.pivotdis", icon="NONE", text="Set Scale by Dist")
         row = layout.row()
         row.label(text="Pivot Point Scale Factors")
         row = layout.row()

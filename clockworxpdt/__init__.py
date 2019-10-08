@@ -143,6 +143,7 @@ classes = (
     clockworx_pivot_point.PDT_OT_PivotOrigin,
     clockworx_pivot_point.PDT_OT_PivotWrite,
     clockworx_pivot_point.PDT_OT_PivotRead,
+    clockworx_pivot_point.PDT_OT_PivotDis,
     pdt_xall.PDT_OT_IntersectAllEdges,
     pdt_bix.PDT_OT_LineOnBisection,
     pdt_etof.PDT_OT_EdgeToFace,
@@ -394,6 +395,11 @@ def register():
         name="Width", min=1, max=5, default=2, description=PDT_DES_PPWIDTH
     )
     Scene.pdt_pivotang = FloatProperty(name="Pivot Angle", min=-180, max=180, default=0.0)
+    Scene.pdt_pivotdis = FloatProperty(name="Pivot Dist",
+        default=0.0,
+        min = 0,
+        description=PDT_DES_PIVOTDIS,
+        )
     Scene.pdt_pivotalpha = FloatProperty(
         name="Alpha",
         min=0.2,
@@ -468,6 +474,7 @@ def unregister():
     del Scene.pdt_pivotloc
     del Scene.pdt_pivotsize
     del Scene.pdt_pivotang
+    del Scene.pdt_pivotdis
     del Scene.pdt_pivotscale
     del Scene.pdt_pivotwidth
     del Scene.pdt_pivotalpha
