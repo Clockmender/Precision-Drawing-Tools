@@ -22,6 +22,7 @@
 # ----------------------------------------------------------
 #
 import bpy
+import bmesh
 from bpy.types import Operator, Panel, PropertyGroup, SpaceView3D
 from mathutils import Vector, Matrix
 from math import pi
