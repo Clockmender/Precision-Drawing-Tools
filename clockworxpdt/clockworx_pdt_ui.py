@@ -1214,9 +1214,7 @@ class PDT_OT_Angle3(Operator):
                 scene.pdt_angle = ang + 180
         else:
             scene.pdt_angle = ang
-        scene.pdt_distance = sqrt(
-            (actV.x - othV.x) ** 2 + (actV.y - othV.y) ** 2 + (actV.z - othV.z) ** 2
-        )
+        scene.pdt_distance = (actV - othV).length
         scene.pdt_delta_x = othV.x - actV.x
         scene.pdt_delta_y = othV.y - actV.y
         scene.pdt_delta_z = othV.z - actV.z
@@ -1461,6 +1459,7 @@ class PDT_OT_ViewRot(Operator):
             roll_value = euler_to_quaternion(
                 scene.pdt_xrot, scene.pdt_yrot, scene.pdt_zrot
             )
+            print(roll_value)
             areas[0].spaces.active.region_3d.view_rotation = roll_value
         return {"FINISHED"}
 
