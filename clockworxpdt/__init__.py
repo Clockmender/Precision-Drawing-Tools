@@ -69,6 +69,7 @@ from bpy.props import (
 )
 
 from .pdt_command import command_run
+from .pdt_functions import scale_set
 from .pdt_msg_strings import *
 
 
@@ -143,7 +144,6 @@ classes = (
     clockworx_pivot_point.PDT_OT_PivotOrigin,
     clockworx_pivot_point.PDT_OT_PivotWrite,
     clockworx_pivot_point.PDT_OT_PivotRead,
-    clockworx_pivot_point.PDT_OT_PivotDis,
     pdt_xall.PDT_OT_IntersectAllEdges,
     pdt_bix.PDT_OT_LineOnBisection,
     pdt_etof.PDT_OT_EdgeToFace,
@@ -398,6 +398,7 @@ def register():
     Scene.pdt_pivotdis = FloatProperty(name="Pivot Dist",
         default=0.0,
         min = 0,
+        update=scale_set,
         description=PDT_DES_PIVOTDIS,
         )
     Scene.pdt_pivotalpha = FloatProperty(
