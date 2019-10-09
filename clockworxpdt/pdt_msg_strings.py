@@ -25,13 +25,11 @@
 
 PDT_ERR_NO_ACT_OBJ    = "No Active Object - Please Select an Object"
 PDT_ERR_NO_ACT_VERTS  = "No Selected Geometry - Please Select some Geometry"
-PDT_ERR_ONE_EDGE      = "Select Only One Edge (You Selected: "
 PDT_ERR_NON_VALID     = " is Not a Valid Option for Command: "
 PDT_ERR_VERT_MODE     = "Work in Vertex Mode for this Function"
 
 PDT_ERR_SEL_1_VERTI   = "Select at least 1 Vertex Individually (You selected: "
 PDT_ERR_SEL_1_VERT    = "Select at least 1 Vertex (You selected: "
-PDT_ERR_SEL_1_EDGE    = "Select at least 1 Edge (You selected: "
 PDT_ERR_SEL_2_VERTI   = "Select at least 2 Vertices Individually (You selected: "
 PDT_ERR_SEL_2_VERTIO  = "Select Exactly 2 Vertices Individually (You selected: "
 PDT_ERR_SEL_2_VERTS   = "Select Exactly 2 Vertices (You selected: "
@@ -39,6 +37,9 @@ PDT_ERR_SEL_3_VERTS   = "Select Exactly 3 Vertices (You selected: "
 PDT_ERR_SEL_3_VERTIO  = "Select Exactly 3 Vertices Individually (You selected: "
 PDT_ERR_SEL_4_VERTS   = "Select 4 Vertices Individually, or 2 Edges (You Selected: "
 
+PDT_ERR_SEL_1_EDGE    = "Select at least 1 Edge (You selected: "
+
+PDT_ERR_SEL_1_OBJ     = "Select Exactly 1 Object (You selected: "
 PDT_ERR_SEL_2_OBJS    = "Select Exactly 2 Objects (You selected: "
 PDT_ERR_SEL_3_OBJS    = "Select Exactly 3 Objects (You selected: "
 PDT_ERR_SEL_4_OBJS    = "Select Exactly 4 Objects (You selected: "
@@ -49,10 +50,12 @@ PDT_ERR_INT_LINES     = "Implied Lines Do Not Intersect in "
 PDT_ERR_INT_NO_ALL    = "Active Vertex was not Closest to Intersection and All/Act was not Selected"
 PDT_ERR_STRIGHT_LINE  = "Selected Points all lie in a Straight Line"
 PDT_ERR_CONNECTED     = "Vertices are already Connected"
-PDT_ERR_EDIT_MODE     = "Only Works in Edit Mode (You are in: )"
-PDT_ERR_EDOB_MODE     = "Only Works in Edit, or Object Modes (You are in: )"
+PDT_ERR_EDIT_MODE     = "Only Works in Edit Mode (You are in: "
+PDT_ERR_EDOB_MODE     = "Only Works in Edit, or Object Modes (You are in: "
 PDT_ERR_TAPER_ANG     = "Angle must be in Range -80 to +80 (You have it set to: "
 PDT_ERR_TAPER_SEL     = "Select at Least 2 Vertices Individually - Active is Rotation Point (You selected: "
+PDT_ERR_NO3DVIEW      = "View3D not found, cannot run operator"
+PDT_ERR_SCALEZERO     = "Scale Distance is 0"
 
 # Info messages
 #

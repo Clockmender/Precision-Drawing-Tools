@@ -27,6 +27,7 @@ from bpy.types import Operator, Panel, PropertyGroup, SpaceView3D
 from mathutils import Vector, Matrix
 from math import pi
 from .pdt_functions import viewCoords, draw3D, drawCallback3D
+from .pdt_msg_strings import *
 
 
 class PDT_OT_ModalDrawOperator(bpy.types.Operator):
@@ -96,7 +97,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
 
             return {"FINISHED"}
         else:
-            self.report({"ERROR"}, "View3D not found, cannot run operator")
+            self.report({"ERROR"}, PDT_ERR_NO3DVIEW)
 
         return {"CANCELLED"}
 
@@ -126,10 +127,11 @@ class PDT_OT_ViewPlaneRotate(Operator):
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
-            self.report({"ERROR"}, "Select 1 Object")
+            self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj.mode != "EDIT":
-            self.report({"ERROR"}, "Only in Works on Vertices in Edit Mode")
+            errmsg = PDT_ERR_EDIT_MODE + obj.mode + ")"
+            self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         bm = bmesh.from_edit_mesh(obj.data)
         v1 = Vector((0, 0, 0))
@@ -169,10 +171,11 @@ class PDT_OT_ViewPlaneScale(Operator):
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
-            self.report({"ERROR"}, "Select 1 Object")
+            self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj.mode != "EDIT":
-            self.report({"ERROR"}, "Only in Works on Vertices in Edit Mode")
+            errmsg = PDT_ERR_EDIT_MODE + obj.mode + ")"
+            self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         bm = bmesh.from_edit_mesh(obj.data)
         verts = verts = [v for v in bm.verts if v.select]
@@ -260,11 +263,12 @@ class PDT_OT_PivotSelected(Operator):
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
-            self.report({"ERROR"}, "Select 1 Object")
+            self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
         if obj.mode != "EDIT":
-            self.report({"ERROR"}, "Only in Works on Vertices in Edit Mode")
+            errmsg = PDT_ERR_EDIT_MODE + obj.mode + ")"
+            self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         bm = bmesh.from_edit_mesh(obj.data)
         verts = verts = [v for v in bm.verts if v.select]
@@ -300,7 +304,7 @@ class PDT_OT_PivotOrigin(Operator):
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
-            self.report({"ERROR"}, "Select 1 Object")
+            self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
         scene.pdt_pivotloc = obj_loc
@@ -336,7 +340,7 @@ class PDT_OT_PivotWrite(Operator):
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
-            self.report({"ERROR"}, "Select 1 Object")
+            self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj["PDT_PP_LOC"] = scene.pdt_pivotloc
         return {"FINISHED"}
@@ -374,7 +378,7 @@ class PDT_OT_PivotRead(Operator):
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
         if obj == None:
-            self.report({"ERROR"}, "Select 1 Object")
+            self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj["PDT_PP_LOC"] is not None:
             scene.pdt_pivotloc = obj["PDT_PP_LOC"]
@@ -415,7 +419,7 @@ class PDT_OT_PivotDis(Operator):
             scale_fac = scale_dis / sys_dis
             scene.pdt_pivotscale = Vector((scale_fac, scale_fac, scale_fac))
         else:
-            self.report({"ERROR"}, "Scale Distance is 0")
+            self.report({"ERROR"}, PDT_ERR_SCALEZERO)
         return {"FINISHED"}
 
 
