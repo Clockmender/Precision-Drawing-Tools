@@ -1742,6 +1742,13 @@ class PDT_PT_Panel1(Panel):
         col.prop(scene, "pdt_filletrad", text="Radius")
         col = row.column()
         col.prop(scene, "pdt_filletpro", text="Profile")
+        #
+        # Command Line
+        box = layout.box()
+        row = box.row()
+        row.label(text="Comand Line, uses Plane & Mode Options")
+        row = box.row()
+        row.prop(scene, "pdt_command", text="")
 
 
 class PDT_PT_Panel4(Panel):
@@ -1783,11 +1790,6 @@ class PDT_PT_Panel4(Panel):
         col.operator("pdt.viewroll", text="", icon="RECOVER_LAST")
         row = box.row()
         row.operator("pdt.viewiso", text="Isometric View")
-        box = layout.box()
-        row = box.row()
-        row.label(text="Comand Line, uses Plane & Mode Options")
-        row = box.row()
-        row.prop(scene, "pdt_command", text="")
 
 
 class PDT_PT_Panel3(Panel):
