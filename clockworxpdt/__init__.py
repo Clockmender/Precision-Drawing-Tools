@@ -50,9 +50,11 @@ if "bpy" in locals():
     importlib.reload(pdt_xall)
     importlib.reload(pdt_bix)
     importlib.reload(pdt_etof)
+    importlib.reload(clockworx_pdt_menus)
 else:
     from . import clockworx_pdt_ui
     from . import clockworx_pivot_point
+    from . import clockworx_pdt_menus
     from . import pdt_xall
     from . import pdt_bix
     from . import pdt_etof
@@ -76,11 +78,11 @@ from .pdt_msg_strings import *
 # Define Panel classes for updating
 #
 panels = (
-    clockworx_pdt_ui.PDT_PT_Panel1,
-    clockworx_pivot_point.PDT_PT_Panel2,
-    clockworx_pdt_ui.PDT_PT_Panel3,
-    clockworx_pdt_ui.PDT_PT_Panel4,
-    clockworx_pdt_ui.PDT_PT_Panel5,
+    clockworx_pdt_menus.PDT_PT_Panel1,
+    clockworx_pdt_menus.PDT_PT_Panel2,
+    clockworx_pdt_menus.PDT_PT_Panel3,
+    clockworx_pdt_menus.PDT_PT_Panel4,
+    clockworx_pdt_menus.PDT_PT_Panel5,
 )
 
 
@@ -148,11 +150,11 @@ classes = (
     pdt_xall.PDT_OT_IntersectAllEdges,
     pdt_bix.PDT_OT_LineOnBisection,
     pdt_etof.PDT_OT_EdgeToFace,
-    clockworx_pdt_ui.PDT_PT_Panel1,
-    clockworx_pdt_ui.PDT_PT_Panel4,
-    clockworx_pdt_ui.PDT_PT_Panel5,
-    clockworx_pivot_point.PDT_PT_Panel2,
-    clockworx_pdt_ui.PDT_PT_Panel3,
+    clockworx_pdt_menus.PDT_PT_Panel1,
+    clockworx_pdt_menus.PDT_PT_Panel4,
+    clockworx_pdt_menus.PDT_PT_Panel5,
+    clockworx_pdt_menus.PDT_PT_Panel2,
+    clockworx_pdt_menus.PDT_PT_Panel3,
 )
 
 
