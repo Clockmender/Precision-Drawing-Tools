@@ -126,7 +126,7 @@ class PDT_OT_ViewPlaneRotate(Operator):
 
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj.mode != "EDIT":
@@ -170,7 +170,7 @@ class PDT_OT_ViewPlaneScale(Operator):
 
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj.mode != "EDIT":
@@ -262,7 +262,7 @@ class PDT_OT_PivotSelected(Operator):
 
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
@@ -303,7 +303,7 @@ class PDT_OT_PivotOrigin(Operator):
 
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
@@ -339,7 +339,7 @@ class PDT_OT_PivotWrite(Operator):
 
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj["PDT_PP_LOC"] = scene.pdt_pivotloc
@@ -377,7 +377,7 @@ class PDT_OT_PivotRead(Operator):
 
         scene = context.scene
         obj = bpy.context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj["PDT_PP_LOC"] is not None:

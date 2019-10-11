@@ -79,7 +79,7 @@ class PDT_OT_PlacementAbs(Operator):
         vector_delta = Vector((x_loc, y_loc, z_loc))
         if data not in ["CU", "PP", "NV"]:
             obj = context.view_layer.objects.active
-            if obj == None:
+            if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
@@ -123,7 +123,7 @@ class PDT_OT_PlacementAbs(Operator):
             bm.select_history.clear()
         elif data == "NV":
             obj = context.view_layer.objects.active
-            if obj == None:
+            if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
@@ -197,7 +197,7 @@ class PDT_OT_PlacementDelta(Operator):
             scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
         else:
             obj = context.view_layer.objects.active
-            if obj == None:
+            if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
@@ -207,7 +207,7 @@ class PDT_OT_PlacementDelta(Operator):
                 if data not in ["MV", "SE", "EV", "DG", "EG"]:
                     if len(bm.select_history) >= 1:
                         actV = checkSelection(1, bm, obj)
-                        if actV == None:
+                        if actV is None:
                             errmsg = PDT_ERR_VERT_MODE
                             self.report({"ERROR"}, errmsg)
                             return {"FINISHED"}
@@ -257,14 +257,19 @@ class PDT_OT_PlacementDelta(Operator):
                     v.select_set(False)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "NV" and obj.mode == "EDIT":
-                vNew = actV + vector_delta
-                nVert = bm.verts.new(vNew)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
+            elif data == "NV":
+                if obj.mode == "EDIT":
+                    vNew = actV + vector_delta
+                    nVert = bm.verts.new(vNew)
+                    bmesh.update_edit_mesh(obj.data)
+                    bm.select_history.clear()
+                    for v in [v for v in bm.verts if v.select]:
+                        v.select_set(False)
+                    nVert.select_set(True)
+                else:
+                    errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                    self.report({"ERROR"}, errmsg)
+                    return {"FINISHED"}
             elif data == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
@@ -370,7 +375,7 @@ class PDT_OT_PlacementDis(Operator):
             scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
         else:
             obj = context.view_layer.objects.active
-            if obj == None:
+            if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
@@ -380,7 +385,7 @@ class PDT_OT_PlacementDis(Operator):
                 if data not in ["MV", "SE", "EV", "DG", "EG"]:
                     if len(bm.select_history) >= 1:
                         actV = checkSelection(1, bm, obj)
-                        if actV == None:
+                        if actV is None:
                             errmsg = PDT_ERR_VERT_MODE
                             self.report({"ERROR"}, errmsg)
                             return {"FINISHED"}
@@ -430,14 +435,19 @@ class PDT_OT_PlacementDis(Operator):
                     v.select_set(False)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "NV" and obj.mode == "EDIT":
-                vNew = actV + vector_delta
-                nVert = bm.verts.new(vNew)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
+            elif data == "NV":
+                if obj.mode == "EDIT":
+                    vNew = actV + vector_delta
+                    nVert = bm.verts.new(vNew)
+                    bmesh.update_edit_mesh(obj.data)
+                    bm.select_history.clear()
+                    for v in [v for v in bm.verts if v.select]:
+                        v.select_set(False)
+                    nVert.select_set(True)
+                else:
+                    errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                    self.report({"ERROR"}, errmsg)
+                    return {"FINISHED"}
             elif data == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
@@ -521,7 +531,7 @@ class PDT_OT_PlacementPer(Operator):
         ext_a = scene.pdt_extend
         flip_p = scene.pdt_flippercent
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -529,7 +539,7 @@ class PDT_OT_PlacementPer(Operator):
             bm = bmesh.from_edit_mesh(obj.data)
         obj_loc = obj.matrix_world.decompose()[0]
         vector_delta = getPercent(obj, flip_p, per_v, data, scene)
-        if vector_delta == None:
+        if vector_delta is None:
             return {"FINISHED"}
 
         if data == "CU":
@@ -564,13 +574,18 @@ class PDT_OT_PlacementPer(Operator):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
-        elif data == "NV" and obj.mode == "EDIT":
-            nVert = bm.verts.new(vector_delta)
-            bmesh.update_edit_mesh(obj.data)
-            bm.select_history.clear()
-            for v in [v for v in bm.verts if v.select]:
-                v.select_set(False)
-            nVert.select_set(True)
+        elif data == "NV":
+            if obj.mode == "EDIT":
+                nVert = bm.verts.new(vector_delta)
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+                for v in [v for v in bm.verts if v.select]:
+                    v.select_set(False)
+                nVert.select_set(True)
+            else:
+                errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                self.report({"ERROR"}, errmsg)
+                return {"FINISHED"}
         elif data == "EV" and obj.mode == "EDIT":
             nVert = bm.verts.new(vector_delta)
             if ext_a:
@@ -616,7 +631,7 @@ class PDT_OT_PlacementNormal(Operator):
         data = scene.pdt_operate
         ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -625,7 +640,7 @@ class PDT_OT_PlacementNormal(Operator):
             bm = bmesh.from_edit_mesh(obj.data)
             if len(bm.select_history) == 3:
                 actV, othV, lstV = checkSelection(3, bm, obj)
-                if actV == None:
+                if actV is None:
                     errmsg = PDT_ERR_VERT_MODE
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
@@ -670,13 +685,18 @@ class PDT_OT_PlacementNormal(Operator):
                 bmesh.update_edit_mesh(obj.data)
             elif obj.mode == "OBJECT":
                 context.view_layer.objects.active.location = vector_delta
-        elif data == "NV" and obj.mode == "EDIT":
-            nVert = bm.verts.new(vector_delta)
-            bmesh.update_edit_mesh(obj.data)
-            bm.select_history.clear()
-            for v in [v for v in bm.verts if v.select]:
-                v.select_set(False)
-            nVert.select_set(True)
+        elif data == "NV":
+            if obj.mode == "EDIT":
+                nVert = bm.verts.new(vector_delta)
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+                for v in [v for v in bm.verts if v.select]:
+                    v.select_set(False)
+                nVert.select_set(True)
+            else:
+                errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                self.report({"ERROR"}, errmsg)
+                return {"FINISHED"}
         elif data == "EV" and obj.mode == "EDIT":
             vNew = vector_delta
             nVert = bm.verts.new(vNew)
@@ -723,7 +743,7 @@ class PDT_OT_PlacementInt(Operator):
         data = scene.pdt_operate
         plane = scene.pdt_plane
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -748,7 +768,7 @@ class PDT_OT_PlacementInt(Operator):
                 vl = bm.select_history[-3]
                 vf = bm.select_history[-4]
                 actV, othV, lstV, fstV = checkSelection(4, bm, obj)
-                if actV == None:
+                if actV is None:
                     errmsg = PDT_ERR_VERT_MODE
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
@@ -913,7 +933,7 @@ class PDT_OT_PlacementCen(Operator):
         ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
 
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -1030,7 +1050,7 @@ class PDT_OT_JoinVerts(Operator):
 
         scene = context.scene
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -1069,7 +1089,7 @@ class PDT_OT_Fillet(Operator):
 
         scene = context.scene
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -1114,7 +1134,7 @@ class PDT_OT_Angle2(Operator):
         plane = scene.pdt_plane
         flip_a = scene.pdt_flipangle
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -1124,7 +1144,7 @@ class PDT_OT_Angle2(Operator):
             if len(verts) == 2:
                 if len(bm.select_history) == 2:
                     actV, othV = checkSelection(2, bm, obj)
-                    if actV == None:
+                    if actV is None:
                         errmsg = PDT_ERR_VERT_MODE
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
@@ -1192,7 +1212,7 @@ class PDT_OT_Angle3(Operator):
         plane = scene.pdt_plane
         flip_a = scene.pdt_flipangle
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -1202,7 +1222,7 @@ class PDT_OT_Angle3(Operator):
             if len(verts) == 3:
                 if len(bm.select_history) == 3:
                     actV, othV, lstV = checkSelection(3, bm, obj)
-                    if actV == None:
+                    if actV is None:
                         errmsg = PDT_ERR_VERT_MODE
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
@@ -1259,7 +1279,7 @@ class PDT_OT_Origin(Operator):
 
         scene = context.scene
         obj = context.view_layer.objects.active
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
@@ -1314,7 +1334,7 @@ class PDT_OT_Taper(Operator):
             errmsg = PDT_ERR_TAPER_ANG + str(ang_v) + ")"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
-        if obj == None:
+        if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}

@@ -392,7 +392,7 @@ def getPercent(obj, flip_p, per_v, data, scene):
         if len(verts) == 2:
             actV = verts[0].co
             othV = verts[1].co
-            if actV == None:
+            if actV is None:
                 scene.pdt_error = "Work in Vertex Mode"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None
@@ -462,7 +462,7 @@ def objCheck(obj, scene, data):
         Object Bmesh and Validity Boolean.
     """
 
-    if obj == None:
+    if obj is None:
         scene.pdt_error = "Select at least 1 Object"
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return None, False
@@ -484,7 +484,7 @@ def objCheck(obj, scene, data):
                     actV = verts[0]
                 else:
                     actV = None
-            if actV == None:
+            if actV is None:
                 scene.pdt_error = "Work in Vertex Mode"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
