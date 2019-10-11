@@ -266,7 +266,7 @@ def command_run(self, context):
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
-                if vector_delta == None:
+                if vector_delta is None:
                     return
                 if obj.mode == "EDIT":
                     if data in ["c", "C"]:
@@ -347,7 +347,7 @@ def command_run(self, context):
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
-                    if vector_delta == None:
+                    if vector_delta is None:
                         return
                     ob.location = vector_delta
             else:
@@ -506,7 +506,7 @@ def command_run(self, context):
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
-                    if vector_delta == None:
+                    if vector_delta is None:
                         return
                     edges = [e for e in bm.edges if e.select]
                     faces = [f for f in bm.faces if f.select]
@@ -772,7 +772,7 @@ def command_run(self, context):
                         vert_bool = False
                     scene = context.scene
                     obj = context.view_layer.objects.active
-                    if obj == None:
+                    if obj is None:
                         scene.pdt_error = PDT_ERR_NO_ACT_OBJ
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
