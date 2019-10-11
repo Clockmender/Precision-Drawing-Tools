@@ -568,6 +568,8 @@ class PDT_OT_PlacementPer(Operator):
             nVert = bm.verts.new(vector_delta)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
             nVert.select_set(True)
         elif data == "EV" and obj.mode == "EDIT":
             nVert = bm.verts.new(vector_delta)
