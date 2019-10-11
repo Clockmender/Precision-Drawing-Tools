@@ -77,7 +77,7 @@ class PDT_OT_PlacementAbs(Operator):
         z_loc = scene.pdt_delta_z
 
         vector_delta = Vector((x_loc, y_loc, z_loc))
-        if data not in ["CU", "PP"]:
+        if data not in ["CU", "PP", "NV"]:
             obj = context.view_layer.objects.active
             if obj == None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
@@ -121,11 +121,23 @@ class PDT_OT_PlacementAbs(Operator):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
-        elif data == "NV" and obj.mode == "EDIT":
-            vNew = vector_delta - obj_loc
-            nVert = bm.verts.new(vNew)
-            bmesh.update_edit_mesh(obj.data)
-            bm.select_history.clear()
+        elif data == "NV":
+            obj = context.view_layer.objects.active
+            if obj == None:
+                errmsg = PDT_ERR_NO_ACT_OBJ
+                self.report({"ERROR"}, errmsg)
+                return {"FINISHED"}
+            if obj.mode == "EDIT":
+                bm = bmesh.from_edit_mesh(obj.data)
+                vNew = vector_delta - obj.location
+                nVert = bm.verts.new(vNew)
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+                nVert.select_set(True)
+            else:
+                errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                self.report({"ERROR"}, errmsg)
+                return {"FINISHED"}
         elif data == "EV" and obj.mode == "EDIT":
             vNew = vector_delta - obj_loc
             nVert = bm.verts.new(vNew)
