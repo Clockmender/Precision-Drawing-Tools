@@ -1650,12 +1650,12 @@ class PDT_PT_Panel1(Panel):
         layout = self.layout
         cursor = context.scene.cursor
         scene = context.scene
-        box = layout.box()
-        row = box.row()
+        row = layout.row()
         col = row.column()
         col.prop(scene, "pdt_plane", text="Plane")
         col = row.column()
         col.prop(scene, "pdt_select", text="Mode")
+        box = layout.box()
         row = box.row()
         row.prop(scene, "pdt_operate", text="Operation")
         row = box.row()
@@ -1742,12 +1742,27 @@ class PDT_PT_Panel1(Panel):
         col.prop(scene, "pdt_filletrad", text="Radius")
         col = row.column()
         col.prop(scene, "pdt_filletpro", text="Profile")
-        #
-        # Command Line
-        box = layout.box()
-        row = box.row()
+
+
+class PDT_PT_Panel5(Panel):
+    bl_idname = "PDT_PT_panel5"
+    bl_label = "PDT Command Line"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "PDT"
+
+    def draw(self, context):
+        layout = self.layout
+        cursor = context.scene.cursor
+        scene = context.scene
+        row = layout.row()
+        col = row.column()
+        col.prop(scene, "pdt_plane", text="Plane")
+        col = row.column()
+        col.prop(scene, "pdt_select", text="Mode")
+        row = layout.row()
         row.label(text="Comand Line, uses Plane & Mode Options")
-        row = box.row()
+        row = layout.row()
         row.prop(scene, "pdt_command", text="")
 
 
