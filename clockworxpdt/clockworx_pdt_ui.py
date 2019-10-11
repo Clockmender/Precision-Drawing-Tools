@@ -255,8 +255,6 @@ class PDT_OT_PlacementDelta(Operator):
                 bmesh.ops.translate(bm, verts=new_verts, vec=vector_delta)
                 for v in [v for v in bm.verts if v.select]:
                     v.select_set(False)
-                for v in new_verts:
-                    v.select_set(False)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             elif data == "NV" and obj.mode == "EDIT":
@@ -264,6 +262,8 @@ class PDT_OT_PlacementDelta(Operator):
                 nVert = bm.verts.new(vNew)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
+                for v in [v for v in bm.verts if v.select]:
+                    v.select_set(False)
                 nVert.select_set(True)
             elif data == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
@@ -428,8 +428,6 @@ class PDT_OT_PlacementDis(Operator):
                 bmesh.ops.translate(bm, verts=new_verts, vec=vector_delta)
                 for v in [v for v in bm.verts if v.select]:
                     v.select_set(False)
-                for v in new_verts:
-                    v.select_set(False)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             elif data == "NV" and obj.mode == "EDIT":
@@ -437,6 +435,8 @@ class PDT_OT_PlacementDis(Operator):
                 nVert = bm.verts.new(vNew)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
+                for v in [v for v in bm.verts if v.select]:
+                    v.select_set(False)
                 nVert.select_set(True)
             elif data == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
