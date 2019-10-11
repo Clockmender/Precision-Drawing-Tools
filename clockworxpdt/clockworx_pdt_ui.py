@@ -264,6 +264,7 @@ class PDT_OT_PlacementDelta(Operator):
                 nVert = bm.verts.new(vNew)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
+                nVert.select_set(True)
             elif data == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
@@ -436,6 +437,7 @@ class PDT_OT_PlacementDis(Operator):
                 nVert = bm.verts.new(vNew)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
+                nVert.select_set(True)
             elif data == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
@@ -566,6 +568,7 @@ class PDT_OT_PlacementPer(Operator):
             nVert = bm.verts.new(vector_delta)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+            nVert.select_set(True)
         elif data == "EV" and obj.mode == "EDIT":
             nVert = bm.verts.new(vector_delta)
             if ext_a:
@@ -669,6 +672,7 @@ class PDT_OT_PlacementNormal(Operator):
             nVert = bm.verts.new(vector_delta)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+            nVert.select_set(True)
         elif data == "EV" and obj.mode == "EDIT":
             vNew = vector_delta
             nVert = bm.verts.new(vNew)
@@ -940,6 +944,7 @@ class PDT_OT_PlacementCen(Operator):
                 nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
+                nVert.select_set(True)
             elif data == "MV":
                 if obj.mode == "EDIT":
                     if ext_a:
