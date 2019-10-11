@@ -656,7 +656,7 @@ def scale_set(self, context):
     Returns:
         Status Set.
     """
-    
+
     scene = context.scene
     sys_dis = scene.pdt_distance
     scale_dis = scene.pdt_pivotdis

@@ -80,6 +80,7 @@ panels = (
     clockworx_pivot_point.PDT_PT_Panel2,
     clockworx_pdt_ui.PDT_PT_Panel3,
     clockworx_pdt_ui.PDT_PT_Panel4,
+    clockworx_pdt_ui.PDT_PT_Panel5,
 )
 
 
@@ -149,6 +150,7 @@ classes = (
     pdt_etof.PDT_OT_EdgeToFace,
     clockworx_pdt_ui.PDT_PT_Panel1,
     clockworx_pdt_ui.PDT_PT_Panel4,
+    clockworx_pdt_ui.PDT_PT_Panel5,
     clockworx_pivot_point.PDT_PT_Panel2,
     clockworx_pdt_ui.PDT_PT_Panel3,
 )

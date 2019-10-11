@@ -67,6 +67,7 @@ def command_run(self, context):
         Valid Second Letters (as 'mode' - pdt_command[1])
             A = Absolute XYZ, D = Delta XYZ, I = Distance at Angle, P = Percent
             X = X Delta, Y = Y, Delta Z, = Z Delta (Maths Operation only)
+            V = Vertex Bevel, G = Geometry Bevel
             Capitals and Lower case letters are both allowed
 
         Valid Values (pdt_command[2:]) - Only Integers and Floats, missing values are set to 0,
@@ -97,6 +98,8 @@ def command_run(self, context):
             "D",
             "e",
             "E",
+            "f",
+            "F",
             "g",
             "G",
             "n",
@@ -110,13 +113,32 @@ def command_run(self, context):
             "s",
             "S",
         ]:
-            scene.pdt_error = "Bad Operator (1st Letter); C D E G N M P S or V only"
+            scene.pdt_error = "Bad Operator (1st Letter); C D E F G N M P S or V only"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         mode = comm[1]
-        if mode not in ["a", "A", "d", "D", "i", "I", "p", "P", "x", "X", "y", "Y", "z", "Z"]:
+        if mode not in [
+            "a",
+            "A",
+            "d",
+            "D",
+            "g",
+            "G",
+            "i",
+            "I",
+            "p",
+            "P",
+            "v",
+            "V",
+            "x",
+            "X",
+            "y",
+            "Y",
+            "z",
+            "Z"
+        ]:
             scene.pdt_error = (
-                "Bad Mode (2nd Letter); A D I or P only (+ X Y & Z for Maths Operations)"
+                "Bad Mode (2nd Letter); A D I or P only (+ X Y & Z for Maths) (+ V & G for Fillet)"
             )
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
@@ -733,5 +755,51 @@ def command_run(self, context):
                     return
             else:
                 scene.pdt_error = "Only Duplicate Geometry in Edit Mode"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+
+        elif data in ["f", "F"]:
+            # Fillet Geometry
+            if obj.mode == "EDIT":
+                if len(vals) != 3:
+                    scene.pdt_error = "Bad Command - 2 Values needed Radius, Segement Count, ProfileValid"
+                    bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                    return
+                else:
+                    if mode in ["v", "V"]:
+                        vert_bool = True
+                    else:
+                        vert_bool = False
+                    scene = context.scene
+                    obj = context.view_layer.objects.active
+                    if obj == None:
+                        scene.pdt_error = PDT_ERR_NO_ACT_OBJ
+                        bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                        return
+                    bm = bmesh.from_edit_mesh(obj.data)
+                    verts = [v for v in bm.verts if v.select]
+                    if len(verts) == 0:
+                        scene.pdt_error = PDT_ERR_SEL_1_VERT
+                        bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                        return
+                    else:
+                        if int(vals[1]) < 1:
+                            segs = 1
+                        else:
+                            segs = int(vals[1])
+                        if float(vals[2]) in range(0,1):
+                            prof = float(vals[2]),
+                        else:
+                            prof = 0.5
+                        bpy.ops.mesh.bevel(
+                            offset_type="OFFSET",
+                            offset=float(vals[0]),
+                            segments=segs,
+                            profile=prof,
+                            vertex_only=vert_bool,
+                        )
+                        return
+            else:
+                scene.pdt_error = "Only Fillet Geometry in Edit Mode"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
