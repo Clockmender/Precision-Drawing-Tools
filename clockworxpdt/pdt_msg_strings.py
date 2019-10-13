@@ -21,8 +21,20 @@
 # Authors: Alan Odom (Clockmender), Rune Morling (ermo)
 # ----------------------------------------------------------
 #
-# English messages
+# If you edit this file do not change any of the PDT_ format, just the Text Value in "'s
+# Do not delete any of the PDT_ lines
+#
+# Menu Labels
+#
+PDT_LAB_ABS           = "Absolute"    # "Global"
+PDT_LAB_DEL           = "Delta"       # "Relative"
+PDT_LAB_DIR           = "Direction"   # "Polar"
+PDT_LAB_NOR           = "Normal"      # "Perpendicular"
 
+# English messages
+#
+# Error Message
+#
 PDT_ERR_NO_ACT_OBJ    = "No Active Object - Please Select an Object"
 PDT_ERR_NO_ACT_VERTS  = "No Selected Geometry - Please Select some Geometry"
 PDT_ERR_NON_VALID     = " is Not a Valid Option for Command: "

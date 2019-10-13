@@ -23,6 +23,7 @@
 #
 import bpy
 from bpy.types import Panel
+from .pdt_msg_strings import *
 
 # PDT Panel menus
 #
@@ -47,16 +48,16 @@ class PDT_PT_Panel1(Panel):
         row.prop(scene, "pdt_operate", text="Operation")
         row = box.row()
         col = row.column()
-        col.operator("pdt.absolute", icon="EMPTY_AXIS", text="Absolute")
+        col.operator("pdt.absolute", icon="EMPTY_AXIS", text=PDT_LAB_ABS)
         col = row.column()
-        col.operator("pdt.delta", icon="EMPTY_AXIS", text="Delta")
+        col.operator("pdt.delta", icon="EMPTY_AXIS", text=PDT_LAB_DEL)
         col = row.column()
-        col.operator("pdt.distance", icon="EMPTY_AXIS", text="Direction")
+        col.operator("pdt.distance", icon="EMPTY_AXIS", text=PDT_LAB_DIR)
         row = box.row()
         col = row.column()
         col.operator("pdt.percent", text="Percent")
         col = row.column()
-        col.operator("pdt.normal", text="Normal")
+        col.operator("pdt.normal", text=PDT_LAB_NOR)
         col = row.column()
         col.operator("pdt.centre", text="Arc Centre")
         row = box.row()
