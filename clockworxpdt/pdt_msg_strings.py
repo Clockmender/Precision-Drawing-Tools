@@ -88,8 +88,11 @@ PDT_ERR_EXTEDIT       = "Only Extrude Vertices in Edit Mode"
 PDT_ERR_DUPEDIT       = "Only Duplicate Geometry in Edit Mode"
 PDT_ERR_FILEDIT       = "Only Fillet Geometry in Edit Mode"
 PDT_ERR_NOCOMMAS      = "No commas allowed in Maths Command"
-PDT_ERR_2CPNPE        = "Select 2 Coplanar Non-Parallel Edges"
-PDT_ERR_NCEDGES       = "Edges must be Coplanar Non-Parallel Edges, Selected Edges aren't"
+
+PDT_ERR_2CPNPE        = "Select 2 Co-Planar Non-Parallel Edges"
+PDT_ERR_NCEDGES       = "Edges must be Co-Planar Non-Parallel Edges, Selected Edges aren't"
+PDT_ERR_1EDGE1FACE    = "Select 1 face and 1 Detached Edge"
+PDT_ERR_NOINT         = "No Intersection Found, see the Info Panel for Details"
 
 # Info messages
 #
