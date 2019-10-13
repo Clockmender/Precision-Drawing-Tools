@@ -32,6 +32,7 @@ from mathutils import Vector, Quaternion
 from gpu_extras.batch import batch_for_shader
 from math import cos, sin, pi
 import numpy as np
+from .pdt_msg_strings import *
 
 
 def oops(self, context):
@@ -393,15 +394,11 @@ def getPercent(obj, flip_p, per_v, data, scene):
             actV = verts[0].co
             othV = verts[1].co
             if actV is None:
-                scene.pdt_error = "Work in Vertex Mode"
+                scene.pdt_error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None
         else:
-            scene.pdt_error = (
-                "Select 2 Vertices Individually, or 1 Edge, you selected "
-                + str(len(verts))
-                + " Vertices"
-            )
+            scene.pdt_error = PDT_ERR_SEL_2_V_1_E + str(len(verts)) + " Vertices"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
         p1 = np.array([actV.x, actV.y, actV.z])
@@ -409,7 +406,7 @@ def getPercent(obj, flip_p, per_v, data, scene):
     elif obj.mode == "OBJECT":
         objs = bpy.context.view_layer.objects.selected
         if len(objs) != 2:
-            scene.pdt_error = "Select Only 2 Objects"
+            scene.pdt_error = PDT_ERR_SEL_2_OBJS + str(len(objs)) + ")"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
         else:
@@ -463,14 +460,15 @@ def objCheck(obj, scene, data):
     """
 
     if obj is None:
-        scene.pdt_error = "Select at least 1 Object"
+        scene.pdt_error = PDT_ERR_NO_ACT_OBJ
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return None, False
     if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
         if data in ["s", "S"]:
-            if len([e for e in bm.edges]) < 1:
-                scene.pdt_error = "Select at Least 1 Edge"
+            edges = [e for e in bm.edges]
+            if len(edges) < 1:
+                scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
             else:
@@ -485,11 +483,11 @@ def objCheck(obj, scene, data):
                 else:
                     actV = None
             if actV is None:
-                scene.pdt_error = "Work in Vertex Mode"
+                scene.pdt_error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
         elif data in ["c", "C", "n", "N"]:
-            scene.pdt_error = "Select at least 1 Vertex Individually"
+            scene.pdt_error = PDT_ERR_SEL_1_VERTI + str(len(bm.select_history)) + ")"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None, False
         return bm, True
