@@ -172,7 +172,7 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
 
             bmesh.update_edit_mesh(obj.data)
         else:
-            msg = "Must be in Edit Mode"
+            msg = PDT_ERR_EDIT_MODE + obj.mode + ")"
             self.report({"ERROR"}, msg)
 
         return {"FINISHED"}
