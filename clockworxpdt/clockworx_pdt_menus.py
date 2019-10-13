@@ -29,7 +29,7 @@ from .pdt_msg_strings import *
 #
 class PDT_PT_Panel1(Panel):
     bl_idname = "PDT_PT_panel1"
-    bl_label = "PDT Drawing Tools"
+    bl_label = "PDT Design"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
