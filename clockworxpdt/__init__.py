@@ -27,12 +27,12 @@
 # ----------------------------------------------
 #
 bl_info = {
-    "name": "Precision Drawing Tools (PDT)",
+    "name": "Precision Draughting Tools (PDT)",
     "author": "Alan Odom (Clockmender)",
     "version": (1, 1, 5),
     "blender": (2, 80, 0),
     "location": "View3D > UI > PDT",
-    "description": "Precision Drawing Tools for Acccurate Modelling",
+    "description": "Precision Draughting Tools for Acccurate Modelling",
     "warning": "",
     "wiki_url": "https://clockmender.uk/blender/precision-drawing-tools/",
     "category": "3D View",
