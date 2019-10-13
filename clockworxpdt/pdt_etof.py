@@ -43,7 +43,7 @@ plane as the face or they lie in a plane that is offset along the face's normal 
     lines = msg2.split("\n")
     for line in lines:
         self.report({"INFO"}, line)
-    self.report({"ERROR"}, "No intersection found, see the info panel for details")
+    self.report({"ERROR"}, PDT_ERR_NOINT)
 
 
 def extend_vertex(self):
