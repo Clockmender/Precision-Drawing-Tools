@@ -88,6 +88,8 @@ PDT_ERR_EXTEDIT       = "Only Extrude Vertices in Edit Mode"
 PDT_ERR_DUPEDIT       = "Only Duplicate Geometry in Edit Mode"
 PDT_ERR_FILEDIT       = "Only Fillet Geometry in Edit Mode"
 PDT_ERR_NOCOMMAS      = "No commas allowed in Maths Command"
+PDT_ERR_2CPNPE        = "Select 2 Coplanar Non-Parallel Edges"
+PDT_ERR_NCEDGES       = "Edges must be Coplanar Non-Parallel Edges, Selected Edges aren't"
 
 # Info messages
 #
