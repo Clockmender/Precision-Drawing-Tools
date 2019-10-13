@@ -27,6 +27,7 @@
 import bpy
 import bmesh
 from . import pdt_cad_module as cm
+from .pdt_msg_strings import *
 
 
 def add_line_to_bisection(self):
@@ -42,7 +43,7 @@ def add_line_to_bisection(self):
     edges = [e for e in bm.edges if e.select and not e.hide]
 
     if not len(edges) == 2:
-        msg = "Select 2 Coplanar Non-Parallel Edges"  # FIXME
+        msg = PDT_ERR_2CPNPE
         self.report({"ERROR"}, msg)
         return
 
@@ -56,7 +57,7 @@ def add_line_to_bisection(self):
     edge2 = (v3, v4)
 
     if not cm.test_coplanar(edge1, edge2):
-        msg = "Edges must be Coplanar Non-Parallel Edges"  # FIXME
+        msg = PDT_ERR_NCEDGES
         self.report({"ERROR"}, msg)
         return
 
