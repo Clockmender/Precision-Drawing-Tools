@@ -19,6 +19,7 @@
 #
 # ----------------------------------------------------------
 # Authors: Alan Odom (Clockmender), Rune Morling (ermo)
+#  Copyright © 2019
 # ----------------------------------------------------------
 #
 # If you edit this file do not change any of the PDT_ format, just the Text Value in "'s
@@ -36,6 +37,8 @@ PDT_LAB_NOR           = "Normal"      # "Perpendicular"
 # Error Message
 #
 PDT_ERR_NO_ACT_OBJ    = "No Active Object - Please Select an Object"
+PDT_ERR_NO_ACT_VERT   = "No Active Vertex - Select One Vertex Individually"
+PDT_ERR_NO_SEL_GEOM   = "No Geometry/Objects Selected"
 PDT_ERR_NO_ACT_VERTS  = "No Selected Geometry - Please Select some Geometry"
 PDT_ERR_NON_VALID     = " is Not a Valid Option for Command: "
 PDT_ERR_VERT_MODE     = "Work in Vertex Mode for this Function"
@@ -49,7 +52,8 @@ PDT_ERR_SEL_3_VERTS   = "Select Exactly 3 Vertices (You selected: "
 PDT_ERR_SEL_3_VERTIO  = "Select Exactly 3 Vertices Individually (You selected: "
 PDT_ERR_SEL_4_VERTS   = "Select 4 Vertices Individually, or 2 Edges (You Selected: "
 
-PDT_ERR_SEL_1_EDGE    = "Select at least 1 Edge (You selected: "
+PDT_ERR_SEL_1_EDGE    = "Select at only 1 Edge (You selected: "
+PDT_ERR_SEL_1_EDGEM   = "Select at least 1 Edge (You selected: "
 
 PDT_ERR_SEL_1_OBJ     = "Select Exactly 1 Object (You selected: "
 PDT_ERR_SEL_2_OBJS    = "Select Exactly 2 Objects (You selected: "
@@ -68,6 +72,21 @@ PDT_ERR_TAPER_ANG     = "Angle must be in Range -80 to +80 (You have it set to: 
 PDT_ERR_TAPER_SEL     = "Select at Least 2 Vertices Individually - Active is Rotation Point (You selected: "
 PDT_ERR_NO3DVIEW      = "View3D not found, cannot run operator"
 PDT_ERR_SCALEZERO     = "Scale Distance is 0"
+
+PDT_ERR_CHARS_NUM     = "Bad Command Format, not enough Characters"
+PDT_ERR_BADFLETTER    = "Bad Operator (1st Letter); C D E F G N M P S or V only"
+PDT_ERR_BADSLETTER    = "Bad Mode (2nd Letter); A D I or P only (+ X Y & Z for Maths) (+ V & G for Fillet)"
+PDT_ERR_BADMATHS      = "Not a Valid Mathematical Expression!"
+PDT_ERR_BADCOORDL     = "X Y & Z Not permitted in anything other than Maths Operations"
+PDT_ERR_BAD1VALS      = "Bad Command - 1 Value needed"
+PDT_ERR_BAD2VALS      = "Bad Command - 2 Values needed"
+PDT_ERR_BAD3VALS      = "Bad Command - 3 Coords needed"
+PDT_ERR_ADDVEDIT      = "Only Add New Vertices in Edit Mode"
+PDT_ERR_SPLITEDIT     = "Only Split Edges in Edit Mode"
+PDT_ERR_EXTEDIT       = "Only Extrude Vertices in Edit Mode"
+PDT_ERR_DUPEDIT       = "Only Duplicate Geometry in Edit Mode"
+PDT_ERR_FILEDIT       = "Only Fillet Geometry in Edit Mode"
+PDT_ERR_NOCOMMAS      = "No commas allowed in Maths Command"
 
 # Info messages
 #
