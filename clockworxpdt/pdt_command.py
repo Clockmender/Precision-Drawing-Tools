@@ -18,7 +18,7 @@
 # ***** END GPL LICENCE BLOCK *****
 #
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender)
+# Author: Alan Odom (Clockmender) Copyright © 2019
 # ----------------------------------------------------------
 #
 import bpy
@@ -44,6 +44,7 @@ from .pdt_functions import (
     disAng,
     objCheck,
 )
+from .pdt_msg_strings import *
 
 
 def command_run(self, context):
@@ -83,10 +84,9 @@ def command_run(self, context):
     """
 
     scene = context.scene
-    scene.pdt_error = "All is Good!"
     comm = scene.pdt_command
     if len(comm) < 3:
-        scene.pdt_error = "Bad Command Format, not enough Characters"
+        scene.pdt_error = PDT_ERR_CHARS_NUM
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
     else:
@@ -113,7 +113,7 @@ def command_run(self, context):
             "s",
             "S",
         ]:
-            scene.pdt_error = "Bad Operator (1st Letter); C D E F G N M P S or V only"
+            scene.pdt_error = PDT_ERR_BADFLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         mode = comm[1]
@@ -137,17 +137,18 @@ def command_run(self, context):
             "z",
             "Z"
         ]:
-            scene.pdt_error = (
-                "Bad Mode (2nd Letter); A D I or P only (+ X Y & Z for Maths) (+ V & G for Fillet)"
-            )
+            scene.pdt_error = PDT_ERR_BADSLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if data in ["m", "M"]:
             exp = comm[2:]
+            if "," in exp:
+                scene.pdt_error = PDT_ERR_NOCOMMAS
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             try:
                 num = eval(exp)
             except ValueError:
-                scene.pdt_error = "Not a Valid Mathematical Expression!"
+                scene.pdt_error = PDT_ERR_BADMATHS
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             if mode in ["x", "X"]:
@@ -162,10 +163,13 @@ def command_run(self, context):
                 scene.pdt_angle = num
             elif mode in ["p", "P"]:
                 scene.pdt_percent = num
+            else:
+                scene.pdt_error = mode + PDT_ERR_NON_VALID + "Maths)"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         else:
             if mode in ["x", "X", "y", "Y", "z", "Z"]:
-                scene.pdt_error = "X Y & Z Not permitted in anything other than Maths Operations"
+                scene.pdt_error = PDT_ERR_BADCOORDL
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
         vals = comm[2:].split(",")
@@ -188,7 +192,7 @@ def command_run(self, context):
             bm, good = objCheck(obj, scene, data)
             if obj.mode == "EDIT":
                 if len(bm.select_history) < 1 and data in ["c", "C", "n", "N", "p", "P"]:
-                    scene.pdt_error = "No Active Vertex - Not a Good Idea!"
+                    scene.pdt_error = PDT_ERR_NO_ACT_VERT
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             if good:
@@ -201,7 +205,7 @@ def command_run(self, context):
             if mode in ["a", "A"]:
                 # Absolute Options
                 if len(vals) != 3:
-                    scene.pdt_error = "Bad Command - 3 Coords needed"
+                    scene.pdt_error = PDT_ERR_BAD3VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -212,7 +216,7 @@ def command_run(self, context):
             elif mode in ["d", "D"]:
                 # Delta Options
                 if len(vals) != 3:
-                    scene.pdt_error = "Bad Command - 3 Coords needed"
+                    scene.pdt_error = PDT_ERR_BAD3VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -237,7 +241,7 @@ def command_run(self, context):
             elif mode in ["i", "I"]:
                 # Direction Options
                 if len(vals) != 2:
-                    scene.pdt_error = "Bad Command - 2 Values needed"
+                    scene.pdt_error = PDT_ERR_BAD2VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = disAng(vals, flip_a, plane, scene)
@@ -262,7 +266,7 @@ def command_run(self, context):
             elif mode in ["p", "P"]:
                 # Percent Options
                 if len(vals) != 1:
-                    scene.pdt_error = "Bad Command - 1 Value needed"
+                    scene.pdt_error = PDT_ERR_BAD1VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
@@ -279,7 +283,7 @@ def command_run(self, context):
                     else:
                         scene.pdt_pivotloc = vector_delta
             else:
-                scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -287,14 +291,14 @@ def command_run(self, context):
             # Move Vertices or Objects
             if mode in ["a", "A"]:
                 if len(vals) != 3:
-                    scene.pdt_error = "Bad Command - 3 Coords needed"
+                    scene.pdt_error = PDT_ERR_BAD3VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                 if obj.mode == "EDIT":
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     for v in verts:
@@ -309,7 +313,7 @@ def command_run(self, context):
                         ob.location = vector_delta
             elif mode in ["d", "D"]:
                 if len(vals) != 3:
-                    scene.pdt_error = "Bad Command - 3 Coords needed"
+                    scene.pdt_error = PDT_ERR_BAD3VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -324,14 +328,14 @@ def command_run(self, context):
                         ob.location = obj_loc + vector_delta
             elif mode in ["i", "I"]:
                 if len(vals) != 2:
-                    scene.pdt_error = "Bad Command - 2 Values needed"
+                    scene.pdt_error = PDT_ERR_BAD2VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = disAng(vals, flip_a, plane, scene)
                 if obj.mode == "EDIT":
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     bmesh.ops.translate(bm, verts=verts, vec=vector_delta)
@@ -343,7 +347,7 @@ def command_run(self, context):
             elif mode in ["p", "P"]:
                 if obj.mode == "OBJECT":
                     if len(vals) != 1:
-                        scene.pdt_error = "Bad Command - 1 Value needed"
+                        scene.pdt_error = PDT_ERR_BAD1VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
@@ -351,7 +355,7 @@ def command_run(self, context):
                         return
                     ob.location = vector_delta
             else:
-                scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -360,7 +364,7 @@ def command_run(self, context):
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -373,7 +377,7 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["d", "D"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -386,7 +390,7 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["i", "I"]:
                     if len(vals) != 2:
-                        scene.pdt_error = "Bad Command - 2 Values needed"
+                        scene.pdt_error = PDT_ERR_BAD2VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = disAng(vals, flip_a, plane, scene)
@@ -399,7 +403,7 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["p", "P"]:
                     if len(vals) != 1:
-                        scene.pdt_error = "Bad Command - 1 Value needed"
+                        scene.pdt_error = PDT_ERR_BAD1VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
@@ -411,11 +415,11 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
-                scene.pdt_error = "Only Add New Vertices in Edit Mode"
+                scene.pdt_error = PDT_ERR_ADDVEDIT
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -424,13 +428,13 @@ def command_run(self, context):
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                     edges = [e for e in bm.edges if e.select]
                     if len(edges) != 1:
-                        scene.pdt_error = "Only Select 1 Edge"
+                        scene.pdt_error = PDT_ERR_SEL_1_EDGE + str(len(edges)) + ")"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -444,20 +448,18 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["d", "D"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                     edges = [e for e in bm.edges if e.select]
                     faces = [f for f in bm.faces if f.select]
                     if len(faces) != 0:
-                        scene.pdt_error = (
-                            "You have a Face Selected, this would have ruined the Topology"
-                        )
+                        scene.pdt_error = PDT_ERR_FACE_SEL
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     if len(edges) < 1:
-                        scene.pdt_error = "Select at Least 1 Edge"
+                        scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -475,20 +477,18 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["i", "I"]:
                     if len(vals) != 2:
-                        scene.pdt_error = "Bad Command - 2 Values needed"
+                        scene.pdt_error = PDT_ERR_BAD2VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = disAng(vals, flip_a, plane, scene)
                     edges = [e for e in bm.edges if e.select]
                     faces = [f for f in bm.faces if f.select]
                     if len(faces) != 0:
-                        scene.pdt_error = (
-                            "You have a Face Selected, this would have ruined the Topology"
-                        )
+                        scene.pdt_error = PDT_ERR_FACE_SEL
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     if len(edges) < 1:
-                        scene.pdt_error = "Select at Least 1 Edge"
+                        scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -502,7 +502,7 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["p", "P"]:
                     if len(vals) != 1:
-                        scene.pdt_error = "Bad Command - 1 Value needed"
+                        scene.pdt_error = PDT_ERR_BAD1VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
@@ -511,13 +511,11 @@ def command_run(self, context):
                     edges = [e for e in bm.edges if e.select]
                     faces = [f for f in bm.faces if f.select]
                     if len(faces) != 0:
-                        scene.pdt_error = (
-                            "You have a Face Selected, this would have ruined the Topology"
-                        )
+                        scene.pdt_error = PDT_ERR_FACE_SEL
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     if len(edges) < 1:
-                        scene.pdt_error = "Select at Least 1 Edge"
+                        scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -530,11 +528,11 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
-                scene.pdt_error = "Only Split Edges in Edit Mode"
+                scene.pdt_error = PDT_ERR_SPLITEDIT
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -543,7 +541,7 @@ def command_run(self, context):
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -560,13 +558,13 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["d", "D"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     for v in verts:
@@ -579,13 +577,13 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["i", "I"]:
                     if len(vals) != 2:
-                        scene.pdt_error = "Bad Command - 2 Values needed"
+                        scene.pdt_error = PDT_ERR_BAD2VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = disAng(vals, flip_a, plane, scene)
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     for v in verts:
@@ -600,7 +598,7 @@ def command_run(self, context):
                     vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     nVert = bm.verts.new(vector_delta)
@@ -614,11 +612,11 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
-                scene.pdt_error = "Only Add Extrude Vertices in Edit Mode"
+                scene.pdt_error = PDT_ERR_EXTEDIT
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -627,13 +625,13 @@ def command_run(self, context):
             if obj.mode == "EDIT":
                 if mode in ["d", "D"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     ret = bmesh.ops.extrude_face_region(
@@ -656,13 +654,13 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["i", "I"]:
                     if len(vals) != 2:
-                        scene.pdt_error = "Bad Command - 2 Values needed"
+                        scene.pdt_error = PDT_ERR_BAD2VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = disAng(vals, flip_a, plane, scene)
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     ret = bmesh.ops.extrude_face_region(
@@ -684,7 +682,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
 
@@ -693,13 +691,13 @@ def command_run(self, context):
             if obj.mode == "EDIT":
                 if mode in ["d", "D"]:
                     if len(vals) != 3:
-                        scene.pdt_error = "Bad Command - 3 Coords needed"
+                        scene.pdt_error = PDT_ERR_BAD3VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     ret = bmesh.ops.duplicate(
@@ -722,13 +720,13 @@ def command_run(self, context):
                     bm.select_history.clear()
                 elif mode in ["i", "I"]:
                     if len(vals) != 2:
-                        scene.pdt_error = "Bad Command - 2 Values needed"
+                        scene.pdt_error = PDT_ERR_BAD2VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     vector_delta = disAng(vals, flip_a, plane, scene)
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
-                        scene.pdt_error = "Nothing Selected!"
+                        scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     ret = bmesh.ops.duplicate(
@@ -750,11 +748,11 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = "Not a Valid, or Sensible, Option!"
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
-                scene.pdt_error = "Only Duplicate Geometry in Edit Mode"
+                scene.pdt_error = PDT_ERR_DUPEDIT
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -762,7 +760,7 @@ def command_run(self, context):
             # Fillet Geometry
             if obj.mode == "EDIT":
                 if len(vals) != 3:
-                    scene.pdt_error = "Bad Command - 2 Values needed Radius, Segement Count, ProfileValid"
+                    scene.pdt_error = PDT_ERR_BAD3VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 else:
@@ -800,6 +798,6 @@ def command_run(self, context):
                         )
                         return
             else:
-                scene.pdt_error = "Only Fillet Geometry in Edit Mode"
+                scene.pdt_error = PDT_ERR_FILEDIT
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
