@@ -18,7 +18,8 @@
 # ***** END GPL LICENCE BLOCK *****
 
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender)
+# Author: Alan Odom (Clockmender), Rune Morling (ermo)
+#  Copyright © 2019
 # ----------------------------------------------------------
 #
 # Common Functions used in more than one place in PDT Operations
