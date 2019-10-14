@@ -130,7 +130,7 @@ class PDT_OT_ViewPlaneRotate(Operator):
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj.mode != "EDIT":
-            errmsg = PDT_ERR_EDIT_MODE + obj.mode + ")"
+            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         bm = bmesh.from_edit_mesh(obj.data)
@@ -174,7 +174,7 @@ class PDT_OT_ViewPlaneScale(Operator):
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if obj.mode != "EDIT":
-            errmsg = PDT_ERR_EDIT_MODE + obj.mode + ")"
+            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         bm = bmesh.from_edit_mesh(obj.data)
@@ -267,7 +267,7 @@ class PDT_OT_PivotSelected(Operator):
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
         if obj.mode != "EDIT":
-            errmsg = PDT_ERR_EDIT_MODE + obj.mode + ")"
+            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         bm = bmesh.from_edit_mesh(obj.data)
