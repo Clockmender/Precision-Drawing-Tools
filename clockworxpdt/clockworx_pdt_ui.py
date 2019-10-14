@@ -109,7 +109,7 @@ class PDT_OT_PlacementAbs(Operator):
         elif data == "SE" and obj.mode == "EDIT":
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
-                errmsg = PDT_ERR_1_EDGE + str(len(edges)) + ")"
+                errmsg = f"{PDT_ERR_1_EDGE} {len(edges)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -135,7 +135,7 @@ class PDT_OT_PlacementAbs(Operator):
                 bm.select_history.clear()
                 nVert.select_set(True)
             else:
-                errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         elif data == "EV" and obj.mode == "EDIT":
@@ -149,7 +149,7 @@ class PDT_OT_PlacementAbs(Operator):
             bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
             bmesh.update_edit_mesh(obj.data)
         else:
-            errmsg = data + PDT_ERR_NON_VALID + "Absolute"
+            errmsg = f"{data} {PDT_ERR_NON_VALID} Absolute"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -212,7 +212,7 @@ class PDT_OT_PlacementDelta(Operator):
                             self.report({"ERROR"}, errmsg)
                             return {"FINISHED"}
                     else:
-                        errmsg = PDT_ERR_SEL_1_VERTI + str(len(bm.select_history)) + ")"
+                        errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
             if data not in ["CU", "PP", "NV"]:
@@ -247,7 +247,7 @@ class PDT_OT_PlacementDelta(Operator):
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
                 if len(edges) < 1:
-                    errmsg = PDT_ERR_SEL_1_EDGE + str(len(edges)) + ")"
+                    errmsg = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
                 geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -267,7 +267,7 @@ class PDT_OT_PlacementDelta(Operator):
                         v.select_set(False)
                     nVert.select_set(True)
                 else:
-                    errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                    errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
             elif data == "EV" and obj.mode == "EDIT":
@@ -318,7 +318,7 @@ class PDT_OT_PlacementDelta(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             else:
-                errmsg = data + PDT_ERR_NON_VALID + "Delta"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} Delta"
                 self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -390,7 +390,7 @@ class PDT_OT_PlacementDis(Operator):
                             self.report({"ERROR"}, errmsg)
                             return {"FINISHED"}
                     else:
-                        errmsg = PDT_ERR_SEL_1_VERTI + str(len(bm.select_history)) + ")"
+                        errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
             if data not in ["CU", "PP", "NV"]:
@@ -425,7 +425,7 @@ class PDT_OT_PlacementDis(Operator):
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
                 if len(edges) < 1:
-                    errmsg = PDT_ERR_SEL_1_EDGE + str(len(edges)) + ")"
+                    errmsg = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
                 geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -445,7 +445,7 @@ class PDT_OT_PlacementDis(Operator):
                         v.select_set(False)
                     nVert.select_set(True)
                 else:
-                    errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                    errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
             elif data == "EV" and obj.mode == "EDIT":
@@ -496,7 +496,7 @@ class PDT_OT_PlacementDis(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             else:
-                errmsg = data + PDT_ERR_NON_VALID + "Direction"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} Direction"
                 self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -562,7 +562,7 @@ class PDT_OT_PlacementPer(Operator):
         elif data == "SE" and obj.mode == "EDIT":
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
-                errmsg = PDT_ERR_1_EDGE + str(len(edges)) + ")"
+                errmsg = f"{PDT_ERR_1_EDGE} {len(edges)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -583,7 +583,7 @@ class PDT_OT_PlacementPer(Operator):
                     v.select_set(False)
                 nVert.select_set(True)
             else:
-                errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         elif data == "EV" and obj.mode == "EDIT":
@@ -598,7 +598,7 @@ class PDT_OT_PlacementPer(Operator):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         else:
-            errmsg = data + PDT_ERR_NON_VALID + "Percent"
+            errmsg = f"{data} {PDT_ERR_NON_VALID} Percent"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -645,13 +645,13 @@ class PDT_OT_PlacementNormal(Operator):
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
             else:
-                errmsg = PDT_ERR_SEL_3_VERTS + str(len(bm.select_history)) + ")"
+                errmsg = f"{PDT_ERR_SEL_3_VERTS} {len(bm.select_history)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         elif obj.mode == "OBJECT":
             objs = context.view_layer.objects.selected
             if len(objs) != 3:
-                errmsg = PDT_ERR_SEL_3_OBJS + str(len(objs)) + ")"
+                errmsg = f"{PDT_ERR_SEL_3_OBJS} {len(objs)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             else:
@@ -694,7 +694,7 @@ class PDT_OT_PlacementNormal(Operator):
                     v.select_set(False)
                 nVert.select_set(True)
             else:
-                errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+                errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         elif data == "EV" and obj.mode == "EDIT":
@@ -711,7 +711,7 @@ class PDT_OT_PlacementNormal(Operator):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         else:
-            errmsg = data + PDT_ERR_NON_VALID + "Normal"
+            errmsg = f"{data} {PDT_ERR_NON_VALID} Normal"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -784,7 +784,7 @@ class PDT_OT_PlacementInt(Operator):
                 return {"FINISHED"}
             vector_delta, done = intersection(actV, othV, lstV, fstV, plane)
             if not done:
-                errmsg = PDT_ERR_INT_LINES + plane + " Plane"
+                errmsg = f"{PDT_ERR_INT_LINES} {plane}  Plane"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
 
@@ -856,12 +856,12 @@ class PDT_OT_PlacementInt(Operator):
                             v.select_set(True)
                     bmesh.update_edit_mesh(obj.data)
             else:
-                errmsg = data + PDT_ERR_NON_VALID + "Intersect"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} Intersect"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         elif obj.mode == "OBJECT":
             if len(context.view_layer.objects.selected) != 4:
-                errmsg = PDT_ERR_SEL_4_OBJS + str(len(context.view_layer.objects.selected)) + ")"
+                errmsg = f"{PDT_ERR_SEL_4_OBJS} {len(context.view_layer.objects.selected)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             else:
@@ -887,7 +887,7 @@ class PDT_OT_PlacementInt(Operator):
                 fstV = objs[int(order[3]) - 1].matrix_world.decompose()[0]
             vector_delta, done = intersection(actV, othV, lstV, fstV, plane)
             if not done:
-                errmsg = PDT_ERR_INT_LINES + plane + " Plane"
+                errmsg = f"{PDT_ERR_INT_LINES} {plane}  Plane"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             if data == "CU":
@@ -899,7 +899,7 @@ class PDT_OT_PlacementInt(Operator):
                 infmsg = PDT_INF_OBJ_MOVED + message
                 self.report({"INFO"}, infmsg)
             else:
-                errmsg = data + PDT_ERR_NON_VALID + "Intersect"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} Intersect"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
@@ -947,7 +947,7 @@ class PDT_OT_PlacementCen(Operator):
                 othV = verts[1].co
                 lstV = verts[2].co
             else:
-                errmsg = PDT_ERR_SEL_3_VERTS + str(len(verts)) + ")"
+                errmsg = f"{PDT_ERR_SEL_3_VERTS} {len(verts)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             vector_delta, radius = arcCentre(actV, othV, lstV)
@@ -1001,12 +1001,12 @@ class PDT_OT_PlacementCen(Operator):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
             else:
-                errmsg = data + PDT_ERR_NON_VALID + "Arc Centre"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} Arc Centre"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         elif obj.mode == "OBJECT":
             if len(context.view_layer.objects.selected) != 3:
-                errmsg = PDT_ERR_SEL_3_OBJS + str(len(context.view_layer.objects.selected)) + ")"
+                errmsg = f"{PDT_ERR_SEL_3_OBJS} {len(context.view_layer.objects.selected)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             else:
@@ -1022,7 +1022,7 @@ class PDT_OT_PlacementCen(Operator):
                 elif data == "MV":
                     context.view_layer.objects.active.location = vector_delta
                 else:
-                    errmsg = data + PDT_ERR_NON_VALID + "Arc Centre"
+                    errmsg = f"{data} {PDT_ERR_NON_VALID} Arc Centre"
                     self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
 
@@ -1068,11 +1068,11 @@ class PDT_OT_JoinVerts(Operator):
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
             else:
-                errmsg = PDT_ERR_SEL_2_VERTS + str(len(verts)) + ")"
+                errmsg = f"{PDT_ERR_SEL_2_VERTS} {len(verts)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         else:
-            errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
@@ -1110,7 +1110,7 @@ class PDT_OT_Fillet(Operator):
                 )
                 return {"FINISHED"}
         else:
-            errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
@@ -1149,17 +1149,17 @@ class PDT_OT_Angle2(Operator):
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
                 else:
-                    errmsg = PDT_ERR_SEL_2_VERTIO + str(len(bm.select_history)) + ")"
+                    errmsg = f"{PDT_ERR_SEL_2_VERTIO} {len(bm.select_history)})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
             else:
-                errmsg = PDT_ERR_SEL_2_VERTIO + str(len(verts)) + ")"
+                errmsg = f"{PDT_ERR_SEL_2_VERTIO} {len(verts)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         elif obj.mode == "OBJECT":
             objs = context.view_layer.objects.selected
             if len(objs) < 2:
-                errmsg = PDT_ERR_SEL_2_OBJS + str(len(objs)) + ")"
+                errmsg = f"{PDT_ERR_SEL_2_OBJS} {len(objs)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             objs_s = [ob for ob in objs if ob.name != obj.name]
@@ -1227,11 +1227,11 @@ class PDT_OT_Angle3(Operator):
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
                 else:
-                    errmsg = PDT_ERR_SEL_3_VERTIO + str(len(bm.select_history)) + ")"
+                    errmsg = f"{PDT_ERR_SEL_3_VERTIO} {len(bm.select_history)})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
             else:
-                errmsg = PDT_ERR_SEL_3_VERTIO + str(len(verts)) + ")"
+                errmsg = f"{PDT_ERR_SEL_3_VERTIO} {len(verts)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         elif obj.mode == "OBJECT":
@@ -1298,7 +1298,7 @@ class PDT_OT_Origin(Operator):
                 v.co = v.co + diff_v
             obj.location = cur_loc
         else:
-            errmsg = PDT_ERR_EDOB_MODE + obj.mode + "Mode)"
+            errmsg = f"{PDT_ERR_EDOB_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         return {"FINISHED"}
@@ -1331,7 +1331,7 @@ class PDT_OT_Taper(Operator):
         ang_v = scene.pdt_angle
         obj = context.view_layer.objects.active
         if ang_v > 80 or ang_v < -80:
-            errmsg = PDT_ERR_TAPER_ANG + str(ang_v) + ")"
+            errmsg = f"{PDT_ERR_TAPER_ANG} {ang_v})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         if obj is None:
@@ -1345,7 +1345,7 @@ class PDT_OT_Taper(Operator):
                 rotV = bm.select_history[-1]
                 viewV = viewCoords(rotV.co.x, rotV.co.y, rotV.co.z)
             else:
-                errmsg = PDT_ERR_TAPER_SEL + str(len(bm.select_history)) + ")"
+                errmsg = f"{PDT_ERR_TAPER_SEL} {len(bm.select_history)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             for v in [v for v in bm.verts if v.select]:
@@ -1362,7 +1362,7 @@ class PDT_OT_Taper(Operator):
             bm.select_history.clear()
             return {"FINISHED"}
         else:
-            errmsg = PDT_ERR_EDIT_MODE + obj.mode + "Mode)"
+            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
