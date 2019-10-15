@@ -508,6 +508,7 @@ class PDT_OT_PlacementPer(Operator):
     bl_label = "Percentage Mode"
     bl_options = {"REGISTER", "UNDO"}
 
+
     def execute(self, context):
         """Manipulates Geometry, or Objects by Percentage between 2 points.
 
@@ -1035,6 +1036,11 @@ class PDT_OT_JoinVerts(Operator):
     bl_label = "Join 2 Vertices"
     bl_options = {"REGISTER", "UNDO"}
 
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+
     def execute(self, context):
         """Joins 2 Free Vertices that do not form part of a Face.
 
@@ -1051,29 +1057,20 @@ class PDT_OT_JoinVerts(Operator):
 
         scene = context.scene
         obj = context.view_layer.objects.active
-        if obj is None:
-            errmsg = PDT_ERR_NO_ACT_OBJ
-            self.report({"ERROR"}, errmsg)
-            return {"FINISHED"}
-        if obj.mode == "EDIT":
-            bm = bmesh.from_edit_mesh(obj.data)
-            verts = [v for v in bm.verts if v.select]
-            if len(verts) == 2:
-                try:
-                    nEdge = bm.edges.new([verts[-1], verts[-2]])
-                    bmesh.update_edit_mesh(obj.data)
-                    bm.select_history.clear()
-                    return {"FINISHED"}
-                except ValueError:
-                    errmsg = PDT_ERR_CONNECTED
-                    self.report({"ERROR"}, errmsg)
-                    return {"FINISHED"}
-            else:
-                errmsg = f"{PDT_ERR_SEL_2_VERTS} {len(verts)})"
+        bm = bmesh.from_edit_mesh(obj.data)
+        verts = [v for v in bm.verts if v.select]
+        if len(verts) == 2:
+            try:
+                nEdge = bm.edges.new([verts[-1], verts[-2]])
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+                return {"FINISHED"}
+            except ValueError:
+                errmsg = PDT_ERR_CONNECTED
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
         else:
-            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
+            errmsg = f"{PDT_ERR_SEL_2_VERTS} {len(verts)})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
@@ -1085,34 +1082,30 @@ class PDT_OT_Fillet(Operator):
     bl_label = "Fillet"
     bl_options = {"REGISTER", "UNDO"}
 
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+
     def execute(self, context):
         # FIXME docstring
 
         scene = context.scene
         obj = context.view_layer.objects.active
-        if obj is None:
-            errmsg = PDT_ERR_NO_ACT_OBJ
+        bm = bmesh.from_edit_mesh(obj.data)
+        verts = [v for v in bm.verts if v.select]
+        if len(verts) == 0:
+            errmsg = PDT_ERR_SEL_1_VERT
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
-        if obj.mode == "EDIT":
-            bm = bmesh.from_edit_mesh(obj.data)
-            verts = [v for v in bm.verts if v.select]
-            if len(verts) == 0:
-                errmsg = PDT_ERR_SEL_1_VERT
-                self.report({"ERROR"}, errmsg)
-                return {"FINISHED"}
-            else:
-                bpy.ops.mesh.bevel(
-                    offset_type="OFFSET",
-                    offset=scene.pdt_filletrad,
-                    segments=scene.pdt_filletnum,
-                    profile=scene.pdt_filletpro,
-                    vertex_only=scene.pdt_filletbool,
-                )
-                return {"FINISHED"}
         else:
-            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
-            self.report({"ERROR"}, errmsg)
+            bpy.ops.mesh.bevel(
+                offset_type="OFFSET",
+                offset=scene.pdt_filletrad,
+                segments=scene.pdt_filletnum,
+                profile=scene.pdt_filletpro,
+                vertex_only=scene.pdt_filletbool,
+            )
             return {"FINISHED"}
 
 
@@ -1312,6 +1305,13 @@ class PDT_OT_Taper(Operator):
     bl_label = "Taper"
     bl_options = {"REGISTER", "UNDO"}
 
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+
+
     def execute(self, context):
         """Taper Geometry along World Axes.
 
@@ -1340,32 +1340,27 @@ class PDT_OT_Taper(Operator):
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         a1, a2, a3 = setAxis(tap_ax)
-        if obj.mode == "EDIT":
-            bm = bmesh.from_edit_mesh(obj.data)
-            if len(bm.select_history) >= 1:
-                rotV = bm.select_history[-1]
-                viewV = viewCoords(rotV.co.x, rotV.co.y, rotV.co.z)
-            else:
-                errmsg = f"{PDT_ERR_TAPER_SEL} {len(bm.select_history)})"
-                self.report({"ERROR"}, errmsg)
-                return {"FINISHED"}
-            for v in [v for v in bm.verts if v.select]:
-                if scene.pdt_plane == "LO":
-                    v_loc = viewCoords(v.co.x, v.co.y, v.co.z)
-                    dis_v = sqrt((viewV.x - v_loc.x) ** 2 + (viewV.y - v_loc.y) ** 2)
-                    x_loc = dis_v * tan(ang_v * pi / 180)
-                    vm = viewDir(x_loc, 0)
-                    v.co = v.co - vm
-                else:
-                    dis_v = sqrt((rotV.co[a3] - v.co[a3]) ** 2 + (rotV.co[a2] - v.co[a2]) ** 2)
-                    v.co[a2] = v.co[a2] - (dis_v * tan(ang_v * pi / 180))
-            bmesh.update_edit_mesh(obj.data)
-            bm.select_history.clear()
-            return {"FINISHED"}
+        bm = bmesh.from_edit_mesh(obj.data)
+        if len(bm.select_history) >= 1:
+            rotV = bm.select_history[-1]
+            viewV = viewCoords(rotV.co.x, rotV.co.y, rotV.co.z)
         else:
-            errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
+            errmsg = f"{PDT_ERR_TAPER_SEL} {len(bm.select_history)})"
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
+        for v in [v for v in bm.verts if v.select]:
+            if scene.pdt_plane == "LO":
+                v_loc = viewCoords(v.co.x, v.co.y, v.co.z)
+                dis_v = sqrt((viewV.x - v_loc.x) ** 2 + (viewV.y - v_loc.y) ** 2)
+                x_loc = dis_v * tan(ang_v * pi / 180)
+                vm = viewDir(x_loc, 0)
+                v.co = v.co - vm
+            else:
+                dis_v = sqrt((rotV.co[a3] - v.co[a3]) ** 2 + (rotV.co[a2] - v.co[a2]) ** 2)
+                v.co[a2] = v.co[a2] - (dis_v * tan(ang_v * pi / 180))
+        bmesh.update_edit_mesh(obj.data)
+        bm.select_history.clear()
+        return {"FINISHED"}
 
 
 class PDT_OT_Append(Operator):
