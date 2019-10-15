@@ -149,7 +149,7 @@ class PDT_OT_PlacementAbs(Operator):
             bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
             bmesh.update_edit_mesh(obj.data)
         else:
-            errmsg = f"{data} {PDT_ERR_NON_VALID} Absolute"
+            errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_ABS}"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -318,7 +318,7 @@ class PDT_OT_PlacementDelta(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} Delta"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_DEL}"
                 self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -496,7 +496,7 @@ class PDT_OT_PlacementDis(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} Direction"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_DIR}"
                 self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -598,7 +598,7 @@ class PDT_OT_PlacementPer(Operator):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         else:
-            errmsg = f"{data} {PDT_ERR_NON_VALID} Percent"
+            errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_PERCENT}"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -609,6 +609,7 @@ class PDT_OT_PlacementNormal(Operator):
     bl_idname = "pdt.normal"
     bl_label = "Normal Mode"
     bl_options = {"REGISTER", "UNDO"}
+
 
     def execute(self, context):
         """Manipulates Geometry, or Objects by Normal Intersection between 3 points.
@@ -711,7 +712,7 @@ class PDT_OT_PlacementNormal(Operator):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         else:
-            errmsg = f"{data} {PDT_ERR_NON_VALID} Normal"
+            errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_NOR}"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -784,7 +785,7 @@ class PDT_OT_PlacementInt(Operator):
                 return {"FINISHED"}
             vector_delta, done = intersection(actV, othV, lstV, fstV, plane)
             if not done:
-                errmsg = f"{PDT_ERR_INT_LINES} {plane}  Plane"
+                errmsg = f"{PDT_ERR_INT_LINES} {plane}  {PDT_LAB_PLANE}"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
 
@@ -856,7 +857,7 @@ class PDT_OT_PlacementInt(Operator):
                             v.select_set(True)
                     bmesh.update_edit_mesh(obj.data)
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} Intersect"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_INTERSECT}"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         elif obj.mode == "OBJECT":
@@ -887,7 +888,7 @@ class PDT_OT_PlacementInt(Operator):
                 fstV = objs[int(order[3]) - 1].matrix_world.decompose()[0]
             vector_delta, done = intersection(actV, othV, lstV, fstV, plane)
             if not done:
-                errmsg = f"{PDT_ERR_INT_LINES} {plane}  Plane"
+                errmsg = f"{PDT_ERR_INT_LINES} {plane}  {PDT_LAB_PLANE}"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             if data == "CU":
@@ -899,7 +900,7 @@ class PDT_OT_PlacementInt(Operator):
                 infmsg = PDT_INF_OBJ_MOVED + message
                 self.report({"INFO"}, infmsg)
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} Intersect"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_INTERSECT}"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
@@ -1001,7 +1002,7 @@ class PDT_OT_PlacementCen(Operator):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} Arc Centre"
+                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_ARCCENTRE}"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         elif obj.mode == "OBJECT":
@@ -1022,7 +1023,7 @@ class PDT_OT_PlacementCen(Operator):
                 elif data == "MV":
                     context.view_layer.objects.active.location = vector_delta
                 else:
-                    errmsg = f"{data} {PDT_ERR_NON_VALID} Arc Centre"
+                    errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_ARCCENTRE}"
                     self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
 
