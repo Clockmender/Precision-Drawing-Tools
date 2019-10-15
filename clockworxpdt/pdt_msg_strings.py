@@ -22,6 +22,8 @@
 #  Copyright © 2019
 # ----------------------------------------------------------
 #
+# English Version
+#
 # If you edit this file do not change any of the PDT_ format, just the Text Value in "'s
 # Do not delete any of the PDT_ lines
 #
@@ -31,8 +33,43 @@ PDT_LAB_ABS           = "Absolute"    # "Global"
 PDT_LAB_DEL           = "Delta"       # "Relative"
 PDT_LAB_DIR           = "Direction"   # "Polar"
 PDT_LAB_NOR           = "Normal"      # "Perpendicular"
-
-# English messages
+PDT_LAB_ARCCENTRE     = "Arc Centre"
+PDT_LAB_PLANE         = "Plane"
+PDT_LAB_MODE          = "Mode"
+PDT_LAB_OPERATION     = "Operation"
+PDT_LAB_PERCENT       = "Percent"
+PDT_LAB_INTERSECT     = "Intersect"   # "Convergance"
+PDT_LAB_ORDER         = "Order"
+PDT_LAB_FLIPANGLE     = "Flip Angle"
+PDT_LAB_FLIPPERCENT   = "Flip %"
+PDT_LAB_ALLACTIVE     = "All/Active"
+PDT_LAB_VARIABLES     = "Coordinates/Delta Offsets & Other Variables"
+PDT_LAB_XVALUE        = "X"
+PDT_LAB_DISVALUE      = "Distance"
+PDT_LAB_YVALUE        = "Y"
+PDT_LAB_ANGLEVALUE    = "Angle"
+PDT_LAB_ZVALUE        = "Z"
+PDT_LAB_PERCENTS      = "%"
+PDT_LAB_TOOLS         = "Tools"
+PDT_LAB_JOIN2VERTS    = "Join 2 Verts"
+PDT_LAB_ORIGINCURSOR  = "Origin To Cursor"
+PDT_LAB_AD2D          = "Set A/D 2D"
+PDT_LAB_AD3D          = "Set A/D 3D"
+PDT_LAB_TAPERAXES     = ""            # Intentionally left blank
+PDT_LAB_TAPER         = "Taper"
+PDT_LAB_INTERSETALL   = "Intersect All"
+PDT_LAB_BISECT        = "Bisect"
+PDT_LAB_EDGETOEFACE   = "Edge-Face"
+PDT_LAB_FILLET        = "Fillet"
+PDT_LAB_SEGMENTS      = "Segments"
+PDT_LAB_USEVERTS      = "Use Verts"
+PDT_LAB_RADIUS        = "Radius"
+PDT_LAB_PROFILE       = "Profile"
+PDT_LAB_PIVOTSIZE     = ""            # Intentionally left blank
+PDT_LAB_PIVOTWIDTH    = ""            # Intentionally left blank
+PDT_LAB_PIVOTALPHA    = ""            # Intentionally left blank
+PDT_LAB_PIVOTLOC      = ""            # Intentionally left blank
+PDT_LAB_PIVOTLOCH     = "Pivot Point Location"
 #
 # Error Message
 #
