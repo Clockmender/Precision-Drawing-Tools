@@ -108,6 +108,12 @@ class PDT_OT_ViewPlaneRotate(Operator):
     bl_idname = "pdt.viewplanerot"
     bl_label = "PDT View Rotate"
 
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+
+
     def execute(self, context):
         """Rotate Selected Vertices about Pivot Point.
 
@@ -151,6 +157,12 @@ class PDT_OT_ViewPlaneScale(Operator):
 
     bl_idname = "pdt.viewscale"
     bl_label = "PDT View Scale"
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+
 
     def execute(self, context):
         """Scales Selected Vertices about Pivot Point.
@@ -247,6 +259,12 @@ class PDT_OT_PivotSelected(Operator):
     bl_idname = "pdt.pivotselected"
     bl_label = "PDT Pivot to Selected"
 
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+
+
     def execute(self, context):
         """Moves Pivot Point centroid of Selected Geometry.
 
@@ -279,7 +297,7 @@ class PDT_OT_PivotSelected(Operator):
             scene.cursor.location = old_cursor_loc
             return {"FINISHED"}
         else:
-            self.report({"ERROR"}, "Nothing Selected!")
+            self.report({"ERROR"}, PDT_ERR_NO_SEL_GEOM)
             return {"FINISHED"}
 
 
@@ -288,6 +306,11 @@ class PDT_OT_PivotOrigin(Operator):
 
     bl_idname = "pdt.pivotorigin"
     bl_label = "PDT Pivot to Object Origin"
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
         """Moves Pivot Point to Object Origin.
@@ -319,7 +342,8 @@ class PDT_OT_PivotWrite(Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH"])
 
     def execute(self, context):
         """Writes Pivot Point Location to Object's Custom Properties.
@@ -359,6 +383,11 @@ class PDT_OT_PivotRead(Operator):
     bl_idname = "pdt.pivotread"
     bl_label = "PDT Read PP"
 
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return all([bool(ob), ob.type == "MESH"])
+
     def execute(self, context):
         """Reads Pivot Point Location from Object's Custom Properties.
 
@@ -380,12 +409,9 @@ class PDT_OT_PivotRead(Operator):
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
-        if obj["PDT_PP_LOC"] is not None:
+        if "PDT_PP_LOC" in obj:
             scene.pdt_pivotloc = obj["PDT_PP_LOC"]
             return {"FINISHED"}
         else:
-            self.report(
-                {"ERROR"},
-                "Custom Property PDT_PP_LOC for this object not found, have you Written it yet?",
-            )
+            self.report({"ERROR"}, PDT_ERR_NOPPLOC)
             return {"FINISHED"}
