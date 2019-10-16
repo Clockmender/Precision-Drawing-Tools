@@ -155,7 +155,9 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        obj = context.active_object
+        ob = context.active_object
+        if ob is None:
+            return False
         return obj is not None and obj.type == "MESH" and obj.mode == "EDIT"
 
     def execute(self, context):

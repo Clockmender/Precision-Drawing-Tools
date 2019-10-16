@@ -97,7 +97,9 @@ class PDT_OT_LineOnBisection(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        obj = context.active_object
+        ob = context.active_object
+        if ob is None:
+            return False
         return all([obj is not None, obj.type == "MESH", obj.mode == "EDIT"])
 
     def execute(self, context):

@@ -22,6 +22,8 @@
 # ----------------------------------------------------------
 #
 import bpy
+import os
+from mathutils import Vector
 from bpy.types import Operator
 from bpy.props import FloatProperty
 
@@ -52,8 +54,11 @@ class PDT_OT_Append(Operator):
         scene = context.scene
         obj_names = [o.name for o in context.view_layer.objects]
         path = (
-            str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
-        )
+            os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"),
+            "clockworxpdt",
+            "parts_library.blend")
+            )
+
         if scene.pdt_lib_mode == "OBJECTS":
             bpy.ops.wm.append(
                 filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
@@ -106,9 +111,10 @@ class PDT_OT_Link(Operator):
         """
 
         scene = context.scene
-        path = (
-            str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
-        )
+        path = (os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"),
+            "clockworxpdt",
+            "parts_library.blend")
+            )
         if scene.pdt_lib_mode == "OBJECTS":
             bpy.ops.wm.link(
                 filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
