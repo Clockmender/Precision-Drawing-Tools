@@ -310,7 +310,7 @@ class PDT_OT_PivotOrigin(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
-        return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
+        return all([bool(ob), ob.type == "MESH"])
 
     def execute(self, context):
         """Moves Pivot Point to Object Origin.
