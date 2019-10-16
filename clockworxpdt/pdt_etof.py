@@ -23,13 +23,14 @@
 # Modified by: Alan Odom (Clockmender) & Rune Morling (ermo)
 # ----------------------------------------------------------
 #
+#
 import bpy
 import bmesh
 from mathutils.geometry import intersect_line_plane
 
 
 def failure_message(self):
-    self.report({"WARNING"}, "select 1 face and 1 detached edge")
+    self.report({"WARNING"}, PDT_ERR_SEL_1_E_1_F)
 
 
 def failure_message_on_plane(self):
