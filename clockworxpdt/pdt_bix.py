@@ -100,7 +100,7 @@ class PDT_OT_LineOnBisection(bpy.types.Operator):
         ob = context.active_object
         if ob is None:
             return False
-        return all([obj is not None, obj.type == "MESH", obj.mode == "EDIT"])
+        return all([ob is not None, ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
         """Computes Bisector of 2 Co-Planar Edges.

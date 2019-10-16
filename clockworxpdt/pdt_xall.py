@@ -158,7 +158,7 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
         ob = context.active_object
         if ob is None:
             return False
-        return obj is not None and obj.type == "MESH" and obj.mode == "EDIT"
+        return ob is not None and ob.type == "MESH" and ob.mode == "EDIT"
 
     def execute(self, context):
         """Computes All intersections with Crossing Geometry.
