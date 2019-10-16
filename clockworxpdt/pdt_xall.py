@@ -23,8 +23,6 @@
 # Modified by: Alan Odom (Clockmender) & Rune Morling (ermo)
 # ----------------------------------------------------------
 #
-# FIXME - all docstrings
-#
 import bpy
 import bmesh
 from mathutils.geometry import intersect_line_line as LineIntersect
@@ -46,6 +44,7 @@ def order_points(edge, point_list):
 
 def remove_permutations_that_share_a_vertex(bm, permutations):
     """Get useful Permutations"""
+
     final_permutations = []
     for edges in permutations:
         raw_vert_indices = cm.vertex_indices_from_edges_tuple(bm, edges)
@@ -59,6 +58,8 @@ def remove_permutations_that_share_a_vertex(bm, permutations):
 
 
 def get_valid_permutations(bm, edge_indices):
+    """Get useful Permutations"""
+
     raw_permutations = itertools.permutations(edge_indices, 2)
     permutations = [r for r in raw_permutations if r[0] < r[1]]
     return remove_permutations_that_share_a_vertex(bm, permutations)
@@ -67,6 +68,7 @@ def get_valid_permutations(bm, edge_indices):
 def can_skip(closest_points, vert_vectors):
     """Check if the intersection lies on both edges and return True
     when criteria are not met, and thus this point can be skipped"""
+
     if not closest_points:
         return True
     if not isinstance(closest_points[0].x, float):
@@ -81,6 +83,7 @@ def can_skip(closest_points, vert_vectors):
 
 def get_intersection_dictionary(bm, edge_indices):
     """Return a dictionary of edge indices and points found on those edges."""
+
     bm.verts.ensure_lookup_table()
     bm.edges.ensure_lookup_table()
 
@@ -113,7 +116,7 @@ def get_intersection_dictionary(bm, edge_indices):
     return d
 
 
-def update_mesh(bm, d):
+def update_mesh(bm, int_dict):
     """Make new geometry (delete old first)"""
 
     oe = bm.edges
@@ -121,7 +124,7 @@ def update_mesh(bm, d):
 
     new_verts = []
     collect = new_verts.extend
-    for old_edge, point_list in d.items():
+    for old_edge, point_list in int_dict.items():
         num_edges_to_add = len(point_list) - 1
         for i in range(num_edges_to_add):
             a = ov.new(point_list[i])
@@ -135,11 +138,12 @@ def update_mesh(bm, d):
 
 
 def unselect_nonintersecting(bm, d_edges, edge_indices):
+    """Deselects Non-Intersection Edges"""
+
     if len(edge_indices) > len(d_edges):
         reserved_edges = set(edge_indices) - set(d_edges)
         for edge in reserved_edges:
             bm.edges[edge].select = False
-        # print("unselected {}, non intersecting edges".format(reserved_edges)) # FIXME
 
 
 class PDT_OT_IntersectAllEdges(bpy.types.Operator):
@@ -155,6 +159,16 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
         return obj is not None and obj.type == "MESH" and obj.mode == "EDIT"
 
     def execute(self, context):
+        """Computes All intersections with Crossing Geometry.
+
+        Deletes original edges and replaces with new intersected edges
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set."""
+
         # must force edge selection mode here
         bpy.context.tool_settings.mesh_select_mode = (False, True, False)
 
@@ -165,10 +179,10 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
             selected_edges = [edge for edge in bm.edges if edge.select]
             edge_indices = [i.index for i in selected_edges]
 
-            d = get_intersection_dictionary(bm, edge_indices)
+            int_dict = get_intersection_dictionary(bm, edge_indices)
 
-            unselect_nonintersecting(bm, d.keys(), edge_indices)
-            update_mesh(bm, d)
+            unselect_nonintersecting(bm, int_dict.keys(), edge_indices)
+            update_mesh(bm, int_dict)
 
             bmesh.update_edit_mesh(obj.data)
         else:
