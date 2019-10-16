@@ -374,7 +374,7 @@ class PDT_OT_PivotWrite(Operator):
 
     def draw(self, context):
         row = self.layout
-        row.label(text="Are You Sure About This?")
+        row.label(text=PDT_CON_AREYOURSURE)
 
 
 class PDT_OT_PivotRead(Operator):
