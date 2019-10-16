@@ -68,6 +68,9 @@ class PDT_OT_PlacementAbs(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' is used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -178,6 +181,9 @@ class PDT_OT_PlacementDelta(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -347,6 +353,9 @@ class PDT_OT_PlacementDis(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -524,6 +533,9 @@ class PDT_OT_PlacementPer(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -627,6 +639,9 @@ class PDT_OT_PlacementNormal(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -739,6 +754,9 @@ class PDT_OT_PlacementInt(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -928,6 +946,9 @@ class PDT_OT_PlacementCen(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -1088,7 +1109,21 @@ class PDT_OT_Fillet(Operator):
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
-        # FIXME docstring
+        """Create Fillets by Vertex or by Geometry.
+
+        Fillets connected edges, or connected faces
+        Uses:
+        - pdt_filletrad  ; Radius of fillet
+        - pdt_filletnum  ; Number of segments
+        - pdt_filletpro  ; Profile, values 0 to 1
+        - pdt_filletbool ; Vertices (True), or Face/Edges
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set.
+        """
 
         scene = context.scene
         obj = context.view_layer.objects.active
@@ -1122,6 +1157,12 @@ class PDT_OT_Angle2(Operator):
         Uses 2 Selected Vertices to set pdt_angle and pdt_distance scene variables
         also sets delta offset from these 2 points using standard Numpy Routines
         Works in Edit and Oject Modes.
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -1200,6 +1241,12 @@ class PDT_OT_Angle3(Operator):
         Uses 3 Selected Vertices to set pdt_angle and pdt_distance scene variables
         also sets delta offset from these 3 points using standard Numpy Routines
         Works in Edit and Oject Modes.
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -1269,6 +1316,12 @@ class PDT_OT_Origin(Operator):
         Keeps geometry static in World Space whilst moving Object Origin
         Requires cursor location
         Works in Edit and Object Modes.
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
@@ -1325,6 +1378,9 @@ class PDT_OT_Taper(Operator):
 
         Notes:
             Uses pdt_taper & pdt_angle scene variables
+
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
