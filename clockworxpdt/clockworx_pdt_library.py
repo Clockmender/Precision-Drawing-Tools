@@ -45,7 +45,8 @@ class PDT_OT_Append(Operator):
         Notes:
             Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
 
-        Returns: Status Set.
+        Returns:
+            Status Set.
         """
 
         scene = context.scene
