@@ -136,6 +136,10 @@ PDT_ERR_NOINT         = "No Intersection Found, see the Info Panel for Details"
 #
 PDT_INF_OBJ_MOVED     = "Active Object Moved to Intersection, "
 
+# Confirm Messages
+#
+PDT_CON_AREYOURSURE   = "Are You Sure About This?"
+
 # Descriptions
 #
 PDT_DES_XDELTA        = "X Coord Delta"
