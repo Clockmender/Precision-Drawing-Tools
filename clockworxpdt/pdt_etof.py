@@ -23,8 +23,6 @@
 # Modified by: Alan Odom (Clockmender) & Rune Morling (ermo)
 # ----------------------------------------------------------
 #
-# FIXME - all docstrings
-#
 import bpy
 import bmesh
 from mathutils.geometry import intersect_line_plane
@@ -47,6 +45,13 @@ plane as the face or they lie in a plane that is offset along the face's normal 
 
 
 def extend_vertex(self):
+    """Computes Edge Extension to Face.
+
+    Args:
+        None
+
+    Returns:
+        Nothing."""
 
     obj = bpy.context.edit_object
     me = obj.data
@@ -105,5 +110,13 @@ class PDT_OT_EdgeToFace(bpy.types.Operator):
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
+        """Extends Disconnected Edge to Intersect with Face.
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set."""
+
         extend_vertex(self)
         return {"FINISHED"}

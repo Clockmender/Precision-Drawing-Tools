@@ -31,7 +31,13 @@ from .pdt_msg_strings import *
 
 
 def add_line_to_bisection(self):
-    """FIXME"""
+    """Computes Bisector of 2 Co-Planar Edges.
+
+    Args:
+        None
+
+    Returns:
+        Nothing."""
 
     obj = bpy.context.object
     me = obj.data
@@ -71,13 +77,13 @@ def add_line_to_bisection(self):
     dex1 = dex1 * (bdist / dex1.length)
     dex2 = dex2 * (bdist / dex2.length)
     pt2 = pt + (dex1).lerp(dex2, 0.5)
-    # pt3 = pt2.lerp(pt, 2.0)
+    pt3 = pt2.lerp(pt, 2.0)
 
     vec1 = bm.verts.new(pt2)
     vec2 = bm.verts.new(pt)
-    # vec3 = bm.verts.new(pt3)
+    vec3 = bm.verts.new(pt3)
     bm.edges.new((vec1, vec2))
-    # bm.edges.new((vec2, vec3))
+    bm.edges.new((vec2, vec3))
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
     bmesh.update_edit_mesh(me)
 
@@ -95,5 +101,13 @@ class PDT_OT_LineOnBisection(bpy.types.Operator):
         return all([obj is not None, obj.type == "MESH", obj.mode == "EDIT"])
 
     def execute(self, context):
+        """Computes Bisector of 2 Co-Planar Edges.
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set."""
+
         add_line_to_bisection(self)
         return {"FINISHED"}
