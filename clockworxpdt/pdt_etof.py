@@ -108,6 +108,8 @@ class PDT_OT_EdgeToFace(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):

@@ -1060,6 +1060,8 @@ class PDT_OT_JoinVerts(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
@@ -1106,6 +1108,8 @@ class PDT_OT_Fillet(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
     def execute(self, context):
@@ -1362,6 +1366,8 @@ class PDT_OT_Taper(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
 

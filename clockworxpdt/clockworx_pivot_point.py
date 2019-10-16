@@ -111,6 +111,8 @@ class PDT_OT_ViewPlaneRotate(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
 
@@ -161,6 +163,8 @@ class PDT_OT_ViewPlaneScale(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
 
@@ -262,6 +266,8 @@ class PDT_OT_PivotSelected(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH", ob.mode == "EDIT"])
 
 
@@ -310,6 +316,8 @@ class PDT_OT_PivotOrigin(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH"])
 
     def execute(self, context):
@@ -343,6 +351,8 @@ class PDT_OT_PivotWrite(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH"])
 
     def execute(self, context):
@@ -386,6 +396,8 @@ class PDT_OT_PivotRead(Operator):
     @classmethod
     def poll(cls, context):
         ob = context.object
+        if ob is None:
+            return False
         return all([bool(ob), ob.type == "MESH"])
 
     def execute(self, context):
