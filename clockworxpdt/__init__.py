@@ -63,6 +63,7 @@ else:
     from . import pdt_bix
     from . import pdt_etof
 import bpy
+import os
 from bpy.types import AddonPreferences, Scene, WindowManager
 from bpy.props import (
     FloatVectorProperty,
@@ -176,7 +177,7 @@ def enumlist_objects(self, context):
     """
 
     scene = context.scene
-    path = str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
+    path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
     with bpy.data.libraries.load(path) as (data_from, data_to):
         if len(scene.pdt_obsearch) == 0:
             object_names = [ob for ob in data_from.objects]
@@ -202,7 +203,7 @@ def enumlist_collections(self, context):
     """
 
     scene = context.scene
-    path = str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
+    path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
     with bpy.data.libraries.load(path) as (data_from, data_to):
         if len(scene.pdt_cosearch) == 0:
             object_names = [ob for ob in data_from.collections]
@@ -228,7 +229,7 @@ def enumlist_materials(self, context):
     """
 
     scene = context.scene
-    path = str(bpy.utils.user_resource("SCRIPTS", "addons")) + "/clockworxpdt/parts_library.blend"
+    path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
     with bpy.data.libraries.load(path) as (data_from, data_to):
         if len(scene.pdt_masearch) == 0:
             object_names = [ob for ob in data_from.materials]
