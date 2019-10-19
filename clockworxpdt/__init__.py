@@ -27,7 +27,7 @@
 # ----------------------------------------------
 #
 bl_info = {
-    "name": "Precision Draughting Tools (PDT)",
+    "name": "Precision Drawing Tools (PDT)",
     "author": "Alan Odom (Clockmender)",
     "version": (1, 1, 5),
     "blender": (2, 80, 0),
