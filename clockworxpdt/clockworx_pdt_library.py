@@ -49,6 +49,8 @@ class PDT_OT_LibShow(Operator):
 
         scene = context.scene
         scene.pdt_error = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+        print("PDT Parts Library:")
+        print(scene.pdt_error)
         bpy.context.window_manager.popup_menu(oops, title="Information - Parts Library File", icon="INFO")
         return {"FINISHED"}
 
