@@ -32,7 +32,7 @@ from . import pdt_cad_module as cm
 
 
 def order_points(edge, point_list):
-    """"Order these edges from distance to v1, then sandwich the sorted list with v1, v2 """
+    """Order these edges from distance to v1, then sandwich the sorted list with v1, v2."""
     v1, v2 = edge
 
     def dist(co):
@@ -43,7 +43,7 @@ def order_points(edge, point_list):
 
 
 def remove_permutations_that_share_a_vertex(bm, permutations):
-    """Get useful Permutations"""
+    """Get useful Permutations."""
 
     final_permutations = []
     for edges in permutations:
@@ -58,7 +58,7 @@ def remove_permutations_that_share_a_vertex(bm, permutations):
 
 
 def get_valid_permutations(bm, edge_indices):
-    """Get useful Permutations"""
+    """Get useful Permutations."""
 
     raw_permutations = itertools.permutations(edge_indices, 2)
     permutations = [r for r in raw_permutations if r[0] < r[1]]
@@ -67,7 +67,7 @@ def get_valid_permutations(bm, edge_indices):
 
 def can_skip(closest_points, vert_vectors):
     """Check if the intersection lies on both edges and return True
-    when criteria are not met, and thus this point can be skipped"""
+    when criteria are not met, and thus this point can be skipped."""
 
     if not closest_points:
         return True
@@ -117,7 +117,7 @@ def get_intersection_dictionary(bm, edge_indices):
 
 
 def update_mesh(bm, int_dict):
-    """Make new geometry (delete old first)"""
+    """Make new geometry (delete old first)."""
 
     oe = bm.edges
     ov = bm.verts
@@ -147,7 +147,7 @@ def unselect_nonintersecting(bm, d_edges, edge_indices):
 
 
 class PDT_OT_IntersectAllEdges(bpy.types.Operator):
-    """Cut Selected Edges at All Intersections"""
+    """Cut Selected Edges at All Intersections."""
 
     bl_idname = "pdt.intersectall"
     bl_label = "Intersect All Edges"

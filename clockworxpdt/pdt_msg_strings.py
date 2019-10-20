@@ -80,6 +80,7 @@ PDT_ERR_NO_ACT_VERTS  = "No Selected Geometry - Please Select some Geometry"
 PDT_ERR_NON_VALID     = "is Not a Valid Option for Command:"
 PDT_ERR_VERT_MODE     = "Work in Vertex Mode for this Function"
 PDT_ERR_NOPPLOC       = "Custom Property PDT_PP_LOC for this object not found, have you Written it yet?"
+PDT_ERR_NO_LIBRARY    = "PDT Library Blend File (parts_library.blend) is Missing from Addons/clockworxpdt Folder"
 
 PDT_ERR_SEL_1_VERTI   = "Select at least 1 Vertex Individually (Currently selected:"
 PDT_ERR_SEL_1_VERT    = "Select at least 1 Vertex (Currently selected:"

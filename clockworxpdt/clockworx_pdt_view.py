@@ -32,7 +32,7 @@ from .pdt_msg_strings import *
 
 
 class PDT_OT_ViewRot(Operator):
-    """Rotate View using X Y Z Absolute Rotations"""
+    """Rotate View using X Y Z Absolute Rotations."""
 
     bl_idname = "pdt.viewrot"
     bl_label = "Rotate View"
@@ -65,7 +65,7 @@ class PDT_OT_ViewRot(Operator):
 
 
 class PDT_OT_vRotL(Operator):
-    """Orbit View to Left by Angle"""
+    """Orbit View to Left by Angle."""
 
     bl_idname = "pdt.viewleft"
     bl_label = "Rotate Left"
@@ -93,7 +93,7 @@ class PDT_OT_vRotL(Operator):
 
 
 class PDT_OT_vRotR(Operator):
-    """Orbit View to Right by Angle"""
+    """Orbit View to Right by Angle."""
 
     bl_idname = "pdt.viewright"
     bl_label = "Rotate Right"
@@ -122,7 +122,7 @@ class PDT_OT_vRotR(Operator):
 
 
 class PDT_OT_vRotU(Operator):
-    """Orbit View to Up by Angle"""
+    """Orbit View to Up by Angle."""
 
     bl_idname = "pdt.viewup"
     bl_label = "Rotate Up"
@@ -151,7 +151,7 @@ class PDT_OT_vRotU(Operator):
 
 
 class PDT_OT_vRotD(Operator):
-    """Orbit View to Down by Angle"""
+    """Orbit View to Down by Angle."""
 
     bl_idname = "pdt.viewdown"
     bl_label = "Rotate Down"
@@ -180,7 +180,7 @@ class PDT_OT_vRotD(Operator):
 
 
 class PDT_OT_vRoll(Operator):
-    """Roll View by Angle"""
+    """Roll View by Angle."""
 
     bl_idname = "pdt.viewroll"
     bl_label = "Roll View"
@@ -209,7 +209,7 @@ class PDT_OT_vRoll(Operator):
 
 
 class PDT_OT_viso(Operator):
-    """Isometric View"""
+    """Isometric View."""
 
     bl_idname = "pdt.viewiso"
     bl_label = "Isometric View"
