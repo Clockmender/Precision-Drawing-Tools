@@ -146,6 +146,7 @@ classes = (
     clockworx_pivot_point.PDT_OT_PivotRead,
     clockworx_pdt_library.PDT_OT_Append,
     clockworx_pdt_library.PDT_OT_Link,
+    clockworx_pdt_library.PDT_OT_LibShow,
     clockworx_pdt_view.PDT_OT_ViewRot,
     clockworx_pdt_view.PDT_OT_vRotL,
     clockworx_pdt_view.PDT_OT_vRotR,
@@ -178,7 +179,7 @@ def enumlist_objects(self, context):
     """
 
     scene = context.scene
-    path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
+    path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
     if Path(path).is_file():
         with bpy.data.libraries.load(path) as (data_from, data_to):
             if len(scene.pdt_obsearch) == 0:
@@ -207,7 +208,7 @@ def enumlist_collections(self, context):
     """
 
     scene = context.scene
-    path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
+    path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
     if Path(path).is_file():
         with bpy.data.libraries.load(path) as (data_from, data_to):
             if len(scene.pdt_cosearch) == 0:
@@ -236,7 +237,7 @@ def enumlist_materials(self, context):
     """
 
     scene = context.scene
-    path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
+    path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
     if Path(path).is_file():
         with bpy.data.libraries.load(path) as (data_from, data_to):
             if len(scene.pdt_masearch) == 0:
