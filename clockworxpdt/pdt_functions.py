@@ -380,7 +380,7 @@ def getPercent(obj, flip_p, per_v, data, scene):
 
     Args:
         obj: The Object under consideration
-        per_v: FIXME
+        per_v: Percentage Input Value
         data: pdt_flip, pdt_percent scene variables & Operational Mode
         scene: Context Scene
 
