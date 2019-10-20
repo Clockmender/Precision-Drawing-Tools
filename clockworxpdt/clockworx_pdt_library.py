@@ -23,6 +23,7 @@
 #
 import bpy
 import os
+from pathlib import Path
 from mathutils import Vector
 from bpy.types import Operator
 from bpy.props import FloatProperty
@@ -30,7 +31,7 @@ from bpy.props import FloatProperty
 from .pdt_msg_strings import *
 
 class PDT_OT_Append(Operator):
-    """Append from Library at cursor Location"""
+    """Append from Library at cursor Location."""
 
     bl_idname = "pdt.append"
     bl_label = "Append"
@@ -59,37 +60,42 @@ class PDT_OT_Append(Operator):
             "parts_library.blend")
             )
 
-        if scene.pdt_lib_mode == "OBJECTS":
-            bpy.ops.wm.append(
-                filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
-            )
-            for obj in context.view_layer.objects:
-                if obj.name not in obj_names:
-                    obj.select_set(False)
-                    obj.location = Vector(
-                        (scene.cursor.location.x, scene.cursor.location.y, scene.cursor.location.z)
-                    )
-            return {"FINISHED"}
-        elif scene.pdt_lib_mode == "COLLECTIONS":
-            bpy.ops.wm.append(
-                filepath=path, directory=path + "/Collection", filename=scene.pdt_lib_collections
-            )
-            for obj in context.view_layer.objects:
-                if obj.name not in obj_names:
-                    obj.select_set(False)
-                    obj.location = Vector(
-                        (scene.cursor.location.x, scene.cursor.location.y, scene.cursor.location.z)
-                    )
-            return {"FINISHED"}
-        elif scene.pdt_lib_mode == "MATERIALS":
-            bpy.ops.wm.append(
-                filepath=path, directory=path + "/Material", filename=scene.pdt_lib_materials
-            )
+        if Path(path).is_file():
+            if scene.pdt_lib_mode == "OBJECTS":
+                bpy.ops.wm.append(
+                    filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
+                )
+                for obj in context.view_layer.objects:
+                    if obj.name not in obj_names:
+                        obj.select_set(False)
+                        obj.location = Vector(
+                            (scene.cursor.location.x, scene.cursor.location.y, scene.cursor.location.z)
+                        )
+                return {"FINISHED"}
+            elif scene.pdt_lib_mode == "COLLECTIONS":
+                bpy.ops.wm.append(
+                    filepath=path, directory=path + "/Collection", filename=scene.pdt_lib_collections
+                )
+                for obj in context.view_layer.objects:
+                    if obj.name not in obj_names:
+                        obj.select_set(False)
+                        obj.location = Vector(
+                            (scene.cursor.location.x, scene.cursor.location.y, scene.cursor.location.z)
+                        )
+                return {"FINISHED"}
+            elif scene.pdt_lib_mode == "MATERIALS":
+                bpy.ops.wm.append(
+                    filepath=path, directory=path + "/Material", filename=scene.pdt_lib_materials
+                )
+                return {"FINISHED"}
+        else:
+            errmsg = PDT_ERR_NO_LIBRARY
+            self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
 
 class PDT_OT_Link(Operator):
-    """Link from Library at Object's Origin"""
+    """Link from Library at Object's Origin."""
 
     bl_idname = "pdt.link"
     bl_label = "Link"
@@ -115,24 +121,30 @@ class PDT_OT_Link(Operator):
             "clockworxpdt",
             "parts_library.blend")
             )
-        if scene.pdt_lib_mode == "OBJECTS":
-            bpy.ops.wm.link(
-                filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
-            )
-            obj_names = [o.name for o in context.view_layer.objects]
-            for obj in context.view_layer.objects:
-                obj.select_set(False)
-            return {"FINISHED"}
-        elif scene.pdt_lib_mode == "COLLECTIONS":
-            bpy.ops.wm.link(
-                filepath=path, directory=path + "/Collection", filename=scene.pdt_lib_collections
-            )
-            obj_names = [o.name for o in context.view_layer.objects]
-            for obj in context.view_layer.objects:
-                obj.select_set(False)
-            return {"FINISHED"}
-        elif scene.pdt_lib_mode == "MATERIALS":
-            bpy.ops.wm.link(
-                filepath=path, directory=path + "/Material", filename=scene.pdt_lib_materials
-            )
+
+        if Path(path).is_file():
+            if scene.pdt_lib_mode == "OBJECTS":
+                bpy.ops.wm.link(
+                    filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
+                )
+                obj_names = [o.name for o in context.view_layer.objects]
+                for obj in context.view_layer.objects:
+                    obj.select_set(False)
+                return {"FINISHED"}
+            elif scene.pdt_lib_mode == "COLLECTIONS":
+                bpy.ops.wm.link(
+                    filepath=path, directory=path + "/Collection", filename=scene.pdt_lib_collections
+                )
+                obj_names = [o.name for o in context.view_layer.objects]
+                for obj in context.view_layer.objects:
+                    obj.select_set(False)
+                return {"FINISHED"}
+            elif scene.pdt_lib_mode == "MATERIALS":
+                bpy.ops.wm.link(
+                    filepath=path, directory=path + "/Material", filename=scene.pdt_lib_materials
+                )
+                return {"FINISHED"}
+        else:
+            errmsg = PDT_ERR_NO_LIBRARY
+            self.report({"ERROR"}, errmsg)
             return {"FINISHED"}

@@ -64,6 +64,7 @@ else:
     from . import pdt_etof
 import bpy
 import os
+from pathlib import Path
 from bpy.types import AddonPreferences, Scene, WindowManager
 from bpy.props import (
     FloatVectorProperty,
@@ -178,15 +179,18 @@ def enumlist_objects(self, context):
 
     scene = context.scene
     path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
-    with bpy.data.libraries.load(path) as (data_from, data_to):
-        if len(scene.pdt_obsearch) == 0:
-            object_names = [ob for ob in data_from.objects]
-        else:
-            object_names = [ob for ob in data_from.objects if scene.pdt_obsearch in ob]
-    items = []
-    for ob in object_names:
-        items.append((ob, ob, ""))
-    return items
+    if Path(path).is_file():
+        with bpy.data.libraries.load(path) as (data_from, data_to):
+            if len(scene.pdt_obsearch) == 0:
+                object_names = [ob for ob in data_from.objects]
+            else:
+                object_names = [ob for ob in data_from.objects if scene.pdt_obsearch in ob]
+        items = []
+        for ob in object_names:
+            items.append((ob, ob, ""))
+        return items
+    else:
+        return [("MISSING","Library is Missing","")]
 
 
 def enumlist_collections(self, context):
@@ -204,15 +208,18 @@ def enumlist_collections(self, context):
 
     scene = context.scene
     path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
-    with bpy.data.libraries.load(path) as (data_from, data_to):
-        if len(scene.pdt_cosearch) == 0:
-            object_names = [ob for ob in data_from.collections]
-        else:
-            object_names = [ob for ob in data_from.collections if scene.pdt_cosearch in ob]
-    items = []
-    for ob in object_names:
-        items.append((ob, ob, ""))
-    return items
+    if Path(path).is_file():
+        with bpy.data.libraries.load(path) as (data_from, data_to):
+            if len(scene.pdt_cosearch) == 0:
+                object_names = [ob for ob in data_from.collections]
+            else:
+                object_names = [ob for ob in data_from.collections if scene.pdt_cosearch in ob]
+        items = []
+        for ob in object_names:
+            items.append((ob, ob, ""))
+        return items
+    else:
+        return [("MISSING","Library is Missing","")]
 
 
 def enumlist_materials(self, context):
@@ -230,15 +237,18 @@ def enumlist_materials(self, context):
 
     scene = context.scene
     path =  os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"), "clockworxpdt", "parts_library.blend")
-    with bpy.data.libraries.load(path) as (data_from, data_to):
-        if len(scene.pdt_masearch) == 0:
-            object_names = [ob for ob in data_from.materials]
-        else:
-            object_names = [ob for ob in data_from.materials if scene.pdt_masearch in ob]
-    items = []
-    for ob in object_names:
-        items.append((ob, ob, ""))
-    return items
+    if Path(path).is_file():
+        with bpy.data.libraries.load(path) as (data_from, data_to):
+            if len(scene.pdt_masearch) == 0:
+                object_names = [ob for ob in data_from.materials]
+            else:
+                object_names = [ob for ob in data_from.materials if scene.pdt_masearch in ob]
+        items = []
+        for ob in object_names:
+            items.append((ob, ob, ""))
+        return items
+    else:
+        return [("MISSING","Library is Missing","")]
 
 
 def register():

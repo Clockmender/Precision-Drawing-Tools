@@ -46,10 +46,14 @@ def point_on_edge(p, edge):
 
 
 def line_from_edge_intersect(edge1, edge2):
-    """ FIXME
-    > takes 2 tuples, each tuple contains 2 vectors
-    - prepares input for sending to intersect_line_line
-    < returns output of intersect_line_line
+    """Get New Line from Intersections.
+
+    Arguments:
+        Takes 2 tuples, each tuple contains 2 vectors
+        prepares input for sending to intersect_line_line
+
+    Returns:
+        Output of intersect_line_line.
     """
 
     [p1, p2], [p3, p4] = edge1, edge2
@@ -57,9 +61,13 @@ def line_from_edge_intersect(edge1, edge2):
 
 
 def get_intersection(edge1, edge2):
-    """ FIXME
-    > takes 2 tuples, each tuple contains 2 vectors
-    < returns the point halfway on line. See intersect_line_line
+    """Get Intersections of 2 Edges.
+
+    Arguments:
+        Takes 2 tuples, each tuple contains 2 vectors
+
+    Returns:
+        The point halfway on line. See intersect_line_line.
     """
 
     line = line_from_edge_intersect(edge1, edge2)
@@ -68,11 +76,18 @@ def get_intersection(edge1, edge2):
 
 
 def test_coplanar(edge1, edge2):
-    """ FIXME
-    the line that describes the shortest line between the two edges
+    """Test 2 Edges are Co-planar.
+
+    Arguments:
+        2 Edges
+
+    The line that describes the shortest line between the two edges
     would be short if the lines intersect mathematically. If this
     line is longer than 1.0e-5 then they are either
-    coplanar or parallel.
+    coplanar or parallel
+
+    Returns:
+        True / False for co-planarity.
     """
 
     line = line_from_edge_intersect(edge1, edge2)
@@ -81,12 +96,16 @@ def test_coplanar(edge1, edge2):
 
 
 def closest_idx(pt, e):
-    """ FIXME
-    > pt:       vector
-    > e:        bmesh edge
-    < returns:  returns index of vertex closest to pt.
+    """Get Closest Vertex to input point.
 
-    if both points in e are equally far from pt, then v1 is returned.
+    Arguments:
+        pt:       vector
+        e:        bmesh edge
+
+    If both points in e are equally far from pt, then v1 is returned
+
+    Returns:
+        Index of vertex closest to pt.
     """
 
     if isinstance(e, bmesh.types.BMEdge):
@@ -100,13 +119,16 @@ def closest_idx(pt, e):
 
 
 def closest_vector(pt, e):
-    """ FIXME
-    > pt:       vector
-    > e:        2 vector tuple
-    < returns:
-    pt, 2 vector tuple: returns closest vector to pt
+    """Return Closest Vector to input Point.
 
-    if both points in e are equally far from pt, then v1 is returned.
+    Arguments:
+        pt:       vector
+        e:        2 vector tuple
+
+    If both points in e are equally far from pt, then v1 is returned.
+
+    Returns:
+        pt, 2 vector tuple: returns closest vector to pt.
     """
 
     if isinstance(e, tuple) and all([isinstance(co, Vector) for co in e]):
@@ -118,20 +140,24 @@ def closest_vector(pt, e):
 
 
 def coords_tuple_from_edge_idx(bm, idx):
-    """FIXME bm is a bmesh representation """
+    """Return Tuple from Vertex."""
     return tuple(v.co for v in bm.edges[idx].verts)
 
 
 def vectors_from_indices(bm, raw_vert_indices):
-    """FIXME bm is a bmesh representation """
+    """Return List of vectors from input indices."""
     return [bm.verts[i].co for i in raw_vert_indices]
 
 
 def vertex_indices_from_edges_tuple(bm, edge_tuple):
-    """ FIXME
-    > bm:           is a bmesh representation
-    > edge_tuple:   contains two edge indices.
-    < returns the vertex indices of edge_tuple
+    """Return List of vertices.
+
+    Arguments:
+        bm:           is a bmesh representation
+        edge_tuple:   contains two edge indices.
+
+    Returns:
+        The vertex indices of edge_tuple.
     """
 
     def k(v, w):
@@ -141,9 +167,13 @@ def vertex_indices_from_edges_tuple(bm, edge_tuple):
 
 
 def get_vert_indices_from_bmedges(edges):
-    """ FIXME
-    > bmedges:      a list of two bm edges
-    < returns the vertex indices of edge_tuple as a flat list.
+    """Return List of Edges for evaluation.
+
+    Arguments:
+        bmedges:      a list of two bm edges
+
+    Returns:
+        The vertex indices of edge_tuple as a flat list.
     """
     temp_edges = []
     print(edges)
@@ -154,16 +184,20 @@ def get_vert_indices_from_bmedges(edges):
 
 
 def num_edges_point_lies_on(pt, edges):
-    """FIXME returns the number of edges that a point lies on. """
+    """Returns the number of edges that a point lies on."""
     res = [point_on_edge(pt, edge) for edge in [edges[:2], edges[2:]]]
     return len([i for i in res if i])
 
 
 def find_intersecting_edges(bm, pt, idx1, idx2):
-    """FIXME
-    > pt:           Vector
-    > idx1, ix2:    edge indices
-    < returns the list of edge indices where pt is on those edges
+    """Find Intercecting Edges.
+
+    Arguments:
+        pt:           Vector
+        idx1, ix2:    edge indices
+
+    Returns:
+        The list of edge indices where pt is on those edges.
     """
     if not pt:
         return []

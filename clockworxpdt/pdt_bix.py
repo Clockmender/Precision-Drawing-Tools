@@ -89,7 +89,7 @@ def add_line_to_bisection(self):
 
 
 class PDT_OT_LineOnBisection(bpy.types.Operator):
-    """Create Bisector between 2 Selected Edges"""
+    """Create Bisector between 2 Selected Edges."""
 
     bl_idname = "pdt.linetobisect"
     bl_label = "Add Edges Bisector"
