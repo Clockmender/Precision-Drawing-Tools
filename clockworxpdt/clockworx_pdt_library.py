@@ -27,8 +27,31 @@ from pathlib import Path
 from mathutils import Vector
 from bpy.types import Operator
 from bpy.props import FloatProperty
+from .pdt_functions import oops
 
 from .pdt_msg_strings import *
+
+class PDT_OT_LibShow(Operator):
+    """Show Library File Details."""
+    bl_idname = "pdt.lib_show"
+    bl_label = "Show Library Details"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        """Shows Location Of PDT Library File.
+
+        Args:
+            context: Current Blender bpy.context
+
+        Returns:
+            Status Set.
+        """
+
+        scene = context.scene
+        scene.pdt_error = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+        bpy.context.window_manager.popup_menu(oops, title="Information - Parts Library File", icon="INFO")
+        return {"FINISHED"}
+
 
 class PDT_OT_Append(Operator):
     """Append from Library at cursor Location."""
@@ -54,11 +77,7 @@ class PDT_OT_Append(Operator):
 
         scene = context.scene
         obj_names = [o.name for o in context.view_layer.objects]
-        path = (
-            os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"),
-            "clockworxpdt",
-            "parts_library.blend")
-            )
+        path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
 
         if Path(path).is_file():
             if scene.pdt_lib_mode == "OBJECTS":
@@ -117,10 +136,7 @@ class PDT_OT_Link(Operator):
         """
 
         scene = context.scene
-        path = (os.path.join(bpy.utils.user_resource("SCRIPTS", "addons"),
-            "clockworxpdt",
-            "parts_library.blend")
-            )
+        path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
 
         if Path(path).is_file():
             if scene.pdt_lib_mode == "OBJECTS":

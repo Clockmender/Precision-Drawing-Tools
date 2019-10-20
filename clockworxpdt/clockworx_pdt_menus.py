@@ -24,6 +24,8 @@
 import bpy
 from bpy.types import Panel
 from .pdt_msg_strings import *
+import os
+from pathlib import Path
 
 # PDT Panel menus
 #
@@ -233,6 +235,8 @@ class PDT_PT_Panel3(Panel):
         col.prop(scene, "pdt_masearch")
         row = box.row()
         row.prop(scene, "pdt_lib_materials", text="")
+        row = box.row()
+        row.operator("pdt.lib_show", text="Show Library File",icon='INFO')
 
 
 class PDT_PT_Panel4(Panel):
