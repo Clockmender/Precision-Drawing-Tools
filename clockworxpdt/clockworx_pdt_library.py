@@ -79,6 +79,8 @@ class PDT_OT_Append(Operator):
 
         scene = context.scene
         obj_names = [o.name for o in context.view_layer.objects]
+        # Force object Mode
+        bpy.ops.object.mode_set(mode='OBJECT')
         path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
 
         if Path(path).is_file():
@@ -139,7 +141,8 @@ class PDT_OT_Link(Operator):
 
         scene = context.scene
         path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
-
+        # Force object Mode
+        bpy.ops.object.mode_set(mode='OBJECT')
         if Path(path).is_file():
             if scene.pdt_lib_mode == "OBJECTS":
                 bpy.ops.wm.link(
