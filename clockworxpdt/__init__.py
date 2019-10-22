@@ -186,11 +186,11 @@ def enumlist_objects(self, context):
     """
 
     scene = context.scene
-    path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+    path = Path(__file__).parent / "parts_library.blend"
     _pdt_obj_items.clear()
 
-    if Path(path).is_file():
-        with bpy.data.libraries.load(path) as (data_from, data_to):
+    if path.is_file():
+        with bpy.data.libraries.load(str(path)) as (data_from, data_to):
             if len(scene.pdt_obsearch) == 0:
                 object_names = [ob for ob in data_from.objects]
             else:
@@ -216,11 +216,11 @@ def enumlist_collections(self, context):
     """
 
     scene = context.scene
-    path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
-    _pdt_col_items.clear()
+    path = Path(__file__).parent / "parts_library.blend"
+    _pdt_obj_items.clear()
 
-    if Path(path).is_file():
-        with bpy.data.libraries.load(path) as (data_from, data_to):
+    if path.is_file():
+        with bpy.data.libraries.load(str(path)) as (data_from, data_to):
             if len(scene.pdt_cosearch) == 0:
                 object_names = [ob for ob in data_from.collections]
             else:
@@ -246,11 +246,11 @@ def enumlist_materials(self, context):
     """
 
     scene = context.scene
-    path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
-    _pdt_mat_items.clear()
+    path = Path(__file__).parent / "parts_library.blend"
+    _pdt_obj_items.clear()
 
-    if Path(path).is_file():
-        with bpy.data.libraries.load(path) as (data_from, data_to):
+    if path.is_file():
+        with bpy.data.libraries.load(str(path)) as (data_from, data_to):
             if len(scene.pdt_masearch) == 0:
                 object_names = [ob for ob in data_from.materials]
             else:
