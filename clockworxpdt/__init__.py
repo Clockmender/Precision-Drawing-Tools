@@ -165,6 +165,13 @@ classes = (
 )
 
 
+# Declare enum items variables
+#
+_pdt_obj_items = []
+_pdt_col_items = []
+_pdt_mat_items = []
+
+
 def enumlist_objects(self, context):
     """Populate Objects List from Parts Library.
 
@@ -180,18 +187,19 @@ def enumlist_objects(self, context):
 
     scene = context.scene
     path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+    _pdt_obj_items.clear()
+
     if Path(path).is_file():
         with bpy.data.libraries.load(path) as (data_from, data_to):
             if len(scene.pdt_obsearch) == 0:
                 object_names = [ob for ob in data_from.objects]
             else:
                 object_names = [ob for ob in data_from.objects if scene.pdt_obsearch in ob]
-        items = []
-        for ob in object_names:
-            items.append((ob, ob, ""))
-        return items
+        for object_name in object_names:
+            _pdt_obj_items.append((object_name, object_name, ""))
     else:
-        return [("MISSING","Library is Missing","")]
+        _pdt_obj_items.append(("MISSING","Library is Missing",""))
+    return _pdt_obj_items
 
 
 def enumlist_collections(self, context):
@@ -209,18 +217,19 @@ def enumlist_collections(self, context):
 
     scene = context.scene
     path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+    _pdt_col_items.clear()
+
     if Path(path).is_file():
         with bpy.data.libraries.load(path) as (data_from, data_to):
             if len(scene.pdt_cosearch) == 0:
                 object_names = [ob for ob in data_from.collections]
             else:
                 object_names = [ob for ob in data_from.collections if scene.pdt_cosearch in ob]
-        items = []
-        for ob in object_names:
-            items.append((ob, ob, ""))
-        return items
+        for object_name in object_names:
+            _pdt_col_items.append((object_name, object_name, ""))
     else:
-        return [("MISSING","Library is Missing","")]
+        _pdt_col_items.append(("MISSING","Library is Missing",""))
+    return _pdt_col_items
 
 
 def enumlist_materials(self, context):
@@ -238,18 +247,19 @@ def enumlist_materials(self, context):
 
     scene = context.scene
     path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+    _pdt_mat_items.clear()
+
     if Path(path).is_file():
         with bpy.data.libraries.load(path) as (data_from, data_to):
             if len(scene.pdt_masearch) == 0:
                 object_names = [ob for ob in data_from.materials]
             else:
                 object_names = [ob for ob in data_from.materials if scene.pdt_masearch in ob]
-        items = []
-        for ob in object_names:
-            items.append((ob, ob, ""))
-        return items
+        for object_name in object_names:
+            _pdt_mat_items.append((object_name, object_name, ""))
     else:
-        return [("MISSING","Library is Missing","")]
+        _pdt_mat_items.append(("MISSING","Library is Missing",""))
+    return _pdt_mat_items
 
 
 def register():
