@@ -131,7 +131,8 @@ class PDTPreferences(bpy.types.AddonPreferences):
         )
 
     pdt_library_path : StringProperty(
-        name="Library Path", default=pdt_library_path, description="Library Path"
+        name="Library Path", default=pdt_library_path, description="Library Path",
+         maxlen=1024, subtype='DIR_PATH'
         )
 
     def draw(self, context):
