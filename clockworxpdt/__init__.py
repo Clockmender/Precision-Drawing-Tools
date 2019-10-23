@@ -119,6 +119,31 @@ def update_panel(self, context):
         pass
 
 
+class PDTPreferences(bpy.types.AddonPreferences):
+    # This must match the addon name, use '__package__' when defining this in a submodule of a python package.
+
+    bl_idname = __name__
+
+    pdt_library_path = str(Path(__file__).parent)
+
+    pdt_library_name : StringProperty(
+        name="Library Name", default="parts_library", description="Library Name"
+        )
+
+    pdt_library_path : StringProperty(
+        name="Library Path", default=pdt_library_path, description="Library Path"
+        )
+
+    def draw(self, context):
+        layout = self.layout
+
+        box = layout.box()
+        row = box.row()
+        row.prop(self, "pdt_library_path")
+        row = box.row()
+        row.prop(self, "pdt_library_name")
+
+
 # List of All Classes in the Add-on to register
 #
 classes = (
@@ -162,6 +187,7 @@ classes = (
     clockworx_pdt_menus.PDT_PT_Panel5,
     clockworx_pdt_menus.PDT_PT_Panel2,
     clockworx_pdt_menus.PDT_PT_Panel3,
+    PDTPreferences,
 )
 
 
@@ -186,7 +212,9 @@ def enumlist_objects(self, context):
     """
 
     scene = context.scene
-    path = Path(__file__).parent / "parts_library.blend"
+    file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
+    file_path = context.preferences.addons[__package__].preferences.pdt_library_path
+    path = Path(file_path) / file_name
     _pdt_obj_items.clear()
 
     if path.is_file():
@@ -216,7 +244,9 @@ def enumlist_collections(self, context):
     """
 
     scene = context.scene
-    path = Path(__file__).parent / "parts_library.blend"
+    file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
+    file_path = context.preferences.addons[__package__].preferences.pdt_library_path
+    path = Path(file_path) / file_name
     _pdt_col_items.clear()
 
     if path.is_file():
@@ -246,7 +276,9 @@ def enumlist_materials(self, context):
     """
 
     scene = context.scene
-    path = Path(__file__).parent / "parts_library.blend"
+    file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
+    file_path = context.preferences.addons[__package__].preferences.pdt_library_path
+    path = Path(file_path) / file_name
     _pdt_mat_items.clear()
 
     if path.is_file():
