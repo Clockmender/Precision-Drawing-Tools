@@ -48,7 +48,9 @@ class PDT_OT_LibShow(Operator):
         """
 
         scene = context.scene
-        scene.pdt_error = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+        file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
+        file_path = context.preferences.addons[__package__].preferences.pdt_library_path
+        scene.pdt_error = str(Path(file_path) / file_name)
         print("PDT Parts Library:")
         print(scene.pdt_error)
         bpy.context.window_manager.popup_menu(oops, title="Information - Parts Library File", icon="INFO")
@@ -79,14 +81,16 @@ class PDT_OT_Append(Operator):
 
         scene = context.scene
         obj_names = [o.name for o in context.view_layer.objects]
-        # Force object Mode
-        bpy.ops.object.mode_set(mode='OBJECT')
-        path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
+        file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
+        file_path = context.preferences.addons[__package__].preferences.pdt_library_path
+        path = Path(file_path) / file_name
 
-        if Path(path).is_file():
+        if path.is_file():
             if scene.pdt_lib_mode == "OBJECTS":
+                # Force object Mode
+                bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.wm.append(
-                    filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
+                    filepath=str(path), directory=str(path) + "/Object", filename=scene.pdt_lib_objects
                 )
                 for obj in context.view_layer.objects:
                     if obj.name not in obj_names:
@@ -97,7 +101,7 @@ class PDT_OT_Append(Operator):
                 return {"FINISHED"}
             elif scene.pdt_lib_mode == "COLLECTIONS":
                 bpy.ops.wm.append(
-                    filepath=path, directory=path + "/Collection", filename=scene.pdt_lib_collections
+                    filepath=str(path), directory=str(path) + "/Collection", filename=scene.pdt_lib_collections
                 )
                 for obj in context.view_layer.objects:
                     if obj.name not in obj_names:
@@ -108,7 +112,7 @@ class PDT_OT_Append(Operator):
                 return {"FINISHED"}
             elif scene.pdt_lib_mode == "MATERIALS":
                 bpy.ops.wm.append(
-                    filepath=path, directory=path + "/Material", filename=scene.pdt_lib_materials
+                    filepath=str(path), directory=str(path) + "/Material", filename=scene.pdt_lib_materials
                 )
                 return {"FINISHED"}
         else:
@@ -140,13 +144,15 @@ class PDT_OT_Link(Operator):
         """
 
         scene = context.scene
-        path = os.path.join(str(Path(__file__).parents[0]), "parts_library.blend")
-        # Force object Mode
-        bpy.ops.object.mode_set(mode='OBJECT')
-        if Path(path).is_file():
+        file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
+        file_path = context.preferences.addons[__package__].preferences.pdt_library_path
+        path = Path(file_path) / file_name
+        if path.is_file():
             if scene.pdt_lib_mode == "OBJECTS":
+                # Force object Mode
+                bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.wm.link(
-                    filepath=path, directory=path + "/Object", filename=scene.pdt_lib_objects
+                    filepath=str(path), directory=str(path) + "/Object", filename=scene.pdt_lib_objects
                 )
                 obj_names = [o.name for o in context.view_layer.objects]
                 for obj in context.view_layer.objects:
@@ -154,7 +160,7 @@ class PDT_OT_Link(Operator):
                 return {"FINISHED"}
             elif scene.pdt_lib_mode == "COLLECTIONS":
                 bpy.ops.wm.link(
-                    filepath=path, directory=path + "/Collection", filename=scene.pdt_lib_collections
+                    filepath=str(path), directory=str(path) + "/Collection", filename=scene.pdt_lib_collections
                 )
                 obj_names = [o.name for o in context.view_layer.objects]
                 for obj in context.view_layer.objects:
@@ -162,7 +168,7 @@ class PDT_OT_Link(Operator):
                 return {"FINISHED"}
             elif scene.pdt_lib_mode == "MATERIALS":
                 bpy.ops.wm.link(
-                    filepath=path, directory=path + "/Material", filename=scene.pdt_lib_materials
+                    filepath=str(path), directory=str(path) + "/Material", filename=scene.pdt_lib_materials
                 )
                 return {"FINISHED"}
         else:
