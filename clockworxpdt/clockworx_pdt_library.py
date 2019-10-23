@@ -48,9 +48,8 @@ class PDT_OT_LibShow(Operator):
         """
 
         scene = context.scene
-        file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
-        scene.pdt_error = str(Path(file_path) / file_name)
+        scene.pdt_error = str(Path(file_path))
         print("PDT Parts Library:")
         print(scene.pdt_error)
         bpy.context.window_manager.popup_menu(oops, title="Information - Parts Library File", icon="INFO")
@@ -81,9 +80,8 @@ class PDT_OT_Append(Operator):
 
         scene = context.scene
         obj_names = [o.name for o in context.view_layer.objects]
-        file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
-        path = Path(file_path) / file_name
+        path = Path(file_path)
 
         if path.is_file():
             if scene.pdt_lib_mode == "OBJECTS":
@@ -144,9 +142,8 @@ class PDT_OT_Link(Operator):
         """
 
         scene = context.scene
-        file_name = context.preferences.addons[__package__].preferences.pdt_library_name + ".blend"
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
-        path = Path(file_path) / file_name
+        path = Path(file_path)
         if path.is_file():
             if scene.pdt_lib_mode == "OBJECTS":
                 # Force object Mode
