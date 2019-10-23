@@ -34,7 +34,7 @@ bl_info = {
     "location": "View3D > UI > PDT",
     "description": "Precision Drawing Tools for Acccurate Modelling",
     "warning": "",
-    "wiki_url": "https://clockmender.uk/blender/precision-drawing-tools/",
+    "wiki_url": "https://github.com/Clockmender/Precision-Drawing-Tools/wiki",
     "category": "3D View",
 }
 
