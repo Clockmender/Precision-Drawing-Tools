@@ -217,7 +217,7 @@ def enumlist_collections(self, context):
 
     scene = context.scene
     path = Path(__file__).parent / "parts_library.blend"
-    _pdt_obj_items.clear()
+    _pdt_col_items.clear()
 
     if path.is_file():
         with bpy.data.libraries.load(str(path)) as (data_from, data_to):
@@ -247,7 +247,7 @@ def enumlist_materials(self, context):
 
     scene = context.scene
     path = Path(__file__).parent / "parts_library.blend"
-    _pdt_obj_items.clear()
+    _pdt_mat_items.clear()
 
     if path.is_file():
         with bpy.data.libraries.load(str(path)) as (data_from, data_to):
