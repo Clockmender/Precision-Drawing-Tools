@@ -83,7 +83,7 @@ class PDT_OT_Append(Operator):
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
         path = Path(file_path)
 
-        if path.is_file():
+        if path.is_file() and ".blend" in str(path):
             if scene.pdt_lib_mode == "OBJECTS":
                 # Force object Mode
                 bpy.ops.object.mode_set(mode='OBJECT')
@@ -144,7 +144,7 @@ class PDT_OT_Link(Operator):
         scene = context.scene
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
         path = Path(file_path)
-        if path.is_file():
+        if path.is_file() and ".blend" in str(path):
             if scene.pdt_lib_mode == "OBJECTS":
                 # Force object Mode
                 bpy.ops.object.mode_set(mode='OBJECT')
