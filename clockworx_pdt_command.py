@@ -91,52 +91,35 @@ def command_run(self, context):
         return
     else:
         data = comm[0]
+        # fmt: off
         if data not in [
-            "c",
-            "C",
-            "d",
-            "D",
-            "e",
-            "E",
-            "f",
-            "F",
-            "g",
-            "G",
-            "n",
-            "N",
-            "m",
-            "M",
-            "p",
-            "P",
-            "v",
-            "V",
-            "s",
-            "S",
+            "c", "C",
+            "d", "D",
+            "e", "E",
+            "f", "F",
+            "g", "G",
+            "n", "N",
+            "m", "M",
+            "p", "P",
+            "v", "V",
+            "s", "S",
         ]:
             scene.pdt_error = PDT_ERR_BADFLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         mode = comm[1]
         if mode not in [
-            "a",
-            "A",
-            "d",
-            "D",
-            "g",
-            "G",
-            "i",
-            "I",
-            "p",
-            "P",
-            "v",
-            "V",
-            "x",
-            "X",
-            "y",
-            "Y",
-            "z",
-            "Z"
+            "a", "A",
+            "d", "D",
+            "g", "G",
+            "i", "I",
+            "p", "P",
+            "v", "V",
+            "x", "X",
+            "y", "Y",
+            "z", "Z"
         ]:
+            # fmt: on
             scene.pdt_error = PDT_ERR_BADSLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
