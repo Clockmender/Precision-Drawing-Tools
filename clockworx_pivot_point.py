@@ -18,7 +18,7 @@
 # ***** END GPL LICENCE BLOCK *****
 
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender)
+# Author: Alan Odom (Clockmender) Copyright © 2019
 # ----------------------------------------------------------
 #
 import bpy
