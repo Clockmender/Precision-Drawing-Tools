@@ -18,8 +18,7 @@
 # ***** END GPL LICENCE BLOCK *****
 #
 # ----------------------------------------------------------
-# Authors: Alan Odom (Clockmender), Rune Morling (ermo)
-#  Copyright © 2019
+# Author: Alan Odom (Clockmender) Copyright © 2019
 # ----------------------------------------------------------
 #
 # English Version
