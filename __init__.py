@@ -48,8 +48,8 @@ if "bpy" in locals():
     importlib.reload(clockworx_pdt_design)
     importlib.reload(clockworx_pivot_point)
     importlib.reload(clockworx_pdt_menus)
-    importlib.relaod(clockworx_pdt_library)
-    importlib.relaod(clockworx_pdt_view)
+    importlib.reload(clockworx_pdt_library)
+    importlib.reload(clockworx_pdt_view)
     importlib.reload(pdt_xall)
     importlib.reload(pdt_bix)
     importlib.reload(pdt_etof)
@@ -115,7 +115,7 @@ def update_panel(self, context):
             bpy.utils.register_class(panel)
 
     except Exception as e:
-        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+        print(f"\n[{__name__}]\n{message}\n\nError:\n{e}")
         pass
 
 
@@ -339,8 +339,8 @@ def register():
     )
     Scene.pdt_operate = EnumProperty(
         items=(
-            ("CU", "Cursor", "Ths Function will Move the Cursor"),
-            ("PP", "Pivot", "Ths Function will Move the Pivot Point"),
+            ("CU", "Cursor", "This Function will Move the Cursor"),
+            ("PP", "Pivot", "This Function will Move the Pivot Point"),
             ("MV", "Move", "This function will Move Vertices, or Objects"),
             ("NV", "New Vertex", "This function will Add a New Vertex"),
             ("EV", "Extrude Vertices", "This function will Extrude Vertices Only in EDIT Mode"),
