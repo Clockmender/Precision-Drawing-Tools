@@ -45,20 +45,20 @@ bl_info = {
 if "bpy" in locals():
     import importlib
 
-    importlib.reload(clockworx_pdt_design)
-    importlib.reload(clockworx_pivot_point)
-    importlib.reload(clockworx_pdt_menus)
-    importlib.reload(clockworx_pdt_library)
-    importlib.reload(clockworx_pdt_view)
+    importlib.reload(pdt_design)
+    importlib.reload(pdt_pivot_point)
+    importlib.reload(pdt_menus)
+    importlib.reload(pdt_library)
+    importlib.reload(pdt_view)
     importlib.reload(pdt_xall)
     importlib.reload(pdt_bix)
     importlib.reload(pdt_etof)
 else:
-    from . import clockworx_pdt_design
-    from . import clockworx_pivot_point
-    from . import clockworx_pdt_menus
-    from . import clockworx_pdt_library
-    from . import clockworx_pdt_view
+    from . import pdt_design
+    from . import pdt_pivot_point
+    from . import pdt_menus
+    from . import pdt_library
+    from . import pdt_view
     from . import pdt_xall
     from . import pdt_bix
     from . import pdt_etof
@@ -76,7 +76,7 @@ from bpy.props import (
     CollectionProperty,
 )
 
-from .clockworx_pdt_command import command_run
+from .pdt_command import command_run
 from .pdt_functions import scale_set
 from .pdt_msg_strings import *
 
@@ -84,11 +84,11 @@ from .pdt_msg_strings import *
 # Define Panel classes for updating
 #
 panels = (
-    clockworx_pdt_menus.PDT_PT_Panel1,
-    clockworx_pdt_menus.PDT_PT_Panel2,
-    clockworx_pdt_menus.PDT_PT_Panel3,
-    clockworx_pdt_menus.PDT_PT_Panel4,
-    clockworx_pdt_menus.PDT_PT_Panel5,
+    pdt_menus.PDT_PT_Panel1,
+    pdt_menus.PDT_PT_Panel2,
+    pdt_menus.PDT_PT_Panel3,
+    pdt_menus.PDT_PT_Panel4,
+    pdt_menus.PDT_PT_Panel5,
 )
 
 
@@ -140,46 +140,46 @@ class PDTPreferences(bpy.types.AddonPreferences):
 # List of All Classes in the Add-on to register
 #
 classes = (
-    clockworx_pdt_design.PDT_OT_PlacementAbs,
-    clockworx_pdt_design.PDT_OT_PlacementDelta,
-    clockworx_pdt_design.PDT_OT_PlacementDis,
-    clockworx_pdt_design.PDT_OT_PlacementCen,
-    clockworx_pdt_design.PDT_OT_PlacementPer,
-    clockworx_pdt_design.PDT_OT_PlacementNormal,
-    clockworx_pdt_design.PDT_OT_PlacementInt,
-    clockworx_pdt_design.PDT_OT_JoinVerts,
-    clockworx_pdt_design.PDT_OT_Angle2,
-    clockworx_pdt_design.PDT_OT_Angle3,
-    clockworx_pdt_design.PDT_OT_Origin,
-    clockworx_pdt_design.PDT_OT_Taper,
-    clockworx_pdt_design.PDT_OT_Fillet,
-    clockworx_pivot_point.PDT_OT_ModalDrawOperator,
-    clockworx_pivot_point.PDT_OT_ViewPlaneRotate,
-    clockworx_pivot_point.PDT_OT_ViewPlaneScale,
-    clockworx_pivot_point.PDT_OT_PivotToCursor,
-    clockworx_pivot_point.PDT_OT_CursorToPivot,
-    clockworx_pivot_point.PDT_OT_PivotSelected,
-    clockworx_pivot_point.PDT_OT_PivotOrigin,
-    clockworx_pivot_point.PDT_OT_PivotWrite,
-    clockworx_pivot_point.PDT_OT_PivotRead,
-    clockworx_pdt_library.PDT_OT_Append,
-    clockworx_pdt_library.PDT_OT_Link,
-    clockworx_pdt_library.PDT_OT_LibShow,
-    clockworx_pdt_view.PDT_OT_ViewRot,
-    clockworx_pdt_view.PDT_OT_vRotL,
-    clockworx_pdt_view.PDT_OT_vRotR,
-    clockworx_pdt_view.PDT_OT_vRotU,
-    clockworx_pdt_view.PDT_OT_vRotD,
-    clockworx_pdt_view.PDT_OT_vRoll,
-    clockworx_pdt_view.PDT_OT_viso,
+    pdt_design.PDT_OT_PlacementAbs,
+    pdt_design.PDT_OT_PlacementDelta,
+    pdt_design.PDT_OT_PlacementDis,
+    pdt_design.PDT_OT_PlacementCen,
+    pdt_design.PDT_OT_PlacementPer,
+    pdt_design.PDT_OT_PlacementNormal,
+    pdt_design.PDT_OT_PlacementInt,
+    pdt_design.PDT_OT_JoinVerts,
+    pdt_design.PDT_OT_Angle2,
+    pdt_design.PDT_OT_Angle3,
+    pdt_design.PDT_OT_Origin,
+    pdt_design.PDT_OT_Taper,
+    pdt_design.PDT_OT_Fillet,
+    pdt_pivot_point.PDT_OT_ModalDrawOperator,
+    pdt_pivot_point.PDT_OT_ViewPlaneRotate,
+    pdt_pivot_point.PDT_OT_ViewPlaneScale,
+    pdt_pivot_point.PDT_OT_PivotToCursor,
+    pdt_pivot_point.PDT_OT_CursorToPivot,
+    pdt_pivot_point.PDT_OT_PivotSelected,
+    pdt_pivot_point.PDT_OT_PivotOrigin,
+    pdt_pivot_point.PDT_OT_PivotWrite,
+    pdt_pivot_point.PDT_OT_PivotRead,
+    pdt_library.PDT_OT_Append,
+    pdt_library.PDT_OT_Link,
+    pdt_library.PDT_OT_LibShow,
+    pdt_view.PDT_OT_ViewRot,
+    pdt_view.PDT_OT_vRotL,
+    pdt_view.PDT_OT_vRotR,
+    pdt_view.PDT_OT_vRotU,
+    pdt_view.PDT_OT_vRotD,
+    pdt_view.PDT_OT_vRoll,
+    pdt_view.PDT_OT_viso,
     pdt_xall.PDT_OT_IntersectAllEdges,
     pdt_bix.PDT_OT_LineOnBisection,
     pdt_etof.PDT_OT_EdgeToFace,
-    clockworx_pdt_menus.PDT_PT_Panel1,
-    clockworx_pdt_menus.PDT_PT_Panel4,
-    clockworx_pdt_menus.PDT_PT_Panel5,
-    clockworx_pdt_menus.PDT_PT_Panel2,
-    clockworx_pdt_menus.PDT_PT_Panel3,
+    pdt_menus.PDT_PT_Panel1,
+    pdt_menus.PDT_PT_Panel4,
+    pdt_menus.PDT_PT_Panel5,
+    pdt_menus.PDT_PT_Panel2,
+    pdt_menus.PDT_PT_Panel3,
     PDTPreferences,
 )
 
@@ -538,8 +538,8 @@ def unregister():
     del Scene.pdt_filletbool
 
     # remove OpenGL data
-    clockworx_pivot_point.PDT_OT_ModalDrawOperator.handle_remove(
-        clockworx_pivot_point.PDT_OT_ModalDrawOperator, bpy.context
+    pdt_pivot_point.PDT_OT_ModalDrawOperator.handle_remove(
+        pdt_pivot_point.PDT_OT_ModalDrawOperator, bpy.context
     )
     wm = bpy.context.window_manager
     p = "pdt_run_opengl"
