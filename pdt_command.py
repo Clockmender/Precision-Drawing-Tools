@@ -85,6 +85,43 @@ def command_run(self, context):
 
     scene = context.scene
     comm = scene.pdt_command
+
+    if comm == "?" or comm.lower() == "help":
+
+        def pdt_help(self, context):
+            self.layout.label(text="Primary Letters (Available Secondary Letters):")
+            self.layout.label(text="C c: Cursor (A a, D d, I i, P p)")
+            self.layout.label(text="D d: Duplicate Geometry (D d, I i)")
+            self.layout.label(text="E e: Extrude Geometry (D d, I i)")
+            self.layout.label(text="F f: Fillet (V v, E e)")
+            self.layout.label(text="G g: Grab (Move) (A a, D d, I i, P p)")
+            self.layout.label(text="N n: New Vertex (A a, D d, I i, P p)")
+            self.layout.label(text="M m: Maths Functions (X x, Z z, D d, A a, P p)")
+            self.layout.label(text="P p: Pivot Point (A a, D d, I i, P p)")
+            self.layout.label(text="V v: Extrude Vetice Only (A a, D d, I i, P p)")
+            self.layout.label(text="S s: Split Edges (A a, D d, I i, P p)")
+            self.layout.label(text="?: Quick Help")
+            self.layout.label(text="")
+            self.layout.label(text="Secondary Letters:")
+            self.layout.label(text="A a: Absolute (Global) Coords e.g. 1,3,2")
+            self.layout.label(text="D d: Delta (Incremental) Coords, e.g. 0.5,0,1.2")
+            self.layout.label(text="I i: Directional (Polar) Coords e.g. 2.6,45")
+            self.layout.label(text="P p: Percent e.g. 67.5")
+            self.layout.label(text="Additions for Maths:")
+            self.layout.label(text="X x, Y y, Z z: Send Input to X, Y & Z Inputs")
+            self.layout.label(text="D d, A a: Send input to Distance, or Angle Inputs")
+            self.layout.label(text="Additions for Fillet:")
+            self.layout.label(text="V v: Fillet Vertices")
+            self.layout.label(text="E e: Fillet Edges")
+            self.layout.label(text="")
+            self.layout.label(text="Example:")
+            self.layout.label(text="ed0.5,,0.6 - Extrude Geometry Delta 0.5 in X, 0.6 in Z")
+
+        # fmt: off
+        bpy.context.window_manager.popup_menu(pdt_help, title="PDT Command Line - Valid Commands:", icon="INFO")
+        # fmt: on
+        return
+
     if len(comm) < 3:
         scene.pdt_error = PDT_ERR_CHARS_NUM
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -103,6 +140,7 @@ def command_run(self, context):
             "p", "P",
             "v", "V",
             "s", "S",
+            "?",
         ]:
             scene.pdt_error = PDT_ERR_BADFLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -111,6 +149,7 @@ def command_run(self, context):
         if mode not in [
             "a", "A",
             "d", "D",
+            "e", "E"
             "g", "G",
             "i", "I",
             "p", "P",
@@ -123,6 +162,8 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_BADSLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+
+
         if data in ["m", "M"]:
             exp = comm[2:]
             if "," in exp:
@@ -155,6 +196,7 @@ def command_run(self, context):
                 scene.pdt_error = PDT_ERR_BADCOORDL
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
+
         vals = comm[2:].split(",")
         ind = 0
         for r in vals:
