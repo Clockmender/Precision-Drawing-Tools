@@ -114,7 +114,7 @@ PDT_ERR_NO3DVIEW      = "View3D not found, cannot run operator"
 PDT_ERR_SCALEZERO     = "Scale Distance is 0"
 
 PDT_ERR_CHARS_NUM     = "Bad Command Format, not enough Characters"
-PDT_ERR_BADFLETTER    = "Bad Operator (1st Letter); C D E F G N M P S or V only"
+PDT_ERR_BADFLETTER    = "Bad Operator (1st Letter); C D E F G N M P S V or ? only"
 PDT_ERR_BADSLETTER    = "Bad Mode (2nd Letter); A D I or P only (+ X Y & Z for Maths) (+ V & G for Fillet)"
 PDT_ERR_BADMATHS      = "Not a Valid Mathematical Expression!"
 PDT_ERR_BADCOORDL     = "X Y & Z Not permitted in anything other than Maths Operations"
