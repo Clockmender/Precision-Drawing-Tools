@@ -69,6 +69,9 @@ class PDT_OT_PlacementAbs(Operator):
 
         Local vector variable 'vector_delta' is used to reposition features.
 
+        Args:
+            context: Current Blender bpy.context
+
         Returns:
             Status Set.
         """
@@ -181,6 +184,9 @@ class PDT_OT_PlacementDelta(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Args:
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -353,6 +359,9 @@ class PDT_OT_PlacementDis(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Args:
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -534,6 +543,9 @@ class PDT_OT_PlacementPer(Operator):
 
         Local vector variable 'vector_delta' used to reposition features.
 
+        Args:
+            context: Current Blender bpy.context
+
         Returns:
             Status Set.
         """
@@ -639,6 +651,9 @@ class PDT_OT_PlacementNormal(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Args:
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -754,6 +769,9 @@ class PDT_OT_PlacementInt(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Args:
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -946,6 +964,9 @@ class PDT_OT_PlacementCen(Operator):
         Invalid Options result in self.report Error.
 
         Local vector variable 'vector_delta' used to reposition features.
+
+        Args:
+            context: Current Blender bpy.context
 
         Returns:
             Status Set.
@@ -1382,7 +1403,7 @@ class PDT_OT_Taper(Operator):
         Args:
             context: Current Blender bpy.context
 
-        Notes:
+        Note:
             Uses pdt_taper & pdt_angle scene variables
 
         Returns:
