@@ -32,7 +32,7 @@ from mathutils.geometry import intersect_point_line as PtLineIntersect
 def point_on_edge(p, edge):
     """Find Point on Edge.
 
-    Arguments:
+    Args:
         p:        vector
         edge:     tuple of 2 vectors
 
@@ -48,9 +48,10 @@ def point_on_edge(p, edge):
 def line_from_edge_intersect(edge1, edge2):
     """Get New Line from Intersections.
 
-    Arguments:
-        Takes 2 tuples, each tuple contains 2 vectors
-        prepares input for sending to intersect_line_line
+    Prepares input for sending to intersect_line_line
+
+    Args:
+        edge1, edge2: tuples containing 2 vectors
 
     Returns:
         Output of intersect_line_line.
@@ -63,8 +64,8 @@ def line_from_edge_intersect(edge1, edge2):
 def get_intersection(edge1, edge2):
     """Get Intersections of 2 Edges.
 
-    Arguments:
-        Takes 2 tuples, each tuple contains 2 vectors
+    Args:
+        edge1, edge2: tuples containing 2 vectors
 
     Returns:
         The point halfway on line. See intersect_line_line.
@@ -78,13 +79,12 @@ def get_intersection(edge1, edge2):
 def test_coplanar(edge1, edge2):
     """Test 2 Edges are Co-planar.
 
-    Arguments:
-        2 Edges
-
-    The line that describes the shortest line between the two edges
-    would be short if the lines intersect mathematically. If this
-    line is longer than 1.0e-5 then they are either
+    The line that describes the shortest line between the two edges would be short if the
+    lines intersect mathematically. If this line is longer than 1.0e-5 then they are either
     coplanar or parallel
+
+    Args:
+        edge1, edge2: tuples containing 2 vectors
 
     Returns:
         True / False for co-planarity.
@@ -98,11 +98,11 @@ def test_coplanar(edge1, edge2):
 def closest_idx(pt, e):
     """Get Closest Vertex to input point.
 
-    Arguments:
+    If both points in e are equally far from pt, then v1 is returned
+
+    Args:
         pt:       vector
         e:        bmesh edge
-
-    If both points in e are equally far from pt, then v1 is returned
 
     Returns:
         Index of vertex closest to pt.
@@ -115,17 +115,17 @@ def closest_idx(pt, e):
         distance_test = (v1 - pt).length <= (v2 - pt).length
         return ev[0].index if distance_test else ev[1].index
 
-    print("received {0}, check expected input in docstring ".format(e))
+    print(f"received {e}, check expected input in docstring ")
 
 
 def closest_vector(pt, e):
     """Return Closest Vector to input Point.
 
-    Arguments:
-        pt:       vector
-        e:        2 vector tuple
-
     If both points in e are equally far from pt, then v1 is returned.
+
+    Args:
+        pt:       vector
+        e:        tuple containing 2 vectors
 
     Returns:
         pt, 2 vector tuple: returns closest vector to pt.
@@ -136,7 +136,7 @@ def closest_vector(pt, e):
         distance_test = (v1 - pt).length <= (v2 - pt).length
         return v1 if distance_test else v2
 
-    print("received {0}, check expected input in docstring ".format(e))
+    print(f"received {e}, check expected input in docstring ")
 
 
 def coords_tuple_from_edge_idx(bm, idx):
@@ -152,9 +152,9 @@ def vectors_from_indices(bm, raw_vert_indices):
 def vertex_indices_from_edges_tuple(bm, edge_tuple):
     """Return List of vertices.
 
-    Arguments:
+    Args:
         bm:           is a bmesh representation
-        edge_tuple:   contains two edge indices.
+        edge_tuple:   contains 2 edge indices.
 
     Returns:
         The vertex indices of edge_tuple.
@@ -169,8 +169,8 @@ def vertex_indices_from_edges_tuple(bm, edge_tuple):
 def get_vert_indices_from_bmedges(edges):
     """Return List of Edges for evaluation.
 
-    Arguments:
-        bmedges:      a list of two bm edges
+    Args:
+        bmedges:      a list of 2 bm edges
 
     Returns:
         The vertex indices of edge_tuple as a flat list.
@@ -192,7 +192,7 @@ def num_edges_point_lies_on(pt, edges):
 def find_intersecting_edges(bm, pt, idx1, idx2):
     """Find Intercecting Edges.
 
-    Arguments:
+    Args:
         pt:           Vector
         idx1, ix2:    edge indices
 
