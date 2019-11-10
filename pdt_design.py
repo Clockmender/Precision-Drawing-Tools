@@ -77,13 +77,13 @@ class PDT_OT_PlacementAbs(Operator):
         """
 
         scene = context.scene
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
         x_loc = scene.pdt_delta_x
         y_loc = scene.pdt_delta_y
         z_loc = scene.pdt_delta_z
 
         vector_delta = Vector((x_loc, y_loc, z_loc))
-        if data not in ["CU", "PP", "NV"]:
+        if oper not in ["CU", "PP", "NV"]:
             obj = context.view_layer.objects.active
             if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
@@ -97,12 +97,12 @@ class PDT_OT_PlacementAbs(Operator):
                 errmsg = PDT_ERR_NO_ACT_VERTS
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
-        if data == "CU":
+        if oper == "CU":
             scene.cursor.location = vector_delta
             scene.cursor.rotation_euler = (0, 0, 0)
-        elif data == "PP":
+        elif oper == "PP":
             scene.pdt_pivotloc = vector_delta
-        elif data == "MV":
+        elif oper == "MV":
             if obj.mode == "EDIT":
                 for v in verts:
                     v.co = vector_delta - obj_loc
@@ -112,7 +112,7 @@ class PDT_OT_PlacementAbs(Operator):
             elif obj.mode == "OBJECT":
                 for ob in context.view_layer.objects.selected:
                     ob.location = vector_delta
-        elif data == "SE" and obj.mode == "EDIT":
+        elif oper == "SE" and obj.mode == "EDIT":
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
                 errmsg = f"{PDT_ERR_1_EDGE} {len(edges)})"
@@ -127,7 +127,7 @@ class PDT_OT_PlacementAbs(Operator):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
-        elif data == "NV":
+        elif oper == "NV":
             obj = context.view_layer.objects.active
             if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
@@ -144,7 +144,7 @@ class PDT_OT_PlacementAbs(Operator):
                 errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
-        elif data == "EV" and obj.mode == "EDIT":
+        elif oper == "EV" and obj.mode == "EDIT":
             vNew = vector_delta - obj_loc
             nVert = bm.verts.new(vNew)
             for v in [v for v in bm.verts if v.select]:
@@ -155,7 +155,7 @@ class PDT_OT_PlacementAbs(Operator):
             bmesh.ops.remove_doubles(bm, verts=[v for v in bm.verts if v.select], dist=0.0001)
             bmesh.update_edit_mesh(obj.data)
         else:
-            errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_ABS}"
+            errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_ABS}"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -170,7 +170,7 @@ class PDT_OT_PlacementDelta(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Delta Offset (Increment).
 
-        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_operate from Operation Mode Selector as 'oper'
         - Reads pdt_select, pdt_plane, pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
@@ -197,15 +197,15 @@ class PDT_OT_PlacementDelta(Operator):
         y_loc = scene.pdt_delta_y
         z_loc = scene.pdt_delta_z
         mode_s = scene.pdt_select
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
 
         if scene.pdt_plane == "LO":
             vector_delta = viewCoords(x_loc, y_loc, z_loc)
         else:
             vector_delta = Vector((x_loc, y_loc, z_loc))
-        if mode_s == "REL" and data == "CU":
+        if mode_s == "REL" and oper == "CU":
             scene.cursor.location = scene.cursor.location + vector_delta
-        elif mode_s == "REL" and data == "PP":
+        elif mode_s == "REL" and oper == "PP":
             scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
         else:
             obj = context.view_layer.objects.active
@@ -216,7 +216,7 @@ class PDT_OT_PlacementDelta(Operator):
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == "EDIT":
                 bm = bmesh.from_edit_mesh(obj.data)
-                if data not in ["MV", "SE", "EV", "DG", "EG"]:
+                if oper not in ["MV", "SE", "EV", "DG", "EG"]:
                     if len(bm.select_history) >= 1:
                         actV = checkSelection(1, bm, obj)
                         if actV is None:
@@ -227,23 +227,23 @@ class PDT_OT_PlacementDelta(Operator):
                         errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
-            if data not in ["CU", "PP", "NV"]:
+            if oper not in ["CU", "PP", "NV"]:
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     errmsg = PDT_ERR_NO_ACT_VERTS
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
-            if data == "CU":
+            if oper == "CU":
                 if obj.mode == "EDIT":
                     scene.cursor.location = obj_loc + actV + vector_delta
                 elif obj.mode == "OBJECT":
                     scene.cursor.location = obj_loc + vector_delta
-            elif data == "PP":
+            elif oper == "PP":
                 if obj.mode == "EDIT":
                     scene.pdt_pivotloc = obj_loc + actV + vector_delta
                 elif obj.mode == "OBJECT":
                     scene.pdt_pivotloc = obj_loc + vector_delta
-            elif data == "MV":
+            elif oper == "MV":
                 if obj.mode == "EDIT":
                     bmesh.ops.translate(bm, verts=verts, vec=vector_delta)
                     bmesh.update_edit_mesh(obj.data)
@@ -251,7 +251,7 @@ class PDT_OT_PlacementDelta(Operator):
                 elif obj.mode == "OBJECT":
                     for ob in context.view_layer.objects.selected:
                         ob.location = obj_loc + vector_delta
-            elif data == "SE" and obj.mode == "EDIT":
+            elif oper == "SE" and obj.mode == "EDIT":
                 edges = [e for e in bm.edges if e.select]
                 faces = [f for f in bm.faces if f.select]
                 if len(faces) != 0:
@@ -269,7 +269,7 @@ class PDT_OT_PlacementDelta(Operator):
                     v.select_set(False)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "NV":
+            elif oper == "NV":
                 if obj.mode == "EDIT":
                     vNew = actV + vector_delta
                     nVert = bm.verts.new(vNew)
@@ -282,7 +282,7 @@ class PDT_OT_PlacementDelta(Operator):
                     errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
-            elif data == "EV" and obj.mode == "EDIT":
+            elif oper == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
                     nVert.co = nVert.co + vector_delta
@@ -291,7 +291,7 @@ class PDT_OT_PlacementDelta(Operator):
                     nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "DG" and obj.mode == "EDIT":
+            elif oper == "DG" and obj.mode == "EDIT":
                 ret = bmesh.ops.duplicate(
                     bm,
                     geom=(
@@ -310,7 +310,7 @@ class PDT_OT_PlacementDelta(Operator):
                 updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "EG" and obj.mode == "EDIT":
+            elif oper == "EG" and obj.mode == "EDIT":
                 ret = bmesh.ops.extrude_face_region(
                     bm,
                     geom=(
@@ -330,7 +330,7 @@ class PDT_OT_PlacementDelta(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_DEL}"
+                errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_DEL}"
                 self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -345,7 +345,7 @@ class PDT_OT_PlacementDis(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Distance at Angle (Direction).
 
-        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_operate from Operation Mode Selector as 'oper'
         - Reads pdt_select, pdt_distance, pdt_angle, pdt_plane & pdt_flipangle scene variables to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
@@ -372,7 +372,7 @@ class PDT_OT_PlacementDis(Operator):
         ang_v = scene.pdt_angle
         plane = scene.pdt_plane
         mode_s = scene.pdt_select
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
         flip_a = scene.pdt_flipangle
         if flip_a:
             if ang_v > 0:
@@ -387,9 +387,9 @@ class PDT_OT_PlacementDis(Operator):
             vector_delta = Vector((0, 0, 0))
             vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi / 180))
             vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v * pi / 180))
-        if mode_s == "REL" and data == "CU":
+        if mode_s == "REL" and oper == "CU":
             scene.cursor.location = scene.cursor.location + vector_delta
-        elif mode_s == "REL" and data == "PP":
+        elif mode_s == "REL" and oper == "PP":
             scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
         else:
             obj = context.view_layer.objects.active
@@ -400,7 +400,7 @@ class PDT_OT_PlacementDis(Operator):
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == "EDIT":
                 bm = bmesh.from_edit_mesh(obj.data)
-                if data not in ["MV", "SE", "EV", "DG", "EG"]:
+                if oper not in ["MV", "SE", "EV", "DG", "EG"]:
                     if len(bm.select_history) >= 1:
                         actV = checkSelection(1, bm, obj)
                         if actV is None:
@@ -411,23 +411,23 @@ class PDT_OT_PlacementDis(Operator):
                         errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
-            if data not in ["CU", "PP", "NV"]:
+            if oper not in ["CU", "PP", "NV"]:
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     errmsg = PDT_ERR_NO_ACT_VERTS
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
-            if data == "CU":
+            if oper == "CU":
                 if obj.mode == "EDIT":
                     scene.cursor.location = obj_loc + actV + vector_delta
                 elif obj.mode == "OBJECT":
                     scene.cursor.location = obj_loc + vector_delta
-            elif data == "PP":
+            elif oper == "PP":
                 if obj.mode == "EDIT":
                     scene.pdt_pivotloc = obj_loc + actV + vector_delta
                 elif obj.mode == "OBJECT":
                     scene.pdt_pivotloc = obj_loc + vector_delta
-            elif data == "MV":
+            elif oper == "MV":
                 if obj.mode == "EDIT":
                     bmesh.ops.translate(bm, verts=verts, vec=vector_delta)
                     bmesh.update_edit_mesh(obj.data)
@@ -435,7 +435,7 @@ class PDT_OT_PlacementDis(Operator):
                 elif obj.mode == "OBJECT":
                     for ob in context.view_layer.objects.selected:
                         ob.location = ob.location + vector_delta
-            elif data == "SE" and obj.mode == "EDIT":
+            elif oper == "SE" and obj.mode == "EDIT":
                 edges = [e for e in bm.edges if e.select]
                 faces = [f for f in bm.faces if f.select]
                 if len(faces) != 0:
@@ -453,7 +453,7 @@ class PDT_OT_PlacementDis(Operator):
                     v.select_set(False)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "NV":
+            elif oper == "NV":
                 if obj.mode == "EDIT":
                     vNew = actV + vector_delta
                     nVert = bm.verts.new(vNew)
@@ -466,7 +466,7 @@ class PDT_OT_PlacementDis(Operator):
                     errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                     self.report({"ERROR"}, errmsg)
                     return {"FINISHED"}
-            elif data == "EV" and obj.mode == "EDIT":
+            elif oper == "EV" and obj.mode == "EDIT":
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
                     nVert.co = nVert.co + vector_delta
@@ -475,7 +475,7 @@ class PDT_OT_PlacementDis(Operator):
                     nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "DG" and obj.mode == "EDIT":
+            elif oper == "DG" and obj.mode == "EDIT":
                 ret = bmesh.ops.duplicate(
                     bm,
                     geom=(
@@ -494,7 +494,7 @@ class PDT_OT_PlacementDis(Operator):
                 updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data == "EG" and obj.mode == "EDIT":
+            elif oper == "EG" and obj.mode == "EDIT":
                 ret = bmesh.ops.extrude_face_region(
                     bm,
                     geom=(
@@ -514,7 +514,7 @@ class PDT_OT_PlacementDis(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_DIR}"
+                errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_DIR}"
                 self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -530,7 +530,7 @@ class PDT_OT_PlacementPer(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Percentage between 2 points.
 
-        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_operate from Operation Mode Selector as 'oper'
         - Reads pdt_percent, pdt_extend & pdt_flippercent scene variables to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
@@ -552,7 +552,7 @@ class PDT_OT_PlacementPer(Operator):
 
         scene = context.scene
         per_v = scene.pdt_percent
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
         ext_a = scene.pdt_extend
         flip_p = scene.pdt_flippercent
         obj = context.view_layer.objects.active
@@ -563,28 +563,28 @@ class PDT_OT_PlacementPer(Operator):
         if obj.mode == "EDIT":
             bm = bmesh.from_edit_mesh(obj.data)
         obj_loc = obj.matrix_world.decompose()[0]
-        vector_delta = getPercent(obj, flip_p, per_v, data, scene)
+        vector_delta = getPercent(obj, flip_p, per_v, oper, scene)
         if vector_delta is None:
             return {"FINISHED"}
 
-        if data == "CU":
+        if oper == "CU":
             if obj.mode == "EDIT":
                 scene.cursor.location = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
                 scene.cursor.location = vector_delta
-        elif data == "PP":
+        elif oper == "PP":
             if obj.mode == "EDIT":
                 scene.pdt_pivotloc = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
                 scene.pdt_pivotloc = vector_delta
-        elif data == "MV":
+        elif oper == "MV":
             if obj.mode == "EDIT":
                 bm.select_history[-1].co = vector_delta
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
             elif obj.mode == "OBJECT":
                 obj.location = vector_delta
-        elif data == "SE" and obj.mode == "EDIT":
+        elif oper == "SE" and obj.mode == "EDIT":
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
                 errmsg = f"{PDT_ERR_1_EDGE} {len(edges)})"
@@ -599,7 +599,7 @@ class PDT_OT_PlacementPer(Operator):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
-        elif data == "NV":
+        elif oper == "NV":
             if obj.mode == "EDIT":
                 nVert = bm.verts.new(vector_delta)
                 bmesh.update_edit_mesh(obj.data)
@@ -611,7 +611,7 @@ class PDT_OT_PlacementPer(Operator):
                 errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
-        elif data == "EV" and obj.mode == "EDIT":
+        elif oper == "EV" and obj.mode == "EDIT":
             nVert = bm.verts.new(vector_delta)
             if ext_a:
                 for v in [v for v in bm.verts if v.select]:
@@ -623,7 +623,7 @@ class PDT_OT_PlacementPer(Operator):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         else:
-            errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_PERCENT}"
+            errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_PERCENT}"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -639,7 +639,7 @@ class PDT_OT_PlacementNormal(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Normal Intersection between 3 points.
 
-        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_operate from Operation Mode Selector as 'oper'
         - Reads pdt_extend scene variable to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
@@ -660,7 +660,7 @@ class PDT_OT_PlacementNormal(Operator):
         """
 
         scene = context.scene
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
         ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
         if obj is None:
@@ -692,17 +692,17 @@ class PDT_OT_PlacementNormal(Operator):
                 othV = objs_s[-1].matrix_world.decompose()[0]
                 lstV = objs_s[-2].matrix_world.decompose()[0]
         vector_delta = intersect_point_line(actV, othV, lstV)[0]
-        if data == "CU":
+        if oper == "CU":
             if obj.mode == "EDIT":
                 scene.cursor.location = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
                 scene.cursor.location = vector_delta
-        elif data == "PP":
+        elif oper == "PP":
             if obj.mode == "EDIT":
                 scene.pdt_pivotloc = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
                 scene.pdt_pivotloc = vector_delta
-        elif data == "MV":
+        elif oper == "MV":
             if obj.mode == "EDIT":
                 if ext_a:
                     for v in [v for v in bm.verts if v.select]:
@@ -717,7 +717,7 @@ class PDT_OT_PlacementNormal(Operator):
                 bmesh.update_edit_mesh(obj.data)
             elif obj.mode == "OBJECT":
                 context.view_layer.objects.active.location = vector_delta
-        elif data == "NV":
+        elif oper == "NV":
             if obj.mode == "EDIT":
                 nVert = bm.verts.new(vector_delta)
                 bmesh.update_edit_mesh(obj.data)
@@ -729,7 +729,7 @@ class PDT_OT_PlacementNormal(Operator):
                 errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
-        elif data == "EV" and obj.mode == "EDIT":
+        elif oper == "EV" and obj.mode == "EDIT":
             vNew = vector_delta
             nVert = bm.verts.new(vNew)
             if ext_a:
@@ -743,7 +743,7 @@ class PDT_OT_PlacementNormal(Operator):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         else:
-            errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_NOR}"
+            errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_NOR}"
             self.report({"ERROR"}, errmsg)
         return {"FINISHED"}
 
@@ -758,7 +758,7 @@ class PDT_OT_PlacementInt(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Convergance Intersection between 4 points, or 2 Edges.
 
-        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_operate from Operation Mode Selector as 'oper'
         - Reads pdt_plane scene variable and operates in Working Plane to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
@@ -778,7 +778,7 @@ class PDT_OT_PlacementInt(Operator):
         """
 
         scene = context.scene
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
         plane = scene.pdt_plane
         obj = context.view_layer.objects.active
         if obj is None:
@@ -826,11 +826,11 @@ class PDT_OT_PlacementInt(Operator):
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
 
-            if data == "CU":
+            if oper == "CU":
                 scene.cursor.location = obj_loc + vector_delta
-            elif data == "PP":
+            elif oper == "PP":
                 scene.pdt_pivotloc = obj_loc + vector_delta
-            elif data == "NV":
+            elif oper == "NV":
                 vNew = vector_delta
                 nVert = bm.verts.new(vNew)
                 for v in [v for v in bm.verts if v.select]:
@@ -842,34 +842,34 @@ class PDT_OT_PlacementInt(Operator):
                 nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif data in ["MV", "EV"]:
+            elif oper in ["MV", "EV"]:
                 nVert = None
                 proc = False
 
                 if (actV - vector_delta).length < (othV - vector_delta).length:
-                    if data == "MV":
+                    if oper == "MV":
                         va.co = vector_delta
                         proc = True
-                    elif data == "EV":
+                    elif oper == "EV":
                         nVert = bm.verts.new(vector_delta)
                         nEdge = bm.edges.new([va, nVert])
                         proc = True
                 else:
-                    if data == "MV" and ext_a:
+                    if oper == "MV" and ext_a:
                         vo.co = vector_delta
-                    elif data == "EV" and ext_a:
+                    elif oper == "EV" and ext_a:
                         nVert = bm.verts.new(vector_delta)
                         nEdge = bm.edges.new([vo, nVert])
 
                 if (lstV - vector_delta).length < (fstV - vector_delta).length:
-                    if data == "MV" and ext_a:
+                    if oper == "MV" and ext_a:
                         vl.co = vector_delta
-                    elif data == "EV" and ext_a:
+                    elif oper == "EV" and ext_a:
                         nEdge = bm.edges.new([vl, nVert])
                 else:
-                    if data == "MV" and ext_a:
+                    if oper == "MV" and ext_a:
                         vf.co = vector_delta
-                    elif data == "EV" and ext_a:
+                    elif oper == "EV" and ext_a:
                         nEdge = bm.edges.new([vf, nVert])
                 bm.select_history.clear()
                 bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
@@ -894,7 +894,7 @@ class PDT_OT_PlacementInt(Operator):
                             v.select_set(True)
                     bmesh.update_edit_mesh(obj.data)
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_INTERSECT}"
+                errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_INTERSECT}"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         elif obj.mode == "OBJECT":
@@ -928,16 +928,16 @@ class PDT_OT_PlacementInt(Operator):
                 errmsg = f"{PDT_ERR_INT_LINES} {plane}  {PDT_LAB_PLANE}"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
-            if data == "CU":
+            if oper == "CU":
                 scene.cursor.location = vector_delta
-            elif data == "PP":
+            elif oper == "PP":
                 scene.pdt_pivotloc = vector_delta
-            elif data == "MV":
+            elif oper == "MV":
                 context.view_layer.objects.active.location = vector_delta
                 infmsg = PDT_INF_OBJ_MOVED + message
                 self.report({"INFO"}, infmsg)
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_INTERSECT}"
+                errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_INTERSECT}"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
 
@@ -953,7 +953,7 @@ class PDT_OT_PlacementCen(Operator):
         """Manipulates Geometry, or Objects to an Arc Centre defined by 3 points on an Imaginary Arc.
 
         Valid Options for pdt_operate; CU PP MV NV EV
-        - Reads pdt_operate from Operation Mode Selector as 'data'
+        - Reads pdt_operate from Operation Mode Selector as 'oper'
         - Reads pdt_extend scene variable to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
@@ -973,7 +973,7 @@ class PDT_OT_PlacementCen(Operator):
         """
 
         scene = context.scene
-        data = scene.pdt_operate
+        oper = scene.pdt_operate
         ext_a = scene.pdt_extend
         obj = context.view_layer.objects.active
 
@@ -1000,11 +1000,11 @@ class PDT_OT_PlacementCen(Operator):
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             scene.pdt_distance = radius
-            if data == "CU":
+            if oper == "CU":
                 scene.cursor.location = obj_loc + vector_delta
-            elif data == "PP":
+            elif oper == "PP":
                 scene.pdt_pivotloc = obj_loc + vector_delta
-            elif data == "NV":
+            elif oper == "NV":
                 vNew = vector_delta
                 nVert = bm.verts.new(vNew)
                 for v in [v for v in bm.verts if v.select]:
@@ -1013,7 +1013,7 @@ class PDT_OT_PlacementCen(Operator):
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
                 nVert.select_set(True)
-            elif data == "MV":
+            elif oper == "MV":
                 if obj.mode == "EDIT":
                     if ext_a:
                         for v in [v for v in bm.verts if v.select]:
@@ -1028,7 +1028,7 @@ class PDT_OT_PlacementCen(Operator):
                     bmesh.update_edit_mesh(obj.data)
                 elif obj.mode == "OBJECT":
                     context.view_layer.objects.active.location = vector_delta
-            elif data == "EV":
+            elif oper == "EV":
                 nVert = bm.verts.new(vector_delta)
                 if ext_a:
                     for v in [v for v in bm.verts if v.select]:
@@ -1045,7 +1045,7 @@ class PDT_OT_PlacementCen(Operator):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
             else:
-                errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_ARCCENTRE}"
+                errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_ARCCENTRE}"
                 self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         elif obj.mode == "OBJECT":
@@ -1059,14 +1059,14 @@ class PDT_OT_PlacementCen(Operator):
                 lstV = context.view_layer.objects.selected[2].matrix_world.decompose()[0]
                 vector_delta, radius = arcCentre(actV, othV, lstV)
                 scene.pdt_distance = radius
-                if data == "CU":
+                if oper == "CU":
                     scene.cursor.location = vector_delta
-                elif data == "PP":
+                elif oper == "PP":
                     scene.pdt_pivotloc = vector_delta
-                elif data == "MV":
+                elif oper == "MV":
                     context.view_layer.objects.active.location = vector_delta
                 else:
-                    errmsg = f"{data} {PDT_ERR_NON_VALID} {PDT_LAB_ARCCENTRE}"
+                    errmsg = f"{oper} {PDT_ERR_NON_VALID} {PDT_LAB_ARCCENTRE}"
                     self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
 
