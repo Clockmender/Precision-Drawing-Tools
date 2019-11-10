@@ -218,7 +218,7 @@ def enumlist_objects(self, context):
         for object_name in object_names:
             _pdt_obj_items.append((object_name, object_name, ""))
     else:
-        _pdt_obj_items.append(("MISSING","Library is Missing",""))
+        _pdt_obj_items.append(("MISSING", "Library is Missing", ""))
     return _pdt_obj_items
 
 
@@ -249,7 +249,7 @@ def enumlist_collections(self, context):
         for object_name in object_names:
             _pdt_col_items.append((object_name, object_name, ""))
     else:
-        _pdt_col_items.append(("MISSING","Library is Missing",""))
+        _pdt_col_items.append(("MISSING", "Library is Missing", ""))
     return _pdt_col_items
 
 
@@ -280,7 +280,7 @@ def enumlist_materials(self, context):
         for object_name in object_names:
             _pdt_mat_items.append((object_name, object_name, ""))
     else:
-        _pdt_mat_items.append(("MISSING","Library is Missing",""))
+        _pdt_mat_items.append(("MISSING", "Library is Missing", ""))
     return _pdt_mat_items
 
 
