@@ -43,7 +43,7 @@ def oops(self, context):
     Args:
         context: Current Blender bpy.context
 
-    Notes:
+    Note:
         Uses pdt_error scene variable
     """
 
@@ -82,7 +82,7 @@ def setAxis(mode_pl):
     Args:
         mode_pl: Taper Axis Selector variable as input
 
-    Notes:
+    Note:
         Axis order: Rotate Axis, Move Axis, Height Axis
 
     Returns:
@@ -447,13 +447,13 @@ def getPercent(obj, flip_p, per_v, data, scene):
     return Vector((tst[0], tst[1], tst[2]))
 
 
-def objCheck(obj, scene, data):
+def objCheck(obj, scene, oper):
     """Check Object & Selection Validity.
 
     Args:
         obj: Active Object
         scene: Active Scene
-        data: Operation to check
+        oper: Operation to check
 
     Returns:
         Object Bmesh and Validity Boolean.
@@ -465,7 +465,7 @@ def objCheck(obj, scene, data):
         return None, False
     if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
-        if data in ["s", "S"]:
+        if oper in ["s", "S"]:
             edges = [e for e in bm.edges]
             if len(edges) < 1:
                 scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
@@ -474,7 +474,7 @@ def objCheck(obj, scene, data):
             else:
                 return bm, True
         if len(bm.select_history) >= 1:
-            if data not in ["e", "E", "g", "G", "d", "D", "s", "S"]:
+            if oper not in ["d", "D", "e", "E", "g", "G", "n", "N", "s", "S"]:
                 actV = checkSelection(1, bm, obj)
             else:
                 verts = [v for v in bm.verts if v.select]
@@ -486,7 +486,7 @@ def objCheck(obj, scene, data):
                 scene.pdt_error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
-        elif data in ["c", "C", "n", "N"]:
+        elif oper in ["c", "C", "n", "N"]:
             scene.pdt_error = PDT_ERR_SEL_1_VERTI + str(len(bm.select_history)) + ")"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None, False
