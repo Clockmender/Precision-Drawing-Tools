@@ -223,8 +223,8 @@ def command_run(self, context):
             else:
                 return
 
+        # Cursor or Pivot Point
         if oper in ["c", "C", "p", "P"]:
-            # Cursor or Pivot Point
             if mode in ["a", "A"]:
                 # Absolute Options
                 if len(vals) != 3:
@@ -236,8 +236,8 @@ def command_run(self, context):
                     scene.cursor.location = vector_delta
                 else:
                     scene.pdt_pivotloc = vector_delta
+            # Delta Options
             elif mode in ["d", "D"]:
-                # Delta Options
                 if len(vals) != 3:
                     scene.pdt_error = PDT_ERR_BAD3VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -261,8 +261,8 @@ def command_run(self, context):
                             scene.cursor.location = obj_loc + vector_delta
                         else:
                             scene.pdt_pivotloc = obj_loc + vector_delta
+            # Direction Options
             elif mode in ["i", "I"]:
-                # Direction Options
                 if len(vals) != 2:
                     scene.pdt_error = PDT_ERR_BAD2VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -286,8 +286,8 @@ def command_run(self, context):
                             scene.cursor.location = obj_loc + vector_delta
                         else:
                             scene.pdt_pivotloc = obj_loc + vector_delta
+            # Percent Options
             elif mode in ["p", "P"]:
-                # Percent Options
                 if len(vals) != 1:
                     scene.pdt_error = PDT_ERR_BAD1VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -310,8 +310,8 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
+        # Move Vertices or Objects
         elif oper in ["g", "G"]:
-            # Move Vertices or Objects
             if mode in ["a", "A"]:
                 if len(vals) != 3:
                     scene.pdt_error = PDT_ERR_BAD3VALS
@@ -382,8 +382,8 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
+        # Add New Vertex
         elif oper in ["n", "N"]:
-            # Add New Vertex
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
                     if len(vals) != 3:
@@ -446,8 +446,8 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
+        # Split Edges
         elif oper in ["s", "S"]:
-            # Split Edges
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
                     if len(vals) != 3:
@@ -559,8 +559,8 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
+        # Extrude Vertices
         elif oper in ["v", "V"]:
-            # Extrude Vertices
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
                     if len(vals) != 3:
@@ -643,8 +643,8 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
+        # Extrude Geometry
         elif oper in ["e", "E"]:
-            # Extrude Geometry
             if obj.mode == "EDIT":
                 if mode in ["d", "D"]:
                     if len(vals) != 3:
@@ -709,8 +709,8 @@ def command_run(self, context):
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
 
+        # Duplicate Geometry
         elif oper in ["d", "D"]:
-            # Duplicate Geometry
             if obj.mode == "EDIT":
                 if mode in ["d", "D"]:
                     if len(vals) != 3:
@@ -779,8 +779,8 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
+        # Fillet Geometry
         elif oper in ["f", "F"]:
-            # Fillet Geometry
             if obj.mode == "EDIT":
                 if len(vals) != 3:
                     scene.pdt_error = PDT_ERR_BAD3VALS
