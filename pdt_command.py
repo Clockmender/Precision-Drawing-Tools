@@ -46,6 +46,34 @@ from .pdt_functions import (
 )
 from .pdt_msg_strings import *
 
+def pdt_help(self, context):
+    self.layout.label(text="Primary Letters (Available Secondary Letters):")
+    self.layout.label(text="C c: Cursor (A a, D d, I i, P p)")
+    self.layout.label(text="D d: Duplicate Geometry (D d, I i)")
+    self.layout.label(text="E e: Extrude Geometry (D d, I i)")
+    self.layout.label(text="F f: Fillet (V v, E e)")
+    self.layout.label(text="G g: Grab (Move) (A a, D d, I i, P p)")
+    self.layout.label(text="N n: New Vertex (A a, D d, I i, P p)")
+    self.layout.label(text="M m: Maths Functions (X x, Z z, D d, A a, P p)")
+    self.layout.label(text="P p: Pivot Point (A a, D d, I i, P p)")
+    self.layout.label(text="V v: Extrude Vetice Only (A a, D d, I i, P p)")
+    self.layout.label(text="S s: Split Edges (A a, D d, I i, P p)")
+    self.layout.label(text="?: Quick Help")
+    self.layout.label(text="")
+    self.layout.label(text="Secondary Letters:")
+    self.layout.label(text="A a: Absolute (Global) Coords e.g. 1,3,2")
+    self.layout.label(text="D d: Delta (Incremental) Coords, e.g. 0.5,0,1.2")
+    self.layout.label(text="I i: Directional (Polar) Coords e.g. 2.6,45")
+    self.layout.label(text="P p: Percent e.g. 67.5")
+    self.layout.label(text="Additions for Maths:")
+    self.layout.label(text="X x, Y y, Z z: Send Input to X, Y & Z Inputs")
+    self.layout.label(text="D d, A a: Send input to Distance, or Angle Inputs")
+    self.layout.label(text="Additions for Fillet:")
+    self.layout.label(text="V v: Fillet Vertices")
+    self.layout.label(text="E e: Fillet Edges")
+    self.layout.label(text="")
+    self.layout.label(text="Example:")
+    self.layout.label(text="ed0.5,,0.6 - Extrude Geometry Delta 0.5 in X, 0.6 in Z")
 
 def command_run(self, context):
     """Run Command String as input into Command Line.
@@ -87,36 +115,6 @@ def command_run(self, context):
     comm = scene.pdt_command
 
     if comm == "?" or comm.lower() == "help":
-
-        def pdt_help(self, context):
-            self.layout.label(text="Primary Letters (Available Secondary Letters):")
-            self.layout.label(text="C c: Cursor (A a, D d, I i, P p)")
-            self.layout.label(text="D d: Duplicate Geometry (D d, I i)")
-            self.layout.label(text="E e: Extrude Geometry (D d, I i)")
-            self.layout.label(text="F f: Fillet (V v, E e)")
-            self.layout.label(text="G g: Grab (Move) (A a, D d, I i, P p)")
-            self.layout.label(text="N n: New Vertex (A a, D d, I i, P p)")
-            self.layout.label(text="M m: Maths Functions (X x, Z z, D d, A a, P p)")
-            self.layout.label(text="P p: Pivot Point (A a, D d, I i, P p)")
-            self.layout.label(text="V v: Extrude Vetice Only (A a, D d, I i, P p)")
-            self.layout.label(text="S s: Split Edges (A a, D d, I i, P p)")
-            self.layout.label(text="?: Quick Help")
-            self.layout.label(text="")
-            self.layout.label(text="Secondary Letters:")
-            self.layout.label(text="A a: Absolute (Global) Coords e.g. 1,3,2")
-            self.layout.label(text="D d: Delta (Incremental) Coords, e.g. 0.5,0,1.2")
-            self.layout.label(text="I i: Directional (Polar) Coords e.g. 2.6,45")
-            self.layout.label(text="P p: Percent e.g. 67.5")
-            self.layout.label(text="Additions for Maths:")
-            self.layout.label(text="X x, Y y, Z z: Send Input to X, Y & Z Inputs")
-            self.layout.label(text="D d, A a: Send input to Distance, or Angle Inputs")
-            self.layout.label(text="Additions for Fillet:")
-            self.layout.label(text="V v: Fillet Vertices")
-            self.layout.label(text="E e: Fillet Edges")
-            self.layout.label(text="")
-            self.layout.label(text="Example:")
-            self.layout.label(text="ed0.5,,0.6 - Extrude Geometry Delta 0.5 in X, 0.6 in Z")
-
         # fmt: off
         bpy.context.window_manager.popup_menu(pdt_help, title="PDT Command Line - Valid Commands:", icon="INFO")
         # fmt: on
