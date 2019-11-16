@@ -84,11 +84,11 @@ from .pdt_msg_strings import *
 # Define Panel classes for updating
 #
 panels = (
-    pdt_menus.PDT_PT_Panel1,
-    pdt_menus.PDT_PT_Panel2,
-    pdt_menus.PDT_PT_Panel3,
-    pdt_menus.PDT_PT_Panel4,
-    pdt_menus.PDT_PT_Panel5,
+    pdt_menus.PDT_PT_PanelDesign,
+    pdt_menus.PDT_PT_PanelPivotPoint,
+    pdt_menus.PDT_PT_PanelPartsLibrary,
+    pdt_menus.PDT_PT_PanelViewControl,
+    pdt_menus.PDT_PT_PanelCommandLine,
 )
 
 
@@ -175,11 +175,11 @@ classes = (
     pdt_xall.PDT_OT_IntersectAllEdges,
     pdt_bix.PDT_OT_LineOnBisection,
     pdt_etof.PDT_OT_EdgeToFace,
-    pdt_menus.PDT_PT_Panel1,
-    pdt_menus.PDT_PT_Panel4,
-    pdt_menus.PDT_PT_Panel5,
-    pdt_menus.PDT_PT_Panel2,
-    pdt_menus.PDT_PT_Panel3,
+    pdt_menus.PDT_PT_PanelDesign,
+    pdt_menus.PDT_PT_PanelCommandLine,
+    pdt_menus.PDT_PT_PanelViewControl,
+    pdt_menus.PDT_PT_PanelPivotPoint,
+    pdt_menus.PDT_PT_PanelPartsLibrary,
     PDTPreferences,
 )
 
