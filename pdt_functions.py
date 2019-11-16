@@ -486,9 +486,7 @@ def objCheck(obj, scene, oper):
                 scene.pdt_error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
-        elif oper in ["c", "C", "n", "N"]:
-            scene.pdt_error = PDT_ERR_SEL_1_VERTI + str(len(bm.select_history)) + ")"
-            bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+        elif oper in ["c", "C"]:
             return None, False
         return bm, True
     elif obj.mode == "OBJECT":
