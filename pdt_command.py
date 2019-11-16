@@ -159,7 +159,7 @@ def command_run(self, context):
         scene.pdt_error = PDT_ERR_BADSLETTER
         context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
-
+    # --------------
     # Math Operation
     if oper in ["m", "M"]:
         exp = cmd[2:]
@@ -193,7 +193,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_BADCOORDL
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-
+    # -----------------------------------------------------
     # Not a Math Operation, so let's parse the command line
     vals = cmd[2:].split(",")
     ind = 0
@@ -209,8 +209,6 @@ def command_run(self, context):
     flip_p = scene.pdt_flippercent
     ext_a = scene.pdt_extend
     plane = scene.pdt_plane
-
-    # set up necessary variables for later use
     obj = context.view_layer.objects.active
     print(f"PDT> cmd: {cmd}")
     bm, good = objCheck(obj, scene, oper)
@@ -219,7 +217,7 @@ def command_run(self, context):
         print(f"PDT> obj: {obj} has a bmesh: {bm} and obj_loc: {obj_loc}")
     else:
         print(f"PDT> obj: {obj} has NO bmesh -> obj_loc not valid?")
-
+    # ---------------------
     # Cursor or Pivot Point
     if oper in ["c", "C", "p", "P"]:
         if mode in ["a", "A"]:
@@ -306,7 +304,7 @@ def command_run(self, context):
             scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-
+    # ------------------------
     # Move Vertices or Objects
     elif oper in ["g", "G"]:
         if mode in ["a", "A"]:
@@ -338,6 +336,7 @@ def command_run(self, context):
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             if obj.mode == "EDIT":
+                # FIXME: Show error dialog if nothing is selected?
                 bmesh.ops.translate(
                     bm, verts=[v for v in bm.verts if v.select], vec=vector_delta
                 )
@@ -378,446 +377,442 @@ def command_run(self, context):
             scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-
+    # --------------
     # Add New Vertex
     elif oper in ["n", "N"]:
-        if obj.mode == "EDIT":
-            if mode in ["a", "A"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                vNew = vector_delta - obj_loc
-                nVert = bm.verts.new(vNew)
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["d", "D"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                vNew = bm.select_history[-1].co + vector_delta
-                nVert = bm.verts.new(vNew)
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["i", "I"]:
-                if len(vals) != 2:
-                    scene.pdt_error = PDT_ERR_BAD2VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = disAng(vals, flip_a, plane, scene)
-                vNew = bm.select_history[-1].co + vector_delta
-                nVert = bm.verts.new(vNew)
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["p", "P"]:
-                if len(vals) != 1:
-                    scene.pdt_error = PDT_ERR_BAD1VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
-                vNew = vector_delta
-                nVert = bm.verts.new(vNew)
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            else:
-                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-        else:
+        if not obj.mode == "EDIT":
             scene.pdt_error = PDT_ERR_ADDVEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-
-    # Split Edges
-    elif oper in ["s", "S"]:
-        if obj.mode == "EDIT":
-            if mode in ["a", "A"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                edges = [e for e in bm.edges if e.select]
-                if len(edges) != 1:
-                    scene.pdt_error = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
-                new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
-                nVert = new_verts[0]
-                nVert.co = vector_delta - obj_loc
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["d", "D"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                edges = [e for e in bm.edges if e.select]
-                faces = [f for f in bm.faces if f.select]
-                if len(faces) != 0:
-                    scene.pdt_error = PDT_ERR_FACE_SEL
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                if len(edges) < 1:
-                    scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
-                new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                for v in new_verts:
-                    v.select_set(False)
-                bmesh.ops.translate(bm, verts=new_verts, vec=vector_delta)
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                for v in new_verts:
-                    v.select_set(False)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["i", "I"]:
-                if len(vals) != 2:
-                    scene.pdt_error = PDT_ERR_BAD2VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = disAng(vals, flip_a, plane, scene)
-                edges = [e for e in bm.edges if e.select]
-                faces = [f for f in bm.faces if f.select]
-                if len(faces) != 0:
-                    scene.pdt_error = PDT_ERR_FACE_SEL
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                if len(edges) < 1:
-                    scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
-                new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
-                bmesh.ops.translate(bm, verts=new_verts, vec=vector_delta)
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                for v in new_verts:
-                    v.select_set(False)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["p", "P"]:
-                if len(vals) != 1:
-                    scene.pdt_error = PDT_ERR_BAD1VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
-                if vector_delta is None:
-                    return
-                edges = [e for e in bm.edges if e.select]
-                faces = [f for f in bm.faces if f.select]
-                if len(faces) != 0:
-                    scene.pdt_error = PDT_ERR_FACE_SEL
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                if len(edges) < 1:
-                    scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
-                new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
-                nVert = new_verts[0]
-                nVert.co = vector_delta
-                for v in [v for v in bm.verts if v.select]:
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            else:
-                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-        else:
-            scene.pdt_error = PDT_ERR_SPLITEDIT
-            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-            return
-
-    # Extrude Vertices
-    elif oper in ["v", "V"]:
-        if obj.mode == "EDIT":
-            if mode in ["a", "A"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                vNew = vector_delta - obj_loc
-                nVert = bm.verts.new(vNew)
-                for v in [v for v in bm.verts if v.select]:
-                    nEdge = bm.edges.new([v, nVert])
-                    v.select_set(False)
-                nVert.select_set(True)
-                bmesh.ops.remove_doubles(
-                    bm, verts=[v for v in bm.verts if v.select], dist=0.0001
-                )
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["d", "D"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                for v in verts:
-                    nVert = bm.verts.new(v.co)
-                    nVert.co = nVert.co + vector_delta
-                    nEdge = bm.edges.new([v, nVert])
-                    v.select_set(False)
-                    nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["i", "I"]:
-                if len(vals) != 2:
-                    scene.pdt_error = PDT_ERR_BAD2VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = disAng(vals, flip_a, plane, scene)
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                for v in verts:
-                    nVert = bm.verts.new(v.co)
-                    nVert.co = nVert.co + vector_delta
-                    nEdge = bm.edges.new([v, nVert])
-                    v.select_set(False)
-                    nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["p", "P"]:
-                vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                nVert = bm.verts.new(vector_delta)
-                if ext_a:
-                    for v in [v for v in bm.verts if v.select]:
-                        nEdge = bm.edges.new([v, nVert])
-                        v.select_set(False)
-                else:
-                    nEdge = bm.edges.new([bm.select_history[-1], nVert])
-                nVert.select_set(True)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            else:
-                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-        else:
-            scene.pdt_error = PDT_ERR_EXTEDIT
-            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-            return
-
-    # Extrude Geometry
-    elif oper in ["e", "E"]:
-        if obj.mode == "EDIT":
-            if mode in ["d", "D"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                ret = bmesh.ops.extrude_face_region(
-                    bm,
-                    geom=(
-                        [f for f in bm.faces if f.select]
-                        + [e for e in bm.edges if e.select]
-                        + [v for v in bm.verts if v.select]
-                    ),
-                    use_select_history=True,
-                )
-                geom_extr = ret["geom"]
-                verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
-                edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
-                faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
-                del ret
-                bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
-                updateSel(bm, verts_extr, edges_extr, faces_extr)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["i", "I"]:
-                if len(vals) != 2:
-                    scene.pdt_error = PDT_ERR_BAD2VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = disAng(vals, flip_a, plane, scene)
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                ret = bmesh.ops.extrude_face_region(
-                    bm,
-                    geom=(
-                        [f for f in bm.faces if f.select]
-                        + [e for e in bm.edges if e.select]
-                        + [v for v in bm.verts if v.select]
-                    ),
-                    use_select_history=True,
-                )
-                geom_extr = ret["geom"]
-                verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
-                edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
-                faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
-                del ret
-                bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
-                updateSel(bm, verts_extr, edges_extr, faces_extr)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            else:
-                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-
-    # Duplicate Geometry
-    elif oper in ["d", "D"]:
-        if obj.mode == "EDIT":
-            if mode in ["d", "D"]:
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                ret = bmesh.ops.duplicate(
-                    bm,
-                    geom=(
-                        [f for f in bm.faces if f.select]
-                        + [e for e in bm.edges if e.select]
-                        + [v for v in bm.verts if v.select]
-                    ),
-                    use_select_history=True,
-                )
-                geom_dupe = ret["geom"]
-                verts_dupe = [v for v in geom_dupe if isinstance(v, bmesh.types.BMVert)]
-                edges_dupe = [e for e in geom_dupe if isinstance(e, bmesh.types.BMEdge)]
-                faces_dupe = [f for f in geom_dupe if isinstance(f, bmesh.types.BMFace)]
-                del ret
-                bmesh.ops.translate(bm, verts=verts_dupe, vec=vector_delta)
-                updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            elif mode in ["i", "I"]:
-                if len(vals) != 2:
-                    scene.pdt_error = PDT_ERR_BAD2VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = disAng(vals, flip_a, plane, scene)
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                ret = bmesh.ops.duplicate(
-                    bm,
-                    geom=(
-                        [f for f in bm.faces if f.select]
-                        + [e for e in bm.edges if e.select]
-                        + [v for v in bm.verts if v.select]
-                    ),
-                    use_select_history=True,
-                )
-                geom_dupe = ret["geom"]
-                verts_dupe = [v for v in geom_dupe if isinstance(v, bmesh.types.BMVert)]
-                edges_dupe = [e for e in geom_dupe if isinstance(e, bmesh.types.BMEdge)]
-                faces_dupe = [f for f in geom_dupe if isinstance(f, bmesh.types.BMFace)]
-                del ret
-                bmesh.ops.translate(bm, verts=verts_dupe, vec=vector_delta)
-                updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            else:
-                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-        else:
-            scene.pdt_error = PDT_ERR_DUPEDIT
-            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-            return
-
-    # Fillet Geometry
-    elif oper in ["f", "F"]:
-        if obj.mode == "EDIT":
+        if mode in ["a", "A"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            vNew = vector_delta - obj_loc
+            nVert = bm.verts.new(vNew)
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["d", "D"]:
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            vNew = bm.select_history[-1].co + vector_delta
+            nVert = bm.verts.new(vNew)
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["i", "I"]:
+            if len(vals) != 2:
+                scene.pdt_error = PDT_ERR_BAD2VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = disAng(vals, flip_a, plane, scene)
+            vNew = bm.select_history[-1].co + vector_delta
+            nVert = bm.verts.new(vNew)
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["p", "P"]:
+            if len(vals) != 1:
+                scene.pdt_error = PDT_ERR_BAD1VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
+            vNew = vector_delta
+            nVert = bm.verts.new(vNew)
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        else:
+            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+    # -----------
+    # Split Edges
+    elif oper in ["s", "S"]:
+        if not obj.mode == "EDIT":
+            scene.pdt_error = PDT_ERR_SPLITEDIT
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+        if mode in ["a", "A"]:
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            edges = [e for e in bm.edges if e.select]
+            if len(edges) != 1:
+                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
+            new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
+            nVert = new_verts[0]
+            nVert.co = vector_delta - obj_loc
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["d", "D"]:
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            edges = [e for e in bm.edges if e.select]
+            faces = [f for f in bm.faces if f.select]
+            if len(faces) != 0:
+                scene.pdt_error = PDT_ERR_FACE_SEL
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            if len(edges) < 1:
+                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
+            new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            for v in new_verts:
+                v.select_set(False)
+            bmesh.ops.translate(bm, verts=new_verts, vec=vector_delta)
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            for v in new_verts:
+                v.select_set(False)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["i", "I"]:
+            if len(vals) != 2:
+                scene.pdt_error = PDT_ERR_BAD2VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = disAng(vals, flip_a, plane, scene)
+            edges = [e for e in bm.edges if e.select]
+            faces = [f for f in bm.faces if f.select]
+            if len(faces) != 0:
+                scene.pdt_error = PDT_ERR_FACE_SEL
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            if len(edges) < 1:
+                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
+            new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
+            bmesh.ops.translate(bm, verts=new_verts, vec=vector_delta)
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            for v in new_verts:
+                v.select_set(False)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["p", "P"]:
+            if len(vals) != 1:
+                scene.pdt_error = PDT_ERR_BAD1VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
+            if vector_delta is None:
+                return
+            edges = [e for e in bm.edges if e.select]
+            faces = [f for f in bm.faces if f.select]
+            if len(faces) != 0:
+                scene.pdt_error = PDT_ERR_FACE_SEL
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            if len(edges) < 1:
+                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
+            new_verts = [v for v in geom["geom_split"] if isinstance(v, bmesh.types.BMVert)]
+            nVert = new_verts[0]
+            nVert.co = vector_delta
+            for v in [v for v in bm.verts if v.select]:
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        else:
+            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+    # ----------------
+    # Extrude Vertices
+    elif oper in ["v", "V"]:
+        if not obj.mode == "EDIT":
+            scene.pdt_error = PDT_ERR_EXTEDIT
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+        if mode in ["a", "A"]:
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            vNew = vector_delta - obj_loc
+            nVert = bm.verts.new(vNew)
+            for v in [v for v in bm.verts if v.select]:
+                nEdge = bm.edges.new([v, nVert])
+                v.select_set(False)
+            nVert.select_set(True)
+            bmesh.ops.remove_doubles(
+                bm, verts=[v for v in bm.verts if v.select], dist=0.0001
+            )
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["d", "D"]:
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            for v in verts:
+                nVert = bm.verts.new(v.co)
+                nVert.co = nVert.co + vector_delta
+                nEdge = bm.edges.new([v, nVert])
+                v.select_set(False)
+                nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["i", "I"]:
+            if len(vals) != 2:
+                scene.pdt_error = PDT_ERR_BAD2VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = disAng(vals, flip_a, plane, scene)
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            for v in verts:
+                nVert = bm.verts.new(v.co)
+                nVert.co = nVert.co + vector_delta
+                nEdge = bm.edges.new([v, nVert])
+                v.select_set(False)
+                nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["p", "P"]:
+            vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            nVert = bm.verts.new(vector_delta)
+            if ext_a:
+                for v in [v for v in bm.verts if v.select]:
+                    nEdge = bm.edges.new([v, nVert])
+                    v.select_set(False)
             else:
-                if mode in ["v", "V"]:
-                    vert_bool = True
-                else:
-                    vert_bool = False
-                scene = context.scene
-                obj = context.view_layer.objects.active
-                if obj is None:
-                    scene.pdt_error = PDT_ERR_NO_ACT_OBJ
+                nEdge = bm.edges.new([bm.select_history[-1], nVert])
+            nVert.select_set(True)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        else:
+            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+    # ----------------
+    # Extrude Geometry
+    elif oper in ["e", "E"]:
+        #FIXME: Missing error popup when not in "EDIT" mode?
+        if obj.mode == "EDIT":
+            if mode in ["d", "D"]:
+                if len(vals) != 3:
+                    scene.pdt_error = PDT_ERR_BAD3VALS
                     context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
-                bm = bmesh.from_edit_mesh(obj.data)
+                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_SEL_1_VERT
+                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
                     context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
-                else:
-                    if int(vals[1]) < 1:
-                        segs = 1
-                    else:
-                        segs = int(vals[1])
-                    if float(vals[2]) in range(0,1):
-                        prof = float(vals[2]),
-                    else:
-                        prof = 0.5
-                    bpy.ops.mesh.bevel(
-                        offset_type="OFFSET",
-                        offset=float(vals[0]),
-                        segments=segs,
-                        profile=prof,
-                        vertex_only=vert_bool,
-                    )
+                ret = bmesh.ops.extrude_face_region(
+                    bm,
+                    geom=(
+                        [f for f in bm.faces if f.select]
+                        + [e for e in bm.edges if e.select]
+                        + [v for v in bm.verts if v.select]
+                    ),
+                    use_select_history=True,
+                )
+                geom_extr = ret["geom"]
+                verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
+                edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
+                faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
+                del ret
+                bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
+                updateSel(bm, verts_extr, edges_extr, faces_extr)
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+            elif mode in ["i", "I"]:
+                if len(vals) != 2:
+                    scene.pdt_error = PDT_ERR_BAD2VALS
+                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
+                vector_delta = disAng(vals, flip_a, plane, scene)
+                verts = [v for v in bm.verts if v.select]
+                if len(verts) == 0:
+                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                    return
+                ret = bmesh.ops.extrude_face_region(
+                    bm,
+                    geom=(
+                        [f for f in bm.faces if f.select]
+                        + [e for e in bm.edges if e.select]
+                        + [v for v in bm.verts if v.select]
+                    ),
+                    use_select_history=True,
+                )
+                geom_extr = ret["geom"]
+                verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
+                edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
+                faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
+                del ret
+                bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
+                updateSel(bm, verts_extr, edges_extr, faces_extr)
+                bmesh.update_edit_mesh(obj.data)
+                bm.select_history.clear()
+            else:
+                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+    # ------------------
+    # Duplicate Geometry
+    elif oper in ["d", "D"]:
+        if not obj.mode == "EDIT":
+            scene.pdt_error = PDT_ERR_DUPEDIT
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+        if mode in ["d", "D"]:
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            ret = bmesh.ops.duplicate(
+                bm,
+                geom=(
+                    [f for f in bm.faces if f.select]
+                    + [e for e in bm.edges if e.select]
+                    + [v for v in bm.verts if v.select]
+                ),
+                use_select_history=True,
+            )
+            geom_dupe = ret["geom"]
+            verts_dupe = [v for v in geom_dupe if isinstance(v, bmesh.types.BMVert)]
+            edges_dupe = [e for e in geom_dupe if isinstance(e, bmesh.types.BMEdge)]
+            faces_dupe = [f for f in geom_dupe if isinstance(f, bmesh.types.BMFace)]
+            del ret
+            bmesh.ops.translate(bm, verts=verts_dupe, vec=vector_delta)
+            updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        elif mode in ["i", "I"]:
+            if len(vals) != 2:
+                scene.pdt_error = PDT_ERR_BAD2VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = disAng(vals, flip_a, plane, scene)
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            ret = bmesh.ops.duplicate(
+                bm,
+                geom=(
+                    [f for f in bm.faces if f.select]
+                    + [e for e in bm.edges if e.select]
+                    + [v for v in bm.verts if v.select]
+                ),
+                use_select_history=True,
+            )
+            geom_dupe = ret["geom"]
+            verts_dupe = [v for v in geom_dupe if isinstance(v, bmesh.types.BMVert)]
+            edges_dupe = [e for e in geom_dupe if isinstance(e, bmesh.types.BMEdge)]
+            faces_dupe = [f for f in geom_dupe if isinstance(f, bmesh.types.BMFace)]
+            del ret
+            bmesh.ops.translate(bm, verts=verts_dupe, vec=vector_delta)
+            updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
         else:
+            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+    # ---------------
+    # Fillet Geometry
+    elif oper in ["f", "F"]:
+        if not obj.mode == "EDIT":
             scene.pdt_error = PDT_ERR_FILEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        if len(vals) != 3:
+            scene.pdt_error = PDT_ERR_BAD3VALS
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+        else:
+            if mode in ["v", "V"]:
+                vert_bool = True
+            else:
+                vert_bool = False
+            scene = context.scene
+            obj = context.view_layer.objects.active
+            if obj is None:
+                scene.pdt_error = PDT_ERR_NO_ACT_OBJ
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            bm = bmesh.from_edit_mesh(obj.data)
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_SEL_1_VERT
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            else:
+                if int(vals[1]) < 1:
+                    segs = 1
+                else:
+                    segs = int(vals[1])
+                if float(vals[2]) in range(0,1):
+                    prof = float(vals[2]),
+                else:
+                    prof = 0.5
+                bpy.ops.mesh.bevel(
+                    offset_type="OFFSET",
+                    offset=float(vals[0]),
+                    segments=segs,
+                    profile=prof,
+                    vertex_only=vert_bool,
+                )
+                return
