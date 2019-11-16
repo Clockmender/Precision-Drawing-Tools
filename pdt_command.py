@@ -160,7 +160,7 @@ def command_run(self, context):
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
 
-
+    # Math Operation
     if oper in ["m", "M"]:
         exp = cmd[2:]
         if "," in exp:
@@ -194,6 +194,7 @@ def command_run(self, context):
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
 
+    # Not a Math Operation, so let's parse the command line
     vals = cmd[2:].split(",")
     ind = 0
     for r in vals:
@@ -208,19 +209,16 @@ def command_run(self, context):
     flip_p = scene.pdt_flippercent
     ext_a = scene.pdt_extend
     plane = scene.pdt_plane
-    # This bit needs looking at.
-    if mode not in ["a", "A"] or (oper in ["s", "S"] and mode in ["a", "A"]):
-        obj = bpy.context.view_layer.objects.active
-        bm, good = objCheck(obj, scene, oper)
-        if obj.mode == "EDIT":
-            if len(bm.select_history) < 1 and oper in ["c", "C", "n", "N", "p", "P"]:
-                scene.pdt_error = PDT_ERR_NO_ACT_VERT
-                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-        if good:
-            obj_loc = obj.matrix_world.decompose()[0]
-        else:
-            return
+
+    # set up necessary variables for later use
+    obj = context.view_layer.objects.active
+    print(f"PDT> cmd: {cmd}")
+    bm, good = objCheck(obj, scene, oper)
+    if good:
+        obj_loc = obj.matrix_world.decompose()[0]
+        print(f"PDT> obj: {obj} has a bmesh: {bm} and obj_loc: {obj_loc}")
+    else:
+        print(f"PDT> obj: {obj} has NO bmesh -> obj_loc not valid?")
 
     # Cursor or Pivot Point
     if oper in ["c", "C", "p", "P"]:
