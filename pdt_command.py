@@ -186,7 +186,7 @@ def command_run(self, context):
             elif mode in ["p", "P"]:
                 scene.pdt_percent = num
             else:
-                scene.pdt_error = mode + PDT_ERR_NON_VALID + "Maths)"
+                scene.pdt_error = f"{mode} {PDT_ERR_NON_VALID} Maths)"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         else:
@@ -306,7 +306,7 @@ def command_run(self, context):
                     else:
                         scene.pdt_pivotloc = vector_delta
             else:
-                scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -378,7 +378,7 @@ def command_run(self, context):
                         return
                     ob.location = vector_delta
             else:
-                scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
@@ -438,7 +438,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                    scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -457,7 +457,7 @@ def command_run(self, context):
                     vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                     edges = [e for e in bm.edges if e.select]
                     if len(edges) != 1:
-                        scene.pdt_error = PDT_ERR_SEL_1_EDGE + str(len(edges)) + ")"
+                        scene.pdt_error = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -482,7 +482,7 @@ def command_run(self, context):
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     if len(edges) < 1:
-                        scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
+                        scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -511,7 +511,7 @@ def command_run(self, context):
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     if len(edges) < 1:
-                        scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
+                        scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -538,7 +538,7 @@ def command_run(self, context):
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     if len(edges) < 1:
-                        scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
+                        scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
                     geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -551,7 +551,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                    scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -635,7 +635,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                    scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -705,7 +705,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                    scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
 
@@ -771,7 +771,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
+                    scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
