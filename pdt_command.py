@@ -88,7 +88,7 @@ def command_run(self, context):
         Example; CD0.4,0.6,1.1 - Moves Cursor Delta XYZ = 0.4,0.6,1.1 from Current Position/Active Vertex/Object Origin
         Example; SP35 - Splits active Edge at 35% of separation between edge's vertices
 
-        Valid First Letters (as 'data' - pdt_command[0])
+        Valid First Letters (as 'oper' - pdt_command[0])
             C = Cursor, G = Grab(move), N = New Vertex, V = Extrude Vertices Only, E = Extrude geometry
             P = Move Pivot Point, D = Duplicate geometry, S = Split Edges
             Capitals and Lower case letters are both allowed
@@ -112,22 +112,22 @@ def command_run(self, context):
     """
 
     scene = context.scene
-    comm = scene.pdt_command
+    cmd = scene.pdt_command
 
-    if comm == "?" or comm.lower() == "help":
+    if cmd == "?" or cmd.lower() == "help":
         # fmt: off
         bpy.context.window_manager.popup_menu(pdt_help, title="PDT Command Line - Valid Commands:", icon="INFO")
         # fmt: on
         return
 
-    if len(comm) < 3:
+    if len(cmd) < 3:
         scene.pdt_error = PDT_ERR_CHARS_NUM
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
     else:
-        data = comm[0]
+        oper = cmd[0]
         # fmt: off
-        if data not in [
+        if oper not in [
             "c", "C",
             "d", "D",
             "e", "E",
@@ -143,7 +143,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_BADFLETTER
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-        mode = comm[1]
+        mode = cmd[1]
         if mode not in [
             "a", "A",
             "d", "D",
@@ -162,8 +162,8 @@ def command_run(self, context):
             return
 
 
-        if data in ["m", "M"]:
-            exp = comm[2:]
+        if oper in ["m", "M"]:
+            exp = cmd[2:]
             if "," in exp:
                 scene.pdt_error = PDT_ERR_NOCOMMAS
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -195,7 +195,7 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        vals = comm[2:].split(",")
+        vals = cmd[2:].split(",")
         ind = 0
         for r in vals:
             try:
@@ -210,11 +210,11 @@ def command_run(self, context):
         ext_a = scene.pdt_extend
         plane = scene.pdt_plane
         # This bit needs looking at.
-        if mode not in ["a", "A"] or (data in ["s", "S"] and mode in ["a", "A"]):
+        if mode not in ["a", "A"] or (oper in ["s", "S"] and mode in ["a", "A"]):
             obj = bpy.context.view_layer.objects.active
-            bm, good = objCheck(obj, scene, data)
+            bm, good = objCheck(obj, scene, oper)
             if obj.mode == "EDIT":
-                if len(bm.select_history) < 1 and data in ["c", "C", "n", "N", "p", "P"]:
+                if len(bm.select_history) < 1 and oper in ["c", "C", "n", "N", "p", "P"]:
                     scene.pdt_error = PDT_ERR_NO_ACT_VERT
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
@@ -223,7 +223,7 @@ def command_run(self, context):
             else:
                 return
 
-        if data in ["c", "C", "p", "P"]:
+        if oper in ["c", "C", "p", "P"]:
             # Cursor or Pivot Point
             if mode in ["a", "A"]:
                 # Absolute Options
@@ -232,7 +232,7 @@ def command_run(self, context):
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                if data in ["c", "C"]:
+                if oper in ["c", "C"]:
                     scene.cursor.location = vector_delta
                 else:
                     scene.pdt_pivotloc = vector_delta
@@ -244,20 +244,20 @@ def command_run(self, context):
                     return
                 vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
                 if mode_s == "REL":
-                    if data in ["c", "C"]:
+                    if oper in ["c", "C"]:
                         scene.cursor.location = scene.cursor.location + vector_delta
                     else:
                         scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
                 elif mode_s == "SEL":
                     if obj.mode == "EDIT":
-                        if data in ["c", "C"]:
+                        if oper in ["c", "C"]:
                             scene.cursor.location = (
                                 bm.select_history[-1].co + obj_loc + vector_delta
                             )
                         else:
                             scene.pdt_pivotloc = bm.select_history[-1].co + obj_loc + vector_delta
                     elif obj.mode == "OBJECT":
-                        if data in ["c", "C"]:
+                        if oper in ["c", "C"]:
                             scene.cursor.location = obj_loc + vector_delta
                         else:
                             scene.pdt_pivotloc = obj_loc + vector_delta
@@ -269,20 +269,20 @@ def command_run(self, context):
                     return
                 vector_delta = disAng(vals, flip_a, plane, scene)
                 if mode_s == "REL":
-                    if data in ["c", "C"]:
+                    if oper in ["c", "C"]:
                         scene.cursor.location = scene.cursor.location + vector_delta
                     else:
                         scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
                 elif mode_s == "SEL":
                     if obj.mode == "EDIT":
-                        if data in ["c", "C"]:
+                        if oper in ["c", "C"]:
                             scene.cursor.location = (
                                 bm.select_history[-1].co + obj_loc + vector_delta
                             )
                         else:
                             scene.pdt_pivotloc = bm.select_history[-1].co + obj_loc + vector_delta
                     elif obj.mode == "OBJECT":
-                        if data in ["c", "C"]:
+                        if oper in ["c", "C"]:
                             scene.cursor.location = obj_loc + vector_delta
                         else:
                             scene.pdt_pivotloc = obj_loc + vector_delta
@@ -292,25 +292,25 @@ def command_run(self, context):
                     scene.pdt_error = PDT_ERR_BAD1VALS
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
-                vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
+                vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
                 if vector_delta is None:
                     return
                 if obj.mode == "EDIT":
-                    if data in ["c", "C"]:
+                    if oper in ["c", "C"]:
                         scene.cursor.location = obj_loc + vector_delta
                     else:
                         scene.pdt_pivotloc = obj_loc + vector_delta
                 elif obj.mode == "OBJECT":
-                    if data in ["c", "C"]:
+                    if oper in ["c", "C"]:
                         scene.cursor.location = vector_delta
                     else:
                         scene.pdt_pivotloc = vector_delta
             else:
-                scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        elif data in ["g", "G"]:
+        elif oper in ["g", "G"]:
             # Move Vertices or Objects
             if mode in ["a", "A"]:
                 if len(vals) != 3:
@@ -373,16 +373,16 @@ def command_run(self, context):
                         scene.pdt_error = PDT_ERR_BAD1VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
-                    vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
+                    vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
                     if vector_delta is None:
                         return
                     ob.location = vector_delta
             else:
-                scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        elif data in ["n", "N"]:
+        elif oper in ["n", "N"]:
             # Add New Vertex
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
@@ -429,7 +429,7 @@ def command_run(self, context):
                         scene.pdt_error = PDT_ERR_BAD1VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
-                    vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
+                    vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
                     vNew = vector_delta
                     nVert = bm.verts.new(vNew)
                     for v in [v for v in bm.verts if v.select]:
@@ -438,7 +438,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -446,7 +446,7 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        elif data in ["s", "S"]:
+        elif oper in ["s", "S"]:
             # Split Edges
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
@@ -528,7 +528,7 @@ def command_run(self, context):
                         scene.pdt_error = PDT_ERR_BAD1VALS
                         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                         return
-                    vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
+                    vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
                     if vector_delta is None:
                         return
                     edges = [e for e in bm.edges if e.select]
@@ -551,7 +551,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -559,7 +559,7 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        elif data in ["v", "V"]:
+        elif oper in ["v", "V"]:
             # Extrude Vertices
             if obj.mode == "EDIT":
                 if mode in ["a", "A"]:
@@ -618,7 +618,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 elif mode in ["p", "P"]:
-                    vector_delta = getPercent(obj, flip_p, float(vals[0]), data, scene)
+                    vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
                     verts = [v for v in bm.verts if v.select]
                     if len(verts) == 0:
                         scene.pdt_error = PDT_ERR_NO_SEL_GEOM
@@ -635,7 +635,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -643,7 +643,7 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        elif data in ["e", "E"]:
+        elif oper in ["e", "E"]:
             # Extrude Geometry
             if obj.mode == "EDIT":
                 if mode in ["d", "D"]:
@@ -705,11 +705,11 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
 
-        elif data in ["d", "D"]:
+        elif oper in ["d", "D"]:
             # Duplicate Geometry
             if obj.mode == "EDIT":
                 if mode in ["d", "D"]:
@@ -771,7 +771,7 @@ def command_run(self, context):
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
                 else:
-                    scene.pdt_error = mode + PDT_ERR_NON_VALID + data
+                    scene.pdt_error = mode + PDT_ERR_NON_VALID + oper
                     bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
             else:
@@ -779,7 +779,7 @@ def command_run(self, context):
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
 
-        elif data in ["f", "F"]:
+        elif oper in ["f", "F"]:
             # Fillet Geometry
             if obj.mode == "EDIT":
                 if len(vals) != 3:
