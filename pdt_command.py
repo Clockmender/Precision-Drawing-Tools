@@ -74,6 +74,7 @@ def pdt_help(self, context):
     self.layout.label(text="")
     self.layout.label(text="Example:")
     self.layout.label(text="ed0.5,,0.6 - Extrude Geometry Delta 0.5 in X, 0.6 in Z")
+    self.layout.label(text="fe0,4, - offset(float), number of segments(int), profile(float[0.0;1.0], defaults to 0.5)")
 
 def command_run(self, context):
     """Run Command String as input into Command Line.
@@ -211,6 +212,8 @@ def command_run(self, context):
     plane = scene.pdt_plane
     obj = context.view_layer.objects.active
     print(f"PDT> cmd: {cmd}")
+    #FIXME: What does call this imply in terms of invariants?
+    #       There's a lot of places in the code where we rely on bm not being None...
     bm, good = objCheck(obj, scene, oper)
     if good:
         obj_loc = obj.matrix_world.decompose()[0]
@@ -220,8 +223,8 @@ def command_run(self, context):
     # ---------------------
     # Cursor or Pivot Point
     if oper in ["c", "C", "p", "P"]:
+        # Absolute/Global Coordinates
         if mode in ["a", "A"]:
-            # Absolute Options
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -231,7 +234,7 @@ def command_run(self, context):
                 scene.cursor.location = vector_delta
             else:
                 scene.pdt_pivotloc = vector_delta
-        # Delta Options
+        # Delta/Relative Coordinates
         elif mode in ["d", "D"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -256,7 +259,7 @@ def command_run(self, context):
                         scene.cursor.location = obj_loc + vector_delta
                     else:
                         scene.pdt_pivotloc = obj_loc + vector_delta
-        # Direction Options
+        # Direction/Polar Coordinates
         elif mode in ["i", "I"]:
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
@@ -307,6 +310,7 @@ def command_run(self, context):
     # ------------------------
     # Move Vertices or Objects
     elif oper in ["g", "G"]:
+        # Absolute/Global Coordinates
         if mode in ["a", "A"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -329,6 +333,7 @@ def command_run(self, context):
             elif obj.mode == "OBJECT":
                 for ob in context.view_layer.objects.selected:
                     ob.location = vector_delta
+        # Delta/Relative Coordinates
         elif mode in ["d", "D"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -345,6 +350,7 @@ def command_run(self, context):
             elif obj.mode == "OBJECT":
                 for ob in context.view_layer.objects.selected:
                     ob.location = obj_loc + vector_delta
+        # Direction/Polar Coordinates
         elif mode in ["i", "I"]:
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
@@ -363,6 +369,7 @@ def command_run(self, context):
             elif obj.mode == "OBJECT":
                 for ob in context.view_layer.objects.selected:
                     ob.location = ob.location + vector_delta
+        # Percent Options
         elif mode in ["p", "P"]:
             if obj.mode == "OBJECT":
                 if len(vals) != 1:
@@ -384,6 +391,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_ADDVEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        # Absolute/Global Coordinates
         if mode in ["a", "A"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -397,6 +405,7 @@ def command_run(self, context):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Delta/Relative Coordinates
         elif mode in ["d", "D"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -410,6 +419,7 @@ def command_run(self, context):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Direction/Polar Coordinates
         elif mode in ["i", "I"]:
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
@@ -423,6 +433,7 @@ def command_run(self, context):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Percent Options
         elif mode in ["p", "P"]:
             if len(vals) != 1:
                 scene.pdt_error = PDT_ERR_BAD1VALS
@@ -447,6 +458,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_SPLITEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        # Absolute/Global Coordinates
         if mode in ["a", "A"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -467,6 +479,7 @@ def command_run(self, context):
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Delta/Relative Coordinates
         elif mode in ["d", "D"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -496,6 +509,7 @@ def command_run(self, context):
                 v.select_set(False)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Directional/Polar Coordinates
         elif mode in ["i", "I"]:
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
@@ -521,6 +535,7 @@ def command_run(self, context):
                 v.select_set(False)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Percent Options
         elif mode in ["p", "P"]:
             if len(vals) != 1:
                 scene.pdt_error = PDT_ERR_BAD1VALS
@@ -559,6 +574,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_EXTEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        # Absolute/Global Coordinates
         if mode in ["a", "A"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -576,6 +592,7 @@ def command_run(self, context):
             )
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Delta/Relative Coordinates
         elif mode in ["d", "D"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -595,6 +612,7 @@ def command_run(self, context):
                 nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Direction/Polar Coordinates
         elif mode in ["i", "I"]:
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
@@ -614,6 +632,7 @@ def command_run(self, context):
                 nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Percent Options
         elif mode in ["p", "P"]:
             vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
             verts = [v for v in bm.verts if v.select]
@@ -640,6 +659,7 @@ def command_run(self, context):
     elif oper in ["e", "E"]:
         #FIXME: Missing error popup when not in "EDIT" mode?
         if obj.mode == "EDIT":
+            # Delta/Relative Coordinates
             if mode in ["d", "D"]:
                 if len(vals) != 3:
                     scene.pdt_error = PDT_ERR_BAD3VALS
@@ -669,6 +689,7 @@ def command_run(self, context):
                 updateSel(bm, verts_extr, edges_extr, faces_extr)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
+            # Direction/Polar Coordinates
             elif mode in ["i", "I"]:
                 if len(vals) != 2:
                     scene.pdt_error = PDT_ERR_BAD2VALS
@@ -709,6 +730,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_DUPEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        # Delta/Relative Coordinates
         if mode in ["d", "D"]:
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
@@ -738,6 +760,7 @@ def command_run(self, context):
             updateSel(bm, verts_dupe, edges_dupe, faces_dupe)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
+        # Direction/Polar Coordinates
         elif mode in ["i", "I"]:
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
@@ -774,6 +797,10 @@ def command_run(self, context):
     # ---------------
     # Fillet Geometry
     elif oper in ["f", "F"]:
+        if obj is None:
+            scene.pdt_error = PDT_ERR_NO_ACT_OBJ
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
         if not obj.mode == "EDIT":
             scene.pdt_error = PDT_ERR_FILEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -782,37 +809,34 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_BAD3VALS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        if mode in ["v", "V"]:
+            vert_bool = True
+        elif mode in ["e", "E"]:
+            vert_bool = False
         else:
-            if mode in ["v", "V"]:
-                vert_bool = True
-            else:
-                vert_bool = False
-            scene = context.scene
-            obj = context.view_layer.objects.active
-            if obj is None:
-                scene.pdt_error = PDT_ERR_NO_ACT_OBJ
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-            bm = bmesh.from_edit_mesh(obj.data)
-            verts = [v for v in bm.verts if v.select]
-            if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_SEL_1_VERT
-                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                return
-            else:
-                if int(vals[1]) < 1:
-                    segs = 1
-                else:
-                    segs = int(vals[1])
-                if float(vals[2]) in range(0,1):
-                    prof = float(vals[2]),
-                else:
-                    prof = 0.5
-                bpy.ops.mesh.bevel(
-                    offset_type="OFFSET",
-                    offset=float(vals[0]),
-                    segments=segs,
-                    profile=prof,
-                    vertex_only=vert_bool,
-                )
-                return
+            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+        verts = [v for v in bm.verts if v.select]
+        if len(verts) == 0:
+            scene.pdt_error = PDT_ERR_SEL_1_VERT
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+            return
+        else:
+            # Note that passing an empty parameter results in that parameter being seen as "0"
+            # _offset <= 0 is apparently ignored...?
+            _offset = float(vals[0])
+            _segments = int(vals[1])
+            if _segments < 1:
+                _segments = 1    # This is a single, flat segment (ignores profile)
+            _profile = float(vals[2])
+            if _profile < 0.0 or _profile > 1.0:
+                _proffile = 0.5  # This is a circular profile
+            bpy.ops.mesh.bevel(
+                offset_type="OFFSET",
+                offset=_offset,
+                segments=_segments,
+                profile=_profile,
+                vertex_only=vert_bool
+            )
+            return
