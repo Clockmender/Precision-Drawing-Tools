@@ -29,8 +29,8 @@ from pathlib import Path
 
 # PDT Panel menus
 #
-class PDT_PT_Panel1(Panel):
-    bl_idname = "PDT_PT_panel1"
+class PDT_PT_PanelDesign(Panel):
+    bl_idname = "PDT_PT_PanelDesign"
     bl_label = "PDT Design"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -134,8 +134,8 @@ class PDT_PT_Panel1(Panel):
         col.prop(scene, "pdt_filletpro", text=PDT_LAB_PROFILE)
 
 
-class PDT_PT_Panel2(Panel):
-    bl_idname = "PDT_PT_panel2"
+class PDT_PT_PanelPivotPoint(Panel):
+    bl_idname = "PDT_PT_PanelPivotPoint"
     bl_label = "PDT Pivot Point"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -193,8 +193,8 @@ class PDT_PT_Panel2(Panel):
         col.operator("pdt.pivotread", icon="FILE", text="PP Read")
 
 
-class PDT_PT_Panel3(Panel):
-    bl_idname = "PDT_PT_panel3"
+class PDT_PT_PanelPartsLibrary(Panel):
+    bl_idname = "PDT_PT_PanelPartsLibrary"
     bl_label = "PDT Parts Library"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -239,8 +239,8 @@ class PDT_PT_Panel3(Panel):
         row.operator("pdt.lib_show", text="Show Library File",icon='INFO')
 
 
-class PDT_PT_Panel4(Panel):
-    bl_idname = "PDT_PT_panel4"
+class PDT_PT_PanelViewControl(Panel):
+    bl_idname = "PDT_PT_PanelViewControl"
     bl_label = "PDT View Control"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -280,8 +280,8 @@ class PDT_PT_Panel4(Panel):
         row.operator("pdt.viewiso", text="Isometric View")
 
 
-class PDT_PT_Panel5(Panel):
-    bl_idname = "PDT_PT_panel5"
+class PDT_PT_PanelCommandLine(Panel):
+    bl_idname = "PDT_PT_PanelCommandLine"
     bl_label = "PDT Command Line"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
