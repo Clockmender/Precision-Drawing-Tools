@@ -74,7 +74,7 @@ def pdt_help(self, context):
     self.layout.label(text="")
     self.layout.label(text="Example:")
     self.layout.label(text="ed0.5,,0.6 - Extrude Geometry Delta 0.5 in X, 0.6 in Z")
-    self.layout.label(text="fe0,4, - offset(float), number of segments(int), profile(float[0.0;1.0], defaults to 0.5)")
+    self.layout.label(text="fe0.1,4,0.5 - radius(float), segments(int), profile(float[0.0;1.0], default=0.5 -> convex & circular)")
 
 def command_run(self, context):
     """Run Command String as input into Command Line.
