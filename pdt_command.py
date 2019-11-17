@@ -828,10 +828,10 @@ def command_run(self, context):
             _offset = float(vals[0])
             _segments = int(vals[1])
             if _segments < 1:
-                _segments = 1    # This is a single, flat segment (ignores profile)
+                _segments = 1   # This is a single, flat segment (ignores profile)
             _profile = float(vals[2])
             if _profile < 0.0 or _profile > 1.0:
-                _proffile = 0.5  # This is a circular profile
+                _profile = 0.5  # This is a circular profile
             bpy.ops.mesh.bevel(
                 offset_type="OFFSET",
                 offset=_offset,
