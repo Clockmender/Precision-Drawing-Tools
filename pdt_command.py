@@ -649,69 +649,71 @@ def command_run(self, context):
             scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-        #FIXME: Missing error popup when not in "EDIT" mode?
-        if obj.mode == "EDIT":
-            # Delta/Relative Coordinates
-            if mode == "d":
-                if len(vals) != 3:
-                    scene.pdt_error = PDT_ERR_BAD3VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                ret = bmesh.ops.extrude_face_region(
-                    bm,
-                    geom=(
-                        [f for f in bm.faces if f.select]
-                        + [e for e in bm.edges if e.select]
-                        + [v for v in bm.verts if v.select]
-                    ),
-                    use_select_history=True,
-                )
-                geom_extr = ret["geom"]
-                verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
-                edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
-                faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
-                del ret
-                bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
-                updateSel(bm, verts_extr, edges_extr, faces_extr)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
-            # Direction/Polar Coordinates
-            elif mode == "i":
-                if len(vals) != 2:
-                    scene.pdt_error = PDT_ERR_BAD2VALS
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                vector_delta = disAng(vals, flip_a, plane, scene)
-                verts = [v for v in bm.verts if v.select]
-                if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
-                    context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
-                    return
-                ret = bmesh.ops.extrude_face_region(
-                    bm,
-                    geom=(
-                        [f for f in bm.faces if f.select]
-                        + [e for e in bm.edges if e.select]
-                        + [v for v in bm.verts if v.select]
-                    ),
-                    use_select_history=True,
-                )
-                geom_extr = ret["geom"]
-                verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
-                edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
-                faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
-                del ret
-                bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
-                updateSel(bm, verts_extr, edges_extr, faces_extr)
-                bmesh.update_edit_mesh(obj.data)
-                bm.select_history.clear()
+        if not obj.mode == "EDIT":
+            scene.pdt_error = PDT_ERR_EXTEDIT
+            context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
+        # Delta/Relative Coordinates
+        if mode == "d":
+            if len(vals) != 3:
+                scene.pdt_error = PDT_ERR_BAD3VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            ret = bmesh.ops.extrude_face_region(
+                bm,
+                geom=(
+                    [f for f in bm.faces if f.select]
+                    + [e for e in bm.edges if e.select]
+                    + [v for v in bm.verts if v.select]
+                ),
+                use_select_history=True,
+            )
+            geom_extr = ret["geom"]
+            verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
+            edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
+            faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
+            del ret
+            bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
+            updateSel(bm, verts_extr, edges_extr, faces_extr)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        # Direction/Polar Coordinates
+        elif mode == "i":
+            if len(vals) != 2:
+                scene.pdt_error = PDT_ERR_BAD2VALS
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            vector_delta = disAng(vals, flip_a, plane, scene)
+            verts = [v for v in bm.verts if v.select]
+            if len(verts) == 0:
+                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return
+            ret = bmesh.ops.extrude_face_region(
+                bm,
+                geom=(
+                    [f for f in bm.faces if f.select]
+                    + [e for e in bm.edges if e.select]
+                    + [v for v in bm.verts if v.select]
+                ),
+                use_select_history=True,
+            )
+            geom_extr = ret["geom"]
+            verts_extr = [v for v in geom_extr if isinstance(v, bmesh.types.BMVert)]
+            edges_extr = [e for e in geom_extr if isinstance(e, bmesh.types.BMEdge)]
+            faces_extr = [f for f in geom_extr if isinstance(f, bmesh.types.BMFace)]
+            del ret
+            bmesh.ops.translate(bm, verts=verts_extr, vec=vector_delta)
+            updateSel(bm, verts_extr, edges_extr, faces_extr)
+            bmesh.update_edit_mesh(obj.data)
+            bm.select_history.clear()
+        return
 
     # ------------------
     # Duplicate Geometry
