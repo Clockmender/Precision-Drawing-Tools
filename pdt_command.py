@@ -341,7 +341,7 @@ def command_run(self, context):
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             if obj.mode == "EDIT":
-                # FIXME: Show error dialog if nothing is selected?
+                # FIXME: Show error popup if nothing is selected?
                 bmesh.ops.translate(
                     bm, verts=[v for v in bm.verts if v.select], vec=vector_delta
                 )
@@ -822,21 +822,20 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_SEL_1_VERT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
-        else:
-            # Note that passing an empty parameter results in that parameter being seen as "0"
-            # _offset <= 0 is apparently ignored...?
-            _offset = float(vals[0])
-            _segments = int(vals[1])
-            if _segments < 1:
-                _segments = 1   # This is a single, flat segment (ignores profile)
-            _profile = float(vals[2])
-            if _profile < 0.0 or _profile > 1.0:
-                _profile = 0.5  # This is a circular profile
-            bpy.ops.mesh.bevel(
-                offset_type="OFFSET",
-                offset=_offset,
-                segments=_segments,
-                profile=_profile,
-                vertex_only=vert_bool
-            )
-            return
+        # Note that passing an empty parameter results in that parameter being seen as "0"
+        # _offset <= 0 is apparently ignored...?
+        _offset = float(vals[0])
+        _segments = int(vals[1])
+        if _segments < 1:
+            _segments = 1   # This is a single, flat segment (ignores profile)
+        _profile = float(vals[2])
+        if _profile < 0.0 or _profile > 1.0:
+            _profile = 0.5  # This is a circular profile
+        bpy.ops.mesh.bevel(
+            offset_type="OFFSET",
+            offset=_offset,
+            segments=_segments,
+            profile=_profile,
+            vertex_only=vert_bool
+        )
+        return
