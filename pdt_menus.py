@@ -282,7 +282,7 @@ class PDT_PT_PanelViewControl(Panel):
 
 class PDT_PT_PanelCommandLine(Panel):
     bl_idname = "PDT_PT_PanelCommandLine"
-    bl_label = "PDT Command Line"
+    bl_label = "PDT Command Line (? for help)"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
