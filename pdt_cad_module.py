@@ -27,7 +27,7 @@ import bmesh
 from mathutils import Vector, geometry
 from mathutils.geometry import intersect_line_line as LineIntersect
 from mathutils.geometry import intersect_point_line as PtLineIntersect
-
+from .pdt_functions import debug
 
 def point_on_edge(p, edge):
     """Find Point on Edge.
@@ -115,7 +115,7 @@ def closest_idx(pt, e):
         distance_test = (v1 - pt).length <= (v2 - pt).length
         return ev[0].index if distance_test else ev[1].index
 
-    print(f"received {e}, check expected input in docstring ")
+    debug(f"Received {e}, check expected input in docstring ")
 
 
 def closest_vector(pt, e):
@@ -136,7 +136,7 @@ def closest_vector(pt, e):
         distance_test = (v1 - pt).length <= (v2 - pt).length
         return v1 if distance_test else v2
 
-    print(f"received {e}, check expected input in docstring ")
+    debug(f"Received {e}, check expected input in docstring ")
 
 
 def coords_tuple_from_edge_idx(bm, idx):
@@ -176,7 +176,7 @@ def get_vert_indices_from_bmedges(edges):
         The vertex indices of edge_tuple as a flat list.
     """
     temp_edges = []
-    print(edges)
+    debug(edges)
     for e in edges:
         for v in e.verts:
             temp_edges.append(v.index)
