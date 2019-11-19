@@ -27,8 +27,8 @@
 import bpy
 import bmesh
 from . import pdt_cad_module as cm
-from .pdt_msg_strings import *
-
+from .pdt_msg_strings import PDT_ERR_2CPNPE, PDT_ERR_NCEDGES
+from .pdt_functions import debug
 
 def add_line_to_bisection(self):
     """Computes Bisector of 2 Co-Planar Edges.
@@ -54,7 +54,7 @@ def add_line_to_bisection(self):
         return
 
     [[v1, v2], [v3, v4]] = [[v.co for v in e.verts] for e in edges]
-    # print('vectors found:\n', v1, '\n', v2, '\n', v3, '\n', v4)
+    debug(f"vectors found:\n {v1}\n {v2}\n' {v3}\n {v4}")
 
     dist1 = (v1 - v2).length
     dist2 = (v3 - v4).length
@@ -97,6 +97,7 @@ class PDT_OT_LineOnBisection(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        """Only allow operation on a mesh object in EDIT mode."""
         ob = context.active_object
         if ob is None:
             return False

@@ -27,7 +27,7 @@ from pathlib import Path
 from mathutils import Vector
 from bpy.types import Operator
 from bpy.props import FloatProperty
-from .pdt_functions import oops
+from .pdt_functions import debug, oops
 
 from .pdt_msg_strings import *
 
@@ -50,8 +50,8 @@ class PDT_OT_LibShow(Operator):
         scene = context.scene
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
         scene.pdt_error = str(Path(file_path))
-        print("PDT Parts Library:")
-        print(scene.pdt_error)
+        debug("PDT Parts Library:")
+        debug(f"{scene.pdt_error}")
         bpy.context.window_manager.popup_menu(oops, title="Information - Parts Library File", icon="INFO")
         return {"FINISHED"}
 

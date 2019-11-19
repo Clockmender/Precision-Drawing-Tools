@@ -35,6 +35,37 @@ import numpy as np
 from .pdt_msg_strings import *
 
 
+def debug(msg, prefix=""):
+    """Print a debug message to the console if PDT's or Blender's debug flags are set.
+
+    The printed message will be of the form:
+
+    {prefix}{caller file name:line number}| {msg}
+    """
+
+    pdt_debug = bpy.context.preferences.addons[__package__].preferences.debug
+    if  bpy.app.debug or bpy.app.debug_python or pdt_debug:
+        import traceback
+
+        def extract_filename(fullpath):
+            """Return only the filename part of fullpath (excluding its path)."""
+            # Expected to end up being a string containing only the filename
+            # (i.e. excluding its preceding '/' separated path)
+            filename = fullpath.split('/')[-1]
+            #print(filename)
+            # something went wrong
+            if len(filename) < 1:
+                return fullpath
+            # since this is a singleton list, just return the filename as a string
+            return filename
+
+        # stack frame corresponding to the line where debug(msg) was called
+        #print(traceback.extract_stack()[-2])
+        laststack = traceback.extract_stack()[-2]
+        #print(laststack[0])
+        # laststack[0] is the caller's full file name, laststack[1] is the line number
+        print(f"{prefix}{extract_filename(laststack[0])}:{laststack[1]}| {msg}")
+
 def oops(self, context):
     """Error Routine.
 

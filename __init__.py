@@ -126,15 +126,22 @@ class PDTPreferences(bpy.types.AddonPreferences):
 
     pdt_library_path : StringProperty(
         name="Parts Library", default="", description="Parts Library File",
-         maxlen=1024, subtype='FILE_PATH'
-        )
+        maxlen=1024, subtype='FILE_PATH'
+    )
+
+    debug : BoolProperty(
+        name="Enable console debug output from PDT scripts", default=False,
+        description="NOTE: Does not enable debugging globally in Blender (only in PDT scripts)"
+    )
 
     def draw(self, context):
         layout = self.layout
 
         box = layout.box()
-        row = box.row()
-        row.prop(self, "pdt_library_path")
+        row1 = box.row()
+        row2 = box.row()
+        row1.prop(self, "debug")
+        row2.prop(self, "pdt_library_path")
 
 
 # List of All Classes in the Add-on to register
