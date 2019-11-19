@@ -191,8 +191,14 @@ def command_run(self, context):
     # Not a Math Operation, so let's parse the command line
     vals = cmd[2:].split(",")
     ind = 0
-    for r vals:
+    for r in vals:
         try:
+            number = float(r)
+            good = True
+        except ValueError:
+            vals[ind] = "0"
+        ind = ind + 1
+    mode_s = scene.pdt_select
     flip_a = scene.pdt_flipangle
     flip_p = scene.pdt_flippercent
     ext_a = scene.pdt_extend
@@ -307,7 +313,7 @@ def command_run(self, context):
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
-        if mode == "A":
+        if mode == "a":
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -330,7 +336,7 @@ def command_run(self, context):
                 for ob in context.view_layer.objects.selected:
                     ob.location = vector_delta
         # Delta/Relative Coordinates
-        elif mode == "D":
+        elif mode == "d":
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -347,7 +353,7 @@ def command_run(self, context):
                 for ob in context.view_layer.objects.selected:
                     ob.location = obj_loc + vector_delta
         # Direction/Polar Coordinates
-        elif mode == "I":
+        elif mode == "i":
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -366,7 +372,7 @@ def command_run(self, context):
                 for ob in context.view_layer.objects.selected:
                     ob.location = ob.location + vector_delta
         # Percent Options
-        elif mode == "P":
+        elif mode == "p":
             if obj.mode == "OBJECT":
                 if len(vals) != 1:
                     scene.pdt_error = PDT_ERR_BAD1VALS
@@ -390,7 +396,7 @@ def command_run(self, context):
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
-        if mode == "A":
+        if mode == "a":
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -404,7 +410,7 @@ def command_run(self, context):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         # Delta/Relative Coordinates
-        elif mode == "D":
+        elif mode == "d":
             if len(vals) != 3:
                 scene.pdt_error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -418,7 +424,7 @@ def command_run(self, context):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         # Direction/Polar Coordinates
-        elif mode == "I":
+        elif mode == "d":
             if len(vals) != 2:
                 scene.pdt_error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -432,7 +438,7 @@ def command_run(self, context):
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
         # Percent Options
-        elif mode == "P":
+        elif mode == "p":
             if len(vals) != 1:
                 scene.pdt_error = PDT_ERR_BAD1VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
