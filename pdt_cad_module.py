@@ -25,8 +25,7 @@
 #
 import bmesh
 from mathutils import Vector, geometry
-from mathutils.geometry import intersect_line_line as LineIntersect
-from mathutils.geometry import intersect_point_line as PtLineIntersect
+from mathutils.geometry import intersect_line_line, intersect_point_line
 from .pdt_functions import debug
 
 def point_on_edge(p, edge):
@@ -40,7 +39,7 @@ def point_on_edge(p, edge):
         True / False if a point happens to lie on an edge
     """
 
-    pt, _percent = PtLineIntersect(p, *edge)
+    pt, _percent = intersect_point_line(p, *edge)
     on_line = (pt - p).length < 1.0e-5
     return on_line and (0.0 <= _percent <= 1.0)
 
@@ -58,7 +57,7 @@ def line_from_edge_intersect(edge1, edge2):
     """
 
     [p1, p2], [p3, p4] = edge1, edge2
-    return LineIntersect(p1, p2, p3, p4)
+    return intersect_line_line(p1, p2, p3, p4)
 
 
 def get_intersection(edge1, edge2):
