@@ -43,7 +43,41 @@ from .pdt_functions import (
     intersection,
     getPercent,
 )
-from .pdt_msg_strings import *
+from .pdt_msg_strings import (
+    PDT_ERR_CONNECTED,
+    PDT_ERR_EDIT_MODE,
+    PDT_ERR_EDOB_MODE,
+    PDT_ERR_FACE_SEL,
+    PDT_ERR_INT_LINES,
+    PDT_ERR_INT_NO_ALL,
+    PDT_ERR_NON_VALID,
+    PDT_ERR_NO_ACT_OBJ,
+    PDT_ERR_NO_ACT_VERTS,
+    PDT_ERR_SEL_1_EDGE,
+    PDT_ERR_SEL_1_VERT,
+    PDT_ERR_SEL_1_VERTI,
+    PDT_ERR_SEL_2_OBJS,
+    PDT_ERR_SEL_2_VERTIO,
+    PDT_ERR_SEL_2_VERTS,
+    PDT_ERR_SEL_3_OBJS,
+    PDT_ERR_SEL_3_VERTIO,
+    PDT_ERR_SEL_3_VERTS,
+    PDT_ERR_SEL_4_OBJS,
+    PDT_ERR_SEL_4_VERTS,
+    PDT_ERR_STRIGHT_LINE,
+    PDT_ERR_TAPER_ANG,
+    PDT_ERR_TAPER_SEL,
+    PDT_ERR_VERT_MODE,
+    PDT_INF_OBJ_MOVED,
+    PDT_LAB_ABS,
+    PDT_LAB_ARCCENTRE,
+    PDT_LAB_DEL,
+    PDT_LAB_DIR,
+    PDT_LAB_INTERSECT,
+    PDT_LAB_NOR,
+    PDT_LAB_PERCENT,
+    PDT_LAB_PLANE
+)
 
 
 class PDT_OT_PlacementAbs(Operator):
@@ -115,7 +149,7 @@ class PDT_OT_PlacementAbs(Operator):
         elif oper == "SE" and obj.mode == "EDIT":
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
-                errmsg = f"{PDT_ERR_1_EDGE} {len(edges)})"
+                errmsg = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -587,7 +621,7 @@ class PDT_OT_PlacementPer(Operator):
         elif oper == "SE" and obj.mode == "EDIT":
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
-                errmsg = f"{PDT_ERR_1_EDGE} {len(edges)})"
+                errmsg = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)

@@ -27,8 +27,14 @@ from bpy.types import Operator, Panel, PropertyGroup, SpaceView3D
 from mathutils import Vector, Matrix
 from math import pi
 from .pdt_functions import viewCoords, draw3D, drawCallback3D
-from .pdt_msg_strings import *
-
+from .pdt_msg_strings import (
+    PDT_CON_AREYOURSURE,
+    PDT_ERR_EDIT_MODE,
+    PDT_ERR_NO3DVIEW,
+    PDT_ERR_NOPPLOC,
+    PDT_ERR_NO_ACT_OBJ,
+    PDT_ERR_NO_SEL_GEOM
+)
 
 class PDT_OT_ModalDrawOperator(bpy.types.Operator):
     """Show/Hide Pivot Point."""

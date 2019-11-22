@@ -92,7 +92,7 @@ PDT_ERR_SEL_2_V_1_E   = "Select 2 Vertices Individually, or 1 Edge (Currently se
 PDT_ERR_SEL_4_VERTS   = "Select 4 Vertices Individually, or 2 Edges (Currently selected:"
 PDT_ERR_SEL_1_E_1_F   = "Select 1 Face and 1 Detached Edge"
 
-PDT_ERR_SEL_1_EDGE    = "Select at only 1 Edge (Currently selected:"
+PDT_ERR_SEL_1_EDGE    = "Select Exactly 1 Edge (Currently selected:"
 PDT_ERR_SEL_1_EDGEM   = "Select at least 1 Edge (Currently selected:"
 
 PDT_ERR_SEL_1_OBJ     = "Select Exactly 1 Object (Currently selected:"

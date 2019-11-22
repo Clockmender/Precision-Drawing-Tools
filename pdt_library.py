@@ -29,7 +29,7 @@ from bpy.types import Operator
 from bpy.props import FloatProperty
 from .pdt_functions import debug, oops
 
-from .pdt_msg_strings import *
+from .pdt_msg_strings import PDT_ERR_NO_LIBRARY
 
 class PDT_OT_LibShow(Operator):
     """Show Library File Details."""

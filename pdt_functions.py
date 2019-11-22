@@ -26,13 +26,18 @@
 import bpy
 import bmesh
 import bgl
-import blf
 import gpu
+import numpy as np
 from mathutils import Vector, Quaternion
 from gpu_extras.batch import batch_for_shader
 from math import cos, sin, pi
-import numpy as np
-from .pdt_msg_strings import *
+from .pdt_msg_strings import (
+    PDT_ERR_VERT_MODE,
+    PDT_ERR_SEL_2_V_1_E,
+    PDT_ERR_SEL_2_OBJS,
+    PDT_ERR_NO_ACT_OBJ,
+    PDT_ERR_SEL_1_EDGEM
+)
 
 
 def debug(msg, prefix=""):
@@ -97,12 +102,13 @@ def setMode(mode_pl):
     if mode_pl == "XY":
         # a1 = x a2 = y a3 = z
         return 0, 1, 2
-    elif mode_pl == "XZ":
+    if mode_pl == "XZ":
         # a1 = x a2 = z a3 = y
         return 0, 2, 1
-    elif mode_pl == "YZ":
+    if mode_pl == "YZ":
         # a1 = y a2 = z a3 = x
         return 1, 2, 0
+    #FIXME: This needs a proper specification and a default
 
 
 def setAxis(mode_pl):
@@ -122,16 +128,17 @@ def setAxis(mode_pl):
 
     if mode_pl == "RX-MY":
         return 0, 1, 2
-    elif mode_pl == "RX-MZ":
+    if mode_pl == "RX-MZ":
         return 0, 2, 1
-    elif mode_pl == "RY-MX":
+    if mode_pl == "RY-MX":
         return 1, 0, 2
-    elif mode_pl == "RY-MZ":
+    if mode_pl == "RY-MZ":
         return 1, 2, 0
-    elif mode_pl == "RZ-MX":
+    if mode_pl == "RZ-MX":
         return 2, 0, 1
-    elif mode_pl == "RZ-MY":
+    if mode_pl == "RZ-MY":
         return 2, 1, 0
+    #FIXME: This needs a proper specification and a default
 
 
 def checkSelection(num, bm, obj):
@@ -177,7 +184,7 @@ def checkSelection(num, bm, obj):
             v.select_set(False)
         bmesh.update_edit_mesh(obj.data)
         bm.select_history.clear()
-        return None
+    return None
 
 
 def updateSel(bm, verts, edges, faces):
@@ -204,7 +211,6 @@ def updateSel(bm, verts, edges, faces):
         e.select_set(True)
     for f in faces:
         f.select_set(True)
-    return
 
 
 def viewCoords(x_loc, y_loc, z_loc):
@@ -296,13 +302,13 @@ def euler_to_quaternion(roll, pitch, yaw):
 
     # fmt: off
     qx = (np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2)
-         - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2))
+          - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2))
     qy = (np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
-         + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2))
+          + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2))
     qz = (np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
-         - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2))
+          - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2))
     qw = (np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2)
-         + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2))
+          + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2))
     # fmt: on
     return Quaternion((qw, qx, qy, qz))
 
@@ -406,10 +412,9 @@ def getPercent(obj, flip_p, per_v, data, scene):
     Works for either 2 vertices for an object in Edit mode
     or 2 selected objects in Object mode.
 
-    Setting pdt_flip to True causes percentage to be measured from second vector.
-
     Args:
         obj: The Object under consideration
+        flip_p: Setting this to True measures the percentage starting from the second vector
         per_v: Percentage Input Value
         data: pdt_flip, pdt_percent scene variables & Operational Mode
         scene: Context Scene
@@ -434,48 +439,33 @@ def getPercent(obj, flip_p, per_v, data, scene):
             return None
         p1 = np.array([actV.x, actV.y, actV.z])
         p2 = np.array([othV.x, othV.y, othV.z])
-    elif obj.mode == "OBJECT":
+    if obj.mode == "OBJECT":
         objs = bpy.context.view_layer.objects.selected
         if len(objs) != 2:
             scene.pdt_error = PDT_ERR_SEL_2_OBJS + str(len(objs)) + ")"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
-        else:
-            p1 = np.array(
-                [
-                    objs[-1].matrix_world.decompose()[0].x,
-                    objs[-1].matrix_world.decompose()[0].y,
-                    objs[-1].matrix_world.decompose()[0].z,
-                ]
-            )
-            p2 = np.array(
-                [
-                    objs[-2].matrix_world.decompose()[0].x,
-                    objs[-2].matrix_world.decompose()[0].y,
-                    objs[-2].matrix_world.decompose()[0].z,
-                ]
-            )
+        p1 = np.array(
+            [
+                objs[-1].matrix_world.decompose()[0].x,
+                objs[-1].matrix_world.decompose()[0].y,
+                objs[-1].matrix_world.decompose()[0].z,
+            ]
+        )
+        p2 = np.array(
+            [
+                objs[-2].matrix_world.decompose()[0].x,
+                objs[-2].matrix_world.decompose()[0].y,
+                objs[-2].matrix_world.decompose()[0].z,
+            ]
+        )
     p4 = np.array([0, 0, 0])
     p3 = p2 - p1
-    if flip_p:
-        if data != "MV":
-            # fmt: off
-            tst = ((p4+p3) * ((100-per_v) / 100)) + p1
-            # fmt: on
-        else:
-            # fmt: off
-            tst = ((p4+p3) * (per_v / 100)) + p1
-            # fmt: on
-    else:
-        if data != "MV":
-            # fmt: off
-            tst = ((p4+p3) * (per_v / 100)) + p1
-            # fmt: on
-        else:
-            # fmt: off
-            tst = ((p4+p3) * ((100-per_v) / 100)) + p1
-            # fmt: on
-    return Vector((tst[0], tst[1], tst[2]))
+    _per_v = per_v
+    if (flip_p and data != "MV") or data == "MV":
+        _per_v = 100 - per_v
+    V = (p4+p3) * (_per_v / 100) + p1
+    return Vector((V[0], V[1], V[2]))
 
 
 def objCheck(obj, scene, oper):
@@ -497,9 +487,8 @@ def objCheck(obj, scene, oper):
     if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
         if oper in ["s", "S"]:
-            edges = [e for e in bm.edges]
-            if len(edges) < 1:
-                scene.pdt_error = PDT_ERR_SEL_1_EDGEM + str(len(edges)) + ")"
+            if len(bm.edges) < 1:
+                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(bm.edges)})"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
             else:
@@ -553,6 +542,7 @@ def disAng(vals, flip_a, plane, scene):
         # fmt: off
         vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi/180))
         vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v * pi/180))
+        # FIXME: Is a3 just ignored?
         # fmt: on
     return vector_delta
 
@@ -562,14 +552,14 @@ def disAng(vals, flip_a, plane, scene):
 shader = gpu.shader.from_builtin("3D_UNIFORM_COLOR") if not bpy.app.background else None
 
 
-def draw3D(coords, type, rgba, context):
+def draw3D(coords, gtype, rgba, context):
     """Draw Pivot Point Graphics.
 
     Draws either Lines Points, or Tris using defined shader
 
     Args:
         coords: Input Coordinates List
-        type: Graphic Type
+        gtype: Graphic Type
         rgba: Colour in RGBA format
         context: Current Blender bpy.context
 
@@ -578,7 +568,7 @@ def draw3D(coords, type, rgba, context):
     """
 
     scene = context.scene
-    batch = batch_for_shader(shader, type, {"pos": coords})
+    batch = batch_for_shader(shader, gtype, {"pos": coords})
 
     try:
         if coords is not None:

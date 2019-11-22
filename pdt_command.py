@@ -22,33 +22,45 @@
 # ----------------------------------------------------------
 #
 import bpy
-from bpy.types import Operator, Panel, PropertyGroup
-from mathutils import Vector
 import bmesh
-import numpy as np
+from mathutils import Vector
+# glob import necessary for command line math functionality to work
 from math import *
-from mathutils.geometry import intersect_point_line
 from .pdt_functions import (
-    setMode,
-    checkSelection,
-    setAxis,
-    updateSel,
-    viewCoords,
-    viewCoordsI,
-    viewDir,
-    euler_to_quaternion,
-    arcCentre,
-    intersection,
-    getPercent,
-    oops,
+    debug,
     disAng,
+    getPercent,
     objCheck,
+    oops,
+    updateSel,
 )
-from .pdt_functions import debug
-from .pdt_msg_strings import *
+from .pdt_msg_strings import (
+    PDT_ERR_ADDVEDIT,
+    PDT_ERR_BAD1VALS,
+    PDT_ERR_BAD2VALS,
+    PDT_ERR_BAD3VALS,
+    PDT_ERR_BADCOORDL,
+    PDT_ERR_BADFLETTER,
+    PDT_ERR_BADMATHS,
+    PDT_ERR_BADSLETTER,
+    PDT_ERR_CHARS_NUM,
+    PDT_ERR_DUPEDIT,
+    PDT_ERR_EXTEDIT,
+    PDT_ERR_FACE_SEL,
+    PDT_ERR_FILEDIT,
+    PDT_ERR_NOCOMMAS,
+    PDT_ERR_NON_VALID,
+    PDT_ERR_NO_ACT_OBJ,
+    PDT_ERR_NO_SEL_GEOM,
+    PDT_ERR_SEL_1_EDGE,
+    PDT_ERR_SEL_1_EDGEM,
+    PDT_ERR_SEL_1_VERT,
+    PDT_ERR_SPLITEDIT
+)
 
 
 def pdt_help(self, context):
+    """Display PDT Command Line help in a pop-up."""
     label = self.layout.label
     label(text="Primary Letters (Available Secondary Letters):")
     label(text="")
@@ -98,29 +110,42 @@ def command_run(self, context):
         context: Current Blender bpy.context
 
     Note:
-        Uses pdt_command, pdt_error & many other 'scene.pdt_' variables to set PDT menu items, or alter functions
+        Uses pdt_command, pdt_error & many other 'scene.pdt_' variables to set PDT menu items,
+        or alter functions
 
-        Command Format; Operation(single letter) Mode(single letter) Values(up to 3 values separated by commas)
-        Example; CD0.4,0.6,1.1 - Moves Cursor Delta XYZ = 0.4,0.6,1.1 from Current Position/Active Vertex/Object Origin
+        Command Format; Operation(single letter) Mode(single letter) Values(up to 3 values
+        separated by commas)
+
+        Example; CD0.4,0.6,1.1 - Moves Cursor Delta XYZ = 0.4,0.6,1.1 from Current Position/Active
+        Vertex/Object Origin
+
         Example; SP35 - Splits active Edge at 35% of separation between edge's vertices
 
         Valid First Letters (as 'oper' - pdt_command[0])
-            C = Cursor, G = Grab(move), N = New Vertex, V = Extrude Vertices Only, E = Extrude geometry
-            P = Move Pivot Point, D = Duplicate geometry, S = Split Edges
-            Capitals and Lower case letters are both allowed
+            C = Cursor, G = Grab(move), N = New Vertex, V = Extrude Vertices Only,
+            E = Extrude geometry, P = Move Pivot Point, D = Duplicate geometry, S = Split Edges
+
+            Capitals and lower case letters are both allowed
 
         Valid Second Letters (as 'mode' - pdt_command[1])
+
             A = Absolute XYZ, D = Delta XYZ, I = Distance at Angle, P = Percent
             X = X Delta, Y = Y, Delta Z, = Z Delta (Maths Operation only)
-            V = Vertex Bevel, G = Geometry Bevel
-            Capitals and Lower case letters are both allowed
+            V = Vertex Bevel, E = Edge Bevel
 
-        Valid Values (pdt_command[2:]) - Only Integers and Floats, missing values are set to 0,
-            appropriate length checks are performed as Values is split by commas
+            Capitals and lower case letters are both allowed
+
+        Valid Values (pdt_command[2:])
+            Only Integers and Floats, missing values are set to 0, appropriate length checks are
+            performed as Values is split by commas.
+
             Example; CA,,3 - Cursor to Absolute, is re-interpreted as CA0,0,3
 
             Exception for Maths Operation, Values section is evaluated as Maths command
-            Example; madegrees(atan(3/4)) - sets PDT Angle to smallest angle of 3,4,5 Triangle; (36.8699 degrees)
+
+            Example; madegrees(atan(3/4)) - sets PDT Angle to smallest angle of 3,4,5 Triangle;
+            (36.8699 degrees)
+
             This is why all Math functions are imported
 
     Returns:
@@ -162,6 +187,7 @@ def command_run(self, context):
             scene.pdt_error = PDT_ERR_NOCOMMAS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         try:
+            # FIXME: The idea is good, but there's no restriction on the expressions allowed?!
             num = eval(exp)
         except ValueError:
             scene.pdt_error = PDT_ERR_BADMATHS
