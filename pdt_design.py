@@ -117,7 +117,7 @@ class PDT_OT_PlacementAbs(Operator):
         z_loc = scene.pdt_delta_z
 
         vector_delta = Vector((x_loc, y_loc, z_loc))
-        if oper not in ["CU", "PP", "NV"]:
+        if oper not in {"CU", "PP", "NV"}:
             obj = context.view_layer.objects.active
             if obj is None:
                 errmsg = PDT_ERR_NO_ACT_OBJ
@@ -250,7 +250,7 @@ class PDT_OT_PlacementDelta(Operator):
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == "EDIT":
                 bm = bmesh.from_edit_mesh(obj.data)
-                if oper not in ["MV", "SE", "EV", "DG", "EG"]:
+                if oper not in {"MV", "SE", "EV", "DG", "EG"}:
                     if len(bm.select_history) >= 1:
                         actV = checkSelection(1, bm, obj)
                         if actV is None:
@@ -261,7 +261,7 @@ class PDT_OT_PlacementDelta(Operator):
                         errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
-            if oper not in ["CU", "PP", "NV"]:
+            if oper not in {"CU", "PP", "NV"}:
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     errmsg = PDT_ERR_NO_ACT_VERTS
@@ -434,7 +434,7 @@ class PDT_OT_PlacementDis(Operator):
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == "EDIT":
                 bm = bmesh.from_edit_mesh(obj.data)
-                if oper not in ["MV", "SE", "EV", "DG", "EG"]:
+                if oper not in {"MV", "SE", "EV", "DG", "EG"}:
                     if len(bm.select_history) >= 1:
                         actV = checkSelection(1, bm, obj)
                         if actV is None:
@@ -445,7 +445,7 @@ class PDT_OT_PlacementDis(Operator):
                         errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
-            if oper not in ["CU", "PP", "NV"]:
+            if oper not in {"CU", "PP", "NV"}:
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     errmsg = PDT_ERR_NO_ACT_VERTS
@@ -876,7 +876,7 @@ class PDT_OT_PlacementInt(Operator):
                 nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
-            elif oper in ["MV", "EV"]:
+            elif oper in {"MV", "EV"}:
                 nVert = None
                 proc = False
 
