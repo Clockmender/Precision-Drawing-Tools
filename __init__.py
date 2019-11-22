@@ -284,6 +284,219 @@ def enumlist_materials(self, context):
     return _pdt_mat_items
 
 
+class PDTPropertyGroup(bpy.types.PropertyGroup):
+    """Group all PDT related properties here."""
+
+    # FIXME: Can be made into a FloatVectorProperty?
+    delta_x : FloatProperty(
+        name="X Coord", default=0.0, precision=5, description=PDT_DES_XDELTA, unit="LENGTH"
+    )
+    delta_y : FloatProperty(
+        name="Y Coord", default=0.0, precision=5, description=PDT_DES_YDELTA, unit="LENGTH"
+    )
+    delta_z : FloatProperty(
+        name="Z Coord", default=0.0, precision=5, description=PDT_DES_ZDELTA, unit="LENGTH"
+    )
+
+    distance : FloatProperty(
+        name="Distance", default=0.0, precision=5, description=PDT_DES_OFFDIS, unit="LENGTH"
+    )
+    angle : FloatProperty(
+        name="Angle", min=-180, max=180, default=0.0, precision=5, description=PDT_DES_OFFANG
+    )
+    percent : FloatProperty(
+        name="Percent", default=0.0, precision=5, description=PDT_DES_OFFPER
+    )
+    plane : EnumProperty(
+        items=(
+            ("XZ", "Front(X-Z)", "Use X-Z Plane"),
+            ("XY", "Top(X-Y)", "Use X-Y Plane"),
+            ("YZ", "Right(Y-Z)", "Use Y-Z Plane"),
+            ("LO", "View", "Use View Plane"),
+        ),
+        name="Working Plane",
+        default="XZ",
+        description=PDT_DES_WORPLANE,
+    )
+    select : EnumProperty(
+        items=(
+            ("REL", "Current", "Moved Relative to Current Position"),
+            (
+                "SEL",
+                "Selected",
+                "Moved Relative to Selected Object, or Vertex, Cursor & Pivot Only",
+            ),
+        ),
+        name="Move Mode",
+        default="SEL",
+        description=PDT_DES_MOVESEL,
+    )
+    # Formerly named 'operate' (a verb). Now it's a noun.
+    operation : EnumProperty(
+        items=(
+            ("CU", "Cursor", "This Function will Move the Cursor"),
+            ("PP", "Pivot", "This Function will Move the Pivot Point"),
+            ("MV", "Move", "This function will Move Vertices, or Objects"),
+            ("NV", "New Vertex", "This function will Add a New Vertex"),
+            ("EV", "Extrude Vertices", "This function will Extrude Vertices Only in EDIT Mode"),
+            ("SE", "Split Edges", "This function will Split Edges Only in EDIT Mode"),
+            (
+                "DG",
+                "Duplicate Geometry",
+                "This function will Duplicate Geometry in EDIT Mode (Delta & Direction Only)",
+            ),
+            (
+                "EG",
+                "Extrude Geometry",
+                "This function will Extrude Geometry in EDIT Mode (Delta & Direction Only)",
+            ),
+        ),
+        name="Operation",
+        default="CU",
+        description=PDT_DES_OPMODE,
+    )
+    taper : EnumProperty(
+        items=(
+            ("RX-MY", "RotX-MovY", "Rotate X - Move Y"),
+            ("RX-MZ", "RotX-MovZ", "Rotate X - Move Z"),
+            ("RY-MX", "RotY-MovX", "Rotate Y - Move X"),
+            ("RY-MZ", "RotY-MovZ", "Rotate Y - Move Z"),
+            ("RZ-MX", "RotZ-MovX", "Rotate Z - Move X"),
+            ("RZ-MY", "RotZ-MovY", "Rotate Z - Move Y"),
+        ),
+        name="Axes",
+        default="RX-MY",
+        description=PDT_DES_ROTMOVAX,
+    )
+
+    # Was flip*, now flip_*
+    flip_angle : BoolProperty(
+        name="Flip Angle", default=False, description=PDT_DES_FLIPANG
+    )
+    flip_percent : BoolProperty(
+        name="Flip %", default=False, description=PDT_DES_FLIPPER
+    )
+
+    extend : BoolProperty(
+        name="Trim/Extend All", default=False, description=PDT_DES_TRIM
+    )
+
+    lib_objects : EnumProperty(
+        items=enumlist_objects, name="Objects", description=PDT_DES_LIBOBS
+    )
+    lib_collections : EnumProperty(
+        items=enumlist_collections, name="Collections", description=PDT_DES_LIBCOLS
+    )
+    lib_materials : EnumProperty(
+        items=enumlist_materials, name="Materials", description=PDT_DES_LIBMATS
+    )
+    lib_mode : EnumProperty(
+        items=(
+            ("OBJECTS", "Objects", "Use Objects"),
+            ("COLLECTIONS", "Collections", "Use Collections"),
+            ("MATERIALS", "Materials", "Use Materials"),
+        ),
+        name="Mode",
+        default="OBJECTS",
+        description=PDT_DES_LIBMODE,
+    )
+
+    # FIXME: These need to be self-documenting.
+    obsearch : StringProperty(
+        name="Search", default="", description=PDT_DES_LIBSER
+    )
+    cosearch : StringProperty(
+        name="Search", default="", description=PDT_DES_LIBSER
+    )
+    masearch : StringProperty(
+        name="Search", default="", description=PDT_DES_LIBSER
+    )
+
+    # FIXME: Can be made into a FloatVectorProperty ?
+    xrot : FloatProperty(name="X Rot", default=0, unit="ROTATION")
+    yrot : FloatProperty(name="Y Rot", default=0, unit="ROTATION")
+    zrot : FloatProperty(name="Z Rot", default=0, unit="ROTATION")
+
+    # FIXME: Needs a more easily understandable name
+    oborder : EnumProperty(
+        items=(
+            ("1,2,3,4", "1,2,3,4", "Objects 1 & 2 are First Line"),
+            ("1,3,2,4", "1,3,2,4", "Objects 1 & 3 are First Line"),
+            ("1,4,2,3", "1,4,2,3", "Objects 1 & 4 are First Line"),
+        ),
+        name="Order",
+        default="1,2,3,4",
+        description=PDT_DES_OBORDER,
+    )
+    vrotangle : FloatProperty(name="View Rotate Angle", default=10, max=180, min=-180)
+    command : StringProperty(
+        name="Command",
+        default="CA0,0,0",
+        update=command_run,
+        description=PDT_DES_VALIDLET,
+    )
+    error : StringProperty(name="Error", default="")
+
+    # Was pivot* -- is now pivot_*
+    pivot_loc : FloatVectorProperty(
+        name="Pivot Location",
+        default=(0.0, 0.0, 0.0),
+        subtype="XYZ",
+        description=PDT_DES_PPLOC,
+    )
+    pivot_scale : FloatVectorProperty(
+        name="Pivot Scale", default=(1.0, 1.0, 1.0), subtype="XYZ", description=PDT_DES_PPSCALEFAC
+    )
+    pivot_size : FloatProperty(
+        name="Pivot Factor", min=0.4, max=2, default=1, precision=1, description=PDT_DES_PPSIZE
+    )
+    pivot_width : IntProperty(
+        name="Width", min=1, max=5, default=2, description=PDT_DES_PPWIDTH
+    )
+    pivot_ang : FloatProperty(name="Pivot Angle", min=-180, max=180, default=0.0)
+    pivot_dis : FloatProperty(name="Pivot Dist",
+        default=0.0,
+        min = 0,
+        update=scale_set,
+        description=PDT_DES_PIVOTDIS,
+        )
+    pivot_alpha : FloatProperty(
+        name="Alpha",
+        min=0.2,
+        max=1,
+        default=0.6,
+        precision=1,
+        description=PDT_DES_PPTRANS,
+    )
+    pivot_show : BoolProperty()
+
+    # Was filletrad
+    fillet_radius : FloatProperty(
+        name="Fillet Radius", min=0.0, default=1.0, description=PDT_DES_FILLETRAD
+    )
+    # Was filletnum
+    fillet_segments : IntProperty(
+        name="Fillet Segments", min=1, default=4, description=PDT_DES_FILLETSEG
+    )
+    # Was filletpro
+    fillet_profile : FloatProperty(
+        name="Fillet Profile", min=0.0, max=1.0, default=0.5, description=PDT_DES_FILLETPROF
+    )
+    # Was filletbool
+    fillet_vertices_only : BoolProperty(
+        name="Fillet Vertices Only",
+        default=True,
+        description=PDT_DES_FILLETVERTS,
+    )
+
+    # OpenGL flag
+    #
+    wm = WindowManager
+    # Register Internal OpenGL Property
+    #
+    wm.run_opengl : BoolProperty(default=False)
+
+
 def register():
     """Register Classes and Create Scene Variables.
 
