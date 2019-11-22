@@ -480,13 +480,15 @@ def objCheck(obj, scene, oper):
         Object Bmesh and Validity Boolean.
     """
 
+    _oper = oper.upper()
+
     if obj is None:
         scene.pdt_error = PDT_ERR_NO_ACT_OBJ
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return None, False
     if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
-        if oper in ["s", "S"]:
+        if _oper == "S":
             if len(bm.edges) < 1:
                 scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(bm.edges)})"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
@@ -494,7 +496,7 @@ def objCheck(obj, scene, oper):
             else:
                 return bm, True
         if len(bm.select_history) >= 1:
-            if oper not in ["d", "D", "e", "E", "g", "G", "n", "N", "s", "S"]:
+            if _oper not in {"D", "E", "G", "N", "S"}:
                 actV = checkSelection(1, bm, obj)
             else:
                 verts = [v for v in bm.verts if v.select]
@@ -506,7 +508,7 @@ def objCheck(obj, scene, oper):
                 scene.pdt_error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
-        elif oper in ["c", "C"]:
+        if _oper == "C":
             return None, False
         return bm, True
     elif obj.mode == "OBJECT":
