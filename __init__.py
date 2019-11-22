@@ -112,44 +112,6 @@ from .pdt_msg_strings import (
 )
 
 
-# Define Panel classes for updating
-#
-panels = (
-    pdt_menus.PDT_PT_PanelDesign,
-    pdt_menus.PDT_PT_PanelPivotPoint,
-    pdt_menus.PDT_PT_PanelPartsLibrary,
-    pdt_menus.PDT_PT_PanelViewControl,
-    pdt_menus.PDT_PT_PanelCommandLine,
-)
-
-
-def update_panel(self, context):
-    """Update Panels if parameters change.
-
-    This routine is required if the panel layouts are changed by the application.
-
-    Args:
-        context: Current Blender bpy.context
-
-    Returns:
-        Nothing.
-    """
-
-    message = "PDT: Updating Panel locations has failed"
-    try:
-        for panel in panels:
-            if "bl_rna" in panel.__dict__:
-                bpy.utils.unregister_class(panel)
-
-        for panel in panels:
-            panel.bl_category = context.preferences.addons[__name__].preferences.category
-            bpy.utils.register_class(panel)
-
-    except Exception as e:
-        print(f"\n[{__name__}]\n{message}\n\nError:\n{e}")
-        pass
-
-
 class PDTPreferences(bpy.types.AddonPreferences):
     # This must match the addon name, use '__package__' when defining this in a submodule of a python package.
 
