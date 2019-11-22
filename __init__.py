@@ -78,7 +78,38 @@ from bpy.props import (
 
 from .pdt_command import command_run
 from .pdt_functions import scale_set
-from .pdt_msg_strings import *
+from .pdt_msg_strings import (
+    PDT_DES_FILLETPROF,
+    PDT_DES_FILLETRAD,
+    PDT_DES_FILLETSEG,
+    PDT_DES_FILLETVERTS,
+    PDT_DES_FLIPANG,
+    PDT_DES_FLIPPER,
+    PDT_DES_LIBCOLS,
+    PDT_DES_LIBMATS,
+    PDT_DES_LIBMODE,
+    PDT_DES_LIBOBS,
+    PDT_DES_LIBSER,
+    PDT_DES_MOVESEL,
+    PDT_DES_OBORDER,
+    PDT_DES_OFFANG,
+    PDT_DES_OFFDIS,
+    PDT_DES_OFFPER,
+    PDT_DES_OPMODE,
+    PDT_DES_PIVOTDIS,
+    PDT_DES_PPLOC,
+    PDT_DES_PPSCALEFAC,
+    PDT_DES_PPSIZE,
+    PDT_DES_PPTRANS,
+    PDT_DES_PPWIDTH,
+    PDT_DES_ROTMOVAX,
+    PDT_DES_TRIM,
+    PDT_DES_VALIDLET,
+    PDT_DES_WORPLANE,
+    PDT_DES_XDELTA,
+    PDT_DES_YDELTA,
+    PDT_DES_ZDELTA
+)
 
 
 # Define Panel classes for updating

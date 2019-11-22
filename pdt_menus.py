@@ -22,10 +22,53 @@
 # ----------------------------------------------------------
 #
 import bpy
-from bpy.types import Panel
-from .pdt_msg_strings import *
 import os
+from bpy.types import Panel
 from pathlib import Path
+from .pdt_msg_strings import (
+    PDT_LAB_ABS,
+    PDT_LAB_AD2D,
+    PDT_LAB_AD3D,
+    PDT_LAB_ALLACTIVE,
+    PDT_LAB_ANGLEVALUE,
+    PDT_LAB_ARCCENTRE,
+    PDT_LAB_BISECT,
+    PDT_LAB_DEL,
+    PDT_LAB_DIR,
+    PDT_LAB_DISVALUE,
+    PDT_LAB_EDGETOEFACE,
+    PDT_LAB_FILLET,
+    PDT_LAB_FLIPANGLE,
+    PDT_LAB_FLIPPERCENT,
+    PDT_LAB_INTERSECT,
+    PDT_LAB_INTERSETALL,
+    PDT_LAB_JOIN2VERTS,
+    PDT_LAB_MODE,
+    PDT_LAB_NOR,
+    PDT_LAB_OPERATION,
+    PDT_LAB_ORDER,
+    PDT_LAB_ORIGINCURSOR,
+    PDT_LAB_PERCENT,
+    PDT_LAB_PERCENTS,
+    PDT_LAB_PIVOTALPHA,
+    PDT_LAB_PIVOTLOC,
+    PDT_LAB_PIVOTLOCH,
+    PDT_LAB_PIVOTSIZE,
+    PDT_LAB_PIVOTWIDTH,
+    PDT_LAB_PLANE,
+    PDT_LAB_PROFILE,
+    PDT_LAB_RADIUS,
+    PDT_LAB_SEGMENTS,
+    PDT_LAB_TAPER,
+    PDT_LAB_TAPERAXES,
+    PDT_LAB_TOOLS,
+    PDT_LAB_USEVERTS,
+    PDT_LAB_VARIABLES,
+    PDT_LAB_XVALUE,
+    PDT_LAB_YVALUE,
+    PDT_LAB_ZVALUE
+)
+
 
 # PDT Panel menus
 #

@@ -27,13 +27,19 @@
 import bpy
 import bmesh
 from mathutils.geometry import intersect_line_plane
+from .pdt_msg_strings import (
+    PDT_ERR_NOINT,
+    PDT_ERR_SEL_1_E_1_F
+)
 
 
 def failure_message(self):
+    """Warn to the user to select 1 edge and 1 face."""
     self.report({"WARNING"}, PDT_ERR_SEL_1_E_1_F)
 
 
 def failure_message_on_plane(self):
+    """Report an informative error message in a popup."""
     msg2 = """\
 Edge2Face expects the edge to intersect at one point on the plane of the selected face. You're
 seeing this warning because mathutils.geometry.intersect_line_plane is being called on an edge/face
@@ -61,12 +67,12 @@ def extend_vertex(self):
     faces = bm.faces
 
     planes = [f for f in faces if f.select]
-    if not (len(planes) == 1):
+    if not len(planes) == 1:
         failure_message(self)
         return
 
     plane = planes[0]
-    plane_vert_indices = [v for v in plane.verts[:]]
+    plane_vert_indices = plane.verts[:]
     all_selected_vert_indices = [v for v in verts if v.select]
 
     M = set(plane_vert_indices)
@@ -107,6 +113,7 @@ class PDT_OT_EdgeToFace(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        """Only allow this to work if a mesh is selected in EDIT mode."""
         ob = context.object
         if ob is None:
             return False

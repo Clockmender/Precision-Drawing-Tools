@@ -26,9 +26,7 @@ from bpy.types import Operator
 from bpy.props import FloatProperty
 from math import pi
 from mathutils import Quaternion
-
 from .pdt_functions import euler_to_quaternion
-from .pdt_msg_strings import *
 
 
 class PDT_OT_ViewRot(Operator):
@@ -139,9 +137,9 @@ class PDT_OT_vRotU(Operator):
         Notes:
             Uses pdt_vrotangle scene variable
 
-	Returns:
-    	    Status Set.
-    	"""
+        Returns:
+            Status Set.
+        """
 
         scene = context.scene
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
