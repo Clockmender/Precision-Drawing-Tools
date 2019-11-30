@@ -166,10 +166,11 @@ class PDT_OT_IntersectAllEdges(bpy.types.Operator):
         Deletes original edges and replaces with new intersected edges
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
-            Status Set."""
+            Status Set.
+        """
 
         # must force edge selection mode here
         bpy.context.tool_settings.mesh_select_mode = (False, True, False)

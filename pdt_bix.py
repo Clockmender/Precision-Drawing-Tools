@@ -30,16 +30,17 @@ from . import pdt_cad_module as cm
 from .pdt_msg_strings import PDT_ERR_2CPNPE, PDT_ERR_NCEDGES
 from .pdt_functions import debug
 
-def add_line_to_bisection(self):
+def add_line_to_bisection(self, context):
     """Computes Bisector of 2 Co-Planar Edges.
 
     Args:
-        None
+        context: Blender bpy.context instance
 
     Returns:
-        Nothing."""
+        Nothing.
+    """
 
-    obj = bpy.context.object
+    obj = context.object
     me = obj.data
     bm = bmesh.from_edit_mesh(me)
 
@@ -54,7 +55,7 @@ def add_line_to_bisection(self):
         return
 
     [[v1, v2], [v3, v4]] = [[v.co for v in e.verts] for e in edges]
-    debug(f"vectors found:\n {v1}\n {v2}\n' {v3}\n {v4}")
+    debug(f"vectors found:\n {v1}\n {v2}\n {v3}\n {v4}")
 
     dist1 = (v1 - v2).length
     dist2 = (v3 - v4).length
@@ -107,10 +108,11 @@ class PDT_OT_LineOnBisection(bpy.types.Operator):
         """Computes Bisector of 2 Co-Planar Edges.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
-            Status Set."""
+            Status Set.
+        """
 
-        add_line_to_bisection(self)
+        add_line_to_bisection(self, context)
         return {"FINISHED"}

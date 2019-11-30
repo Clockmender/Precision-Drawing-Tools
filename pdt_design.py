@@ -17,19 +17,18 @@
 #
 # ***** END GPL LICENCE BLOCK *****
 #
-# ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
-# ----------------------------------------------------------
+# -----------------------------------------------------------------------
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
+# -----------------------------------------------------------------------
 #
+import bmesh
 import bpy
+import numpy as np
+from bpy.props import FloatProperty
 from bpy.types import Operator, Panel, PropertyGroup
 from mathutils import Vector, Quaternion
-from bpy.props import FloatProperty
-import bmesh
-import numpy as np
-from math import sin, cos, tan, acos, pi, sqrt
-
 from mathutils.geometry import intersect_point_line
+from math import sin, cos, tan, acos, pi, sqrt
 from .pdt_functions import (
     setMode,
     checkSelection,
@@ -90,8 +89,8 @@ class PDT_OT_PlacementAbs(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Absolute (World) Coordinates.
 
-        - Reads pdt_operate from Operation Mode Selector as 'data'
-        - Reads pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables to:
+        - Reads pg.operate from Operation Mode Selector as 'data'
+        - Reads pg.cartesian_coords scene variables to:
         -- set position of CUrsor      (CU)
         -- set postion of Pivot Point  (PP)
         -- MoVe geometry/objects       (MV)
@@ -104,19 +103,17 @@ class PDT_OT_PlacementAbs(Operator):
         Local vector variable 'vector_delta' is used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        oper = scene.pdt_operate
-        x_loc = scene.pdt_delta_x
-        y_loc = scene.pdt_delta_y
-        z_loc = scene.pdt_delta_z
+        pg = scene.pdt_pg
+        oper = pg.operation
 
-        vector_delta = Vector((x_loc, y_loc, z_loc))
+        vector_delta = pg.cartesian_coords
         if oper not in {"CU", "PP", "NV"}:
             obj = context.view_layer.objects.active
             if obj is None:
@@ -135,7 +132,7 @@ class PDT_OT_PlacementAbs(Operator):
             scene.cursor.location = vector_delta
             scene.cursor.rotation_euler = (0, 0, 0)
         elif oper == "PP":
-            scene.pdt_pivotloc = vector_delta
+            pg.pivot_loc = vector_delta
         elif oper == "MV":
             if obj.mode == "EDIT":
                 for v in verts:
@@ -204,8 +201,8 @@ class PDT_OT_PlacementDelta(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Delta Offset (Increment).
 
-        - Reads pdt_operate from Operation Mode Selector as 'oper'
-        - Reads pdt_select, pdt_plane, pdt_delta_x, pdt_delta_y & pdt_delta_z scene variables to:
+        - Reads pg.operation from Operation Mode Selector as 'oper'
+        - Reads pg.select, pg.plane, pg.cartesian_coords scene variables to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
         -- MoVe geometry/objects        (MV)
@@ -220,27 +217,28 @@ class PDT_OT_PlacementDelta(Operator):
         Local vector variable 'vector_delta' used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        x_loc = scene.pdt_delta_x
-        y_loc = scene.pdt_delta_y
-        z_loc = scene.pdt_delta_z
-        mode_s = scene.pdt_select
-        oper = scene.pdt_operate
+        pg = scene.pdt_pg
+        x_loc = pg.cartesian_coords.x
+        y_loc = pg.cartesian_coords.y
+        z_loc = pg.cartesian_coords.z
+        mode_s = pg.select
+        oper = pg.operation
 
-        if scene.pdt_plane == "LO":
+        if pg.plane == "LO":
             vector_delta = viewCoords(x_loc, y_loc, z_loc)
         else:
             vector_delta = Vector((x_loc, y_loc, z_loc))
         if mode_s == "REL" and oper == "CU":
             scene.cursor.location = scene.cursor.location + vector_delta
         elif mode_s == "REL" and oper == "PP":
-            scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
+            pg.pivot_loc = pg.pivot_loc + vector_delta
         else:
             obj = context.view_layer.objects.active
             if obj is None:
@@ -274,9 +272,9 @@ class PDT_OT_PlacementDelta(Operator):
                     scene.cursor.location = obj_loc + vector_delta
             elif oper == "PP":
                 if obj.mode == "EDIT":
-                    scene.pdt_pivotloc = obj_loc + actV + vector_delta
+                    pg.pivot_loc = obj_loc + actV + vector_delta
                 elif obj.mode == "OBJECT":
-                    scene.pdt_pivotloc = obj_loc + vector_delta
+                    pg.pivot_loc = obj_loc + vector_delta
             elif oper == "MV":
                 if obj.mode == "EDIT":
                     bmesh.ops.translate(bm, verts=verts, vec=vector_delta)
@@ -379,8 +377,8 @@ class PDT_OT_PlacementDis(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Distance at Angle (Direction).
 
-        - Reads pdt_operate from Operation Mode Selector as 'oper'
-        - Reads pdt_select, pdt_distance, pdt_angle, pdt_plane & pdt_flipangle scene variables to:
+        - Reads pg.operation from Operation Mode Selector as 'oper'
+        - Reads pg.select, pg.distance, pg.angle, pg.plane & pg.flip_angle scene variables to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
         -- MoVe geometry/objects        (MV)
@@ -395,25 +393,26 @@ class PDT_OT_PlacementDis(Operator):
         Local vector variable 'vector_delta' used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        dis_v = scene.pdt_distance
-        ang_v = scene.pdt_angle
-        plane = scene.pdt_plane
-        mode_s = scene.pdt_select
-        oper = scene.pdt_operate
-        flip_a = scene.pdt_flipangle
+        pg = scene.pdt_pg
+        dis_v = pg.distance
+        ang_v = pg.angle
+        plane = pg.plane
+        mode_s = pg.select
+        oper = pg.operation
+        flip_a = pg.flip_angle
         if flip_a:
             if ang_v > 0:
                 ang_v = ang_v - 180
             else:
                 ang_v = ang_v + 180
-            scene.pdt_angle = ang_v
+            pg.angle = ang_v
         if plane == "LO":
             vector_delta = viewDir(dis_v, ang_v)
         else:
@@ -424,7 +423,7 @@ class PDT_OT_PlacementDis(Operator):
         if mode_s == "REL" and oper == "CU":
             scene.cursor.location = scene.cursor.location + vector_delta
         elif mode_s == "REL" and oper == "PP":
-            scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
+            pg.pivot_loc = pg.pivot_loc + vector_delta
         else:
             obj = context.view_layer.objects.active
             if obj is None:
@@ -458,9 +457,9 @@ class PDT_OT_PlacementDis(Operator):
                     scene.cursor.location = obj_loc + vector_delta
             elif oper == "PP":
                 if obj.mode == "EDIT":
-                    scene.pdt_pivotloc = obj_loc + actV + vector_delta
+                    pg.pivot_loc = obj_loc + actV + vector_delta
                 elif obj.mode == "OBJECT":
-                    scene.pdt_pivotloc = obj_loc + vector_delta
+                    pg.pivot_loc = obj_loc + vector_delta
             elif oper == "MV":
                 if obj.mode == "EDIT":
                     bmesh.ops.translate(bm, verts=verts, vec=vector_delta)
@@ -564,8 +563,8 @@ class PDT_OT_PlacementPer(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Percentage between 2 points.
 
-        - Reads pdt_operate from Operation Mode Selector as 'oper'
-        - Reads pdt_percent, pdt_extend & pdt_flippercent scene variables to:
+        - Reads pg.operation from Operation Mode Selector as 'oper'
+        - Reads pg.percent, pg.extend & pg.flip_percent scene variables to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
         -- MoVe geometry/objects        (MV)
@@ -578,17 +577,18 @@ class PDT_OT_PlacementPer(Operator):
         Local vector variable 'vector_delta' used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        per_v = scene.pdt_percent
-        oper = scene.pdt_operate
-        ext_a = scene.pdt_extend
-        flip_p = scene.pdt_flippercent
+        pg = scene.pdt_pg
+        per_v = pg.percent
+        oper = pg.operation
+        ext_a = pg.extend
+        flip_p = pg.flip_percent
         obj = context.view_layer.objects.active
         if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
@@ -608,9 +608,9 @@ class PDT_OT_PlacementPer(Operator):
                 scene.cursor.location = vector_delta
         elif oper == "PP":
             if obj.mode == "EDIT":
-                scene.pdt_pivotloc = obj_loc + vector_delta
+                pg.pivot_loc = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
-                scene.pdt_pivotloc = vector_delta
+                pg.pivot_loc = vector_delta
         elif oper == "MV":
             if obj.mode == "EDIT":
                 bm.select_history[-1].co = vector_delta
@@ -673,8 +673,8 @@ class PDT_OT_PlacementNormal(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Normal Intersection between 3 points.
 
-        - Reads pdt_operate from Operation Mode Selector as 'oper'
-        - Reads pdt_extend scene variable to:
+        - Reads pg.operation from Operation Mode Selector as 'oper'
+        - Reads pg.extend scene variable to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
         -- MoVe geometry/objects        (MV)
@@ -687,15 +687,16 @@ class PDT_OT_PlacementNormal(Operator):
         Local vector variable 'vector_delta' used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        oper = scene.pdt_operate
-        ext_a = scene.pdt_extend
+        pg = scene.pdt_pg
+        oper = pg.operation
+        ext_a = pg.extend
         obj = context.view_layer.objects.active
         if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
@@ -733,9 +734,9 @@ class PDT_OT_PlacementNormal(Operator):
                 scene.cursor.location = vector_delta
         elif oper == "PP":
             if obj.mode == "EDIT":
-                scene.pdt_pivotloc = obj_loc + vector_delta
+                pg.pivot_loc = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
-                scene.pdt_pivotloc = vector_delta
+                pg.pivot_loc = vector_delta
         elif oper == "MV":
             if obj.mode == "EDIT":
                 if ext_a:
@@ -792,8 +793,8 @@ class PDT_OT_PlacementInt(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects by Convergance Intersection between 4 points, or 2 Edges.
 
-        - Reads pdt_operate from Operation Mode Selector as 'oper'
-        - Reads pdt_plane scene variable and operates in Working Plane to:
+        - Reads pg.operation from Operation Mode Selector as 'oper'
+        - Reads pg.plane scene variable and operates in Working Plane to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
         -- MoVe geometry/objects        (MV)
@@ -805,15 +806,16 @@ class PDT_OT_PlacementInt(Operator):
         Local vector variable 'vector_delta' used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        oper = scene.pdt_operate
-        plane = scene.pdt_plane
+        pg = scene.pdt_pg
+        oper = pg.operation
+        plane = pg.plane
         obj = context.view_layer.objects.active
         if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
@@ -834,7 +836,7 @@ class PDT_OT_PlacementInt(Operator):
                 vf = edges[1].verts[1]
                 fstV = vf.co
             elif len(bm.select_history) == 4:
-                ext_a = scene.pdt_extend
+                ext_a = pg.extend
                 va = bm.select_history[-1]
                 vo = bm.select_history[-2]
                 vl = bm.select_history[-3]
@@ -863,7 +865,7 @@ class PDT_OT_PlacementInt(Operator):
             if oper == "CU":
                 scene.cursor.location = obj_loc + vector_delta
             elif oper == "PP":
-                scene.pdt_pivotloc = obj_loc + vector_delta
+                pg.pivot_loc = obj_loc + vector_delta
             elif oper == "NV":
                 vNew = vector_delta
                 nVert = bm.verts.new(vNew)
@@ -937,7 +939,7 @@ class PDT_OT_PlacementInt(Operator):
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
             else:
-                order = scene.pdt_oborder.split(",")
+                order = pg.object_order.split(",")
                 objs = sorted(
                     [ob for ob in context.view_layer.objects.selected], key=lambda x: x.name
                 )
@@ -965,7 +967,7 @@ class PDT_OT_PlacementInt(Operator):
             if oper == "CU":
                 scene.cursor.location = vector_delta
             elif oper == "PP":
-                scene.pdt_pivotloc = vector_delta
+                pg.pivot_loc = vector_delta
             elif oper == "MV":
                 context.view_layer.objects.active.location = vector_delta
                 infmsg = PDT_INF_OBJ_MOVED + message
@@ -986,9 +988,9 @@ class PDT_OT_PlacementCen(Operator):
     def execute(self, context):
         """Manipulates Geometry, or Objects to an Arc Centre defined by 3 points on an Imaginary Arc.
 
-        Valid Options for pdt_operate; CU PP MV NV EV
-        - Reads pdt_operate from Operation Mode Selector as 'oper'
-        - Reads pdt_extend scene variable to:
+        Valid Options for pg.operation; CU PP MV NV EV
+        - Reads pg.operation from Operation Mode Selector as 'oper'
+        - Reads pg.extend scene variable to:
         -- set position of CUrsor       (CU)
         -- set position of Pivot Point  (PP)
         -- MoVe geometry/objects        (MV)
@@ -1000,15 +1002,16 @@ class PDT_OT_PlacementCen(Operator):
         Local vector variable 'vector_delta' used to reposition features.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        oper = scene.pdt_operate
-        ext_a = scene.pdt_extend
+        pg = scene.pdt_pg
+        oper = pg.operation
+        ext_a = pg.extend
         obj = context.view_layer.objects.active
 
         if obj is None:
@@ -1033,11 +1036,11 @@ class PDT_OT_PlacementCen(Operator):
                 errmsg = PDT_ERR_STRIGHT_LINE
                 self.report({"ERROR"}, errmsg)
                 return {"FINISHED"}
-            scene.pdt_distance = radius
+            pg.distance = radius
             if oper == "CU":
                 scene.cursor.location = obj_loc + vector_delta
             elif oper == "PP":
-                scene.pdt_pivotloc = obj_loc + vector_delta
+                pg.pivot_loc = obj_loc + vector_delta
             elif oper == "NV":
                 vNew = vector_delta
                 nVert = bm.verts.new(vNew)
@@ -1092,11 +1095,11 @@ class PDT_OT_PlacementCen(Operator):
                 othV = context.view_layer.objects.selected[1].matrix_world.decompose()[0]
                 lstV = context.view_layer.objects.selected[2].matrix_world.decompose()[0]
                 vector_delta, radius = arcCentre(actV, othV, lstV)
-                scene.pdt_distance = radius
+                pg.distance = radius
                 if oper == "CU":
                     scene.cursor.location = vector_delta
                 elif oper == "PP":
-                    scene.pdt_pivotloc = vector_delta
+                    pg.pivot_loc = vector_delta
                 elif oper == "MV":
                     context.view_layer.objects.active.location = vector_delta
                 else:
@@ -1127,13 +1130,14 @@ class PDT_OT_JoinVerts(Operator):
         or to join two disconnected Edges.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = context.view_layer.objects.active
         bm = bmesh.from_edit_mesh(obj.data)
         verts = [v for v in bm.verts if v.select]
@@ -1172,19 +1176,20 @@ class PDT_OT_Fillet(Operator):
 
         Fillets connected edges, or connected faces
         Uses:
-        - pdt_filletrad  ; Radius of fillet
-        - pdt_filletnum  ; Number of segments
-        - pdt_filletpro  ; Profile, values 0 to 1
-        - pdt_filletbool ; Vertices (True), or Face/Edges
+        - pg.fillet_radius  ; Radius of fillet
+        - pg.fillet_segments  ; Number of segments
+        - pg.fillet_profile  ; Profile, values 0 to 1
+        - pg.fillet_vertices_only ; Vertices (True), or Face/Edges
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = context.view_layer.objects.active
         bm = bmesh.from_edit_mesh(obj.data)
         verts = [v for v in bm.verts if v.select]
@@ -1195,10 +1200,10 @@ class PDT_OT_Fillet(Operator):
         else:
             bpy.ops.mesh.bevel(
                 offset_type="OFFSET",
-                offset=scene.pdt_filletrad,
-                segments=scene.pdt_filletnum,
-                profile=scene.pdt_filletpro,
-                vertex_only=scene.pdt_filletbool,
+                offset=pg.fillet_radius,
+                segments=pg.fillet_segments,
+                profile=pg.fillet_profile,
+                vertex_only=pg.fillet_vertices_only,
             )
             return {"FINISHED"}
 
@@ -1213,20 +1218,21 @@ class PDT_OT_Angle2(Operator):
     def execute(self, context):
         """Measures Angle and Offsets between 2 Points in View Plane.
 
-        Uses 2 Selected Vertices to set pdt_angle and pdt_distance scene variables
+        Uses 2 Selected Vertices to set pg.angle and pg.distance scene variables
         also sets delta offset from these 2 points using standard Numpy Routines
         Works in Edit and Oject Modes.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        plane = scene.pdt_plane
-        flip_a = scene.pdt_flipangle
+        pg = scene.pdt_pg
+        plane = pg.plane
+        flip_a = pg.flip_angle
         obj = context.view_layer.objects.active
         if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
@@ -1272,18 +1278,16 @@ class PDT_OT_Angle2(Operator):
         ang = np.rad2deg(np.arctan2(np.linalg.det([v0, v1]), np.dot(v0, v1)))
         if flip_a:
             if ang > 0:
-                scene.pdt_angle = ang - 180
+                pg.angle = ang - 180
             else:
-                scene.pdt_angle = ang + 180
+                pg.angle = ang + 180
         else:
-            scene.pdt_angle = ang
+            pg.angle = ang
         if plane == "LO":
-            scene.pdt_distance = sqrt((actV.x - othV.x) ** 2 + (actV.y - othV.y) ** 2)
+            pg.distance = sqrt((actV.x - othV.x) ** 2 + (actV.y - othV.y) ** 2)
         else:
-            scene.pdt_distance = sqrt((actV[a1] - othV[a1]) ** 2 + (actV[a2] - othV[a2]) ** 2)
-        scene.pdt_delta_x = othV.x - actV.x
-        scene.pdt_delta_y = othV.y - actV.y
-        scene.pdt_delta_z = othV.z - actV.z
+            pg.distance = sqrt((actV[a1] - othV[a1]) ** 2 + (actV[a2] - othV[a2]) ** 2)
+        pg.cartesian_coords = othV - actV
         return {"FINISHED"}
 
 
@@ -1297,20 +1301,21 @@ class PDT_OT_Angle3(Operator):
     def execute(self, context):
         """Measures Angle and Offsets between 3 Points in World Space, Also sets Deltas.
 
-        Uses 3 Selected Vertices to set pdt_angle and pdt_distance scene variables
+        Uses 3 Selected Vertices to set pg.angle and pg.distance scene variables
         also sets delta offset from these 3 points using standard Numpy Routines
         Works in Edit and Oject Modes.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        plane = scene.pdt_plane
-        flip_a = scene.pdt_flipangle
+        pg = scene.pdt_pg
+        plane = pg.plane
+        flip_a = pg.flip_angle
         obj = context.view_layer.objects.active
         if obj is None:
             errmsg = PDT_ERR_NO_ACT_OBJ
@@ -1350,15 +1355,13 @@ class PDT_OT_Angle3(Operator):
         ang = np.degrees(np.arccos(cosA))
         if flip_a:
             if ang > 0:
-                scene.pdt_angle = ang - 180
+                pg.angle = ang - 180
             else:
-                scene.pdt_angle = ang + 180
+                pg.angle = ang + 180
         else:
-            scene.pdt_angle = ang
-        scene.pdt_distance = (actV - othV).length
-        scene.pdt_delta_x = othV.x - actV.x
-        scene.pdt_delta_y = othV.y - actV.y
-        scene.pdt_delta_z = othV.z - actV.z
+            pg.angle = ang
+        pg.distance = (actV - othV).length
+        pg.cartesian_coords = othV - actV
         return {"FINISHED"}
 
 
@@ -1377,7 +1380,7 @@ class PDT_OT_Origin(Operator):
         Works in Edit and Object Modes.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
@@ -1435,18 +1438,19 @@ class PDT_OT_Taper(Operator):
         Works only in Edit mode.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Note:
-            Uses pdt_taper & pdt_angle scene variables
+            Uses pg.taper & pg.angle scene variables
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        tap_ax = scene.pdt_taper
-        ang_v = scene.pdt_angle
+        pg = scene.pdt_pg
+        tap_ax = pg.taper
+        ang_v = pg.angle
         obj = context.view_layer.objects.active
         if ang_v > 80 or ang_v < -80:
             errmsg = f"{PDT_ERR_TAPER_ANG} {ang_v})"
@@ -1466,7 +1470,7 @@ class PDT_OT_Taper(Operator):
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
         for v in [v for v in bm.verts if v.select]:
-            if scene.pdt_plane == "LO":
+            if pg.plane == "LO":
                 v_loc = viewCoords(v.co.x, v.co.y, v.co.z)
                 dis_v = sqrt((viewV.x - v_loc.x) ** 2 + (viewV.y - v_loc.y) ** 2)
                 x_loc = dis_v * tan(ang_v * pi / 180)

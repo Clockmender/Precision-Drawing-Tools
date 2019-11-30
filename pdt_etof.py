@@ -123,7 +123,7 @@ class PDT_OT_EdgeToFace(bpy.types.Operator):
         """Extends Disconnected Edge to Intersect with Face.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set."""

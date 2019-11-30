@@ -18,13 +18,14 @@
 # ***** END GPL LICENCE BLOCK *****
 #
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # ----------------------------------------------------------
 #
 import bpy
 import os
 from bpy.types import Panel
 from pathlib import Path
+from .pdt_functions import debug
 from .pdt_msg_strings import (
     PDT_LAB_ABS,
     PDT_LAB_AD2D,
@@ -33,6 +34,7 @@ from .pdt_msg_strings import (
     PDT_LAB_ANGLEVALUE,
     PDT_LAB_ARCCENTRE,
     PDT_LAB_BISECT,
+    PDT_LAB_CVALUE,
     PDT_LAB_DEL,
     PDT_LAB_DIR,
     PDT_LAB_DISVALUE,
@@ -63,10 +65,7 @@ from .pdt_msg_strings import (
     PDT_LAB_TAPERAXES,
     PDT_LAB_TOOLS,
     PDT_LAB_USEVERTS,
-    PDT_LAB_VARIABLES,
-    PDT_LAB_XVALUE,
-    PDT_LAB_YVALUE,
-    PDT_LAB_ZVALUE
+    PDT_LAB_VARIABLES
 )
 
 
@@ -82,15 +81,15 @@ class PDT_PT_PanelDesign(Panel):
     def draw(self, context):
         layout = self.layout
         cursor = context.scene.cursor
-        scene = context.scene
+        pdt_pg = context.scene.pdt_pg
         row = layout.row()
         col = row.column()
-        col.prop(scene, "pdt_plane", text=PDT_LAB_PLANE)
+        col.prop(pdt_pg, "plane", text=PDT_LAB_PLANE)
         col = row.column()
-        col.prop(scene, "pdt_select", text=PDT_LAB_MODE)
+        col.prop(pdt_pg, "select", text=PDT_LAB_MODE)
         box = layout.box()
         row = box.row()
-        row.prop(scene, "pdt_operate", text=PDT_LAB_OPERATION)
+        row.prop(pdt_pg, "operation", text=PDT_LAB_OPERATION)
         row = box.row()
         col = row.column()
         col.operator("pdt.absolute", icon="EMPTY_AXIS", text=PDT_LAB_ABS)
@@ -109,32 +108,26 @@ class PDT_PT_PanelDesign(Panel):
         col = row.column()
         col.operator("pdt.intersect", text=PDT_LAB_INTERSECT)
         col = row.column()
-        col.prop(scene, "pdt_oborder", text=PDT_LAB_ORDER)
+        col.prop(pdt_pg, "object_search_string", text=PDT_LAB_ORDER)
         row = box.row()
         col = row.column()
-        col.prop(scene, "pdt_flipangle", text=PDT_LAB_FLIPANGLE)
+        col.prop(pdt_pg, "flip_angle", text=PDT_LAB_FLIPANGLE)
         col = row.column()
-        col.prop(scene, "pdt_flippercent", text=PDT_LAB_FLIPPERCENT)
+        col.prop(pdt_pg, "flip_percent", text=PDT_LAB_FLIPPERCENT)
         col = row.column()
-        col.prop(scene, "pdt_extend", text=PDT_LAB_ALLACTIVE)
+        col.prop(pdt_pg, "extend", text=PDT_LAB_ALLACTIVE)
         box = layout.box()
         row = box.row()
         row.label(text=PDT_LAB_VARIABLES)
         row = box.row()
-        col = row.column()
-        col.prop(scene, "pdt_delta_x", text=PDT_LAB_XVALUE)
-        col = row.column()
-        col.prop(scene, "pdt_distance", text=PDT_LAB_DISVALUE)
+        row.prop(pdt_pg, "cartesian_coords", text=PDT_LAB_CVALUE)
         row = box.row()
         col = row.column()
-        col.prop(scene, "pdt_delta_y", text=PDT_LAB_YVALUE)
+        col.prop(pdt_pg, "distance", text=PDT_LAB_DISVALUE)
         col = row.column()
-        col.prop(scene, "pdt_angle", text=PDT_LAB_ANGLEVALUE)
-        row = box.row()
+        col.prop(pdt_pg, "angle", text=PDT_LAB_ANGLEVALUE)
         col = row.column()
-        col.prop(scene, "pdt_delta_z", text=PDT_LAB_ZVALUE)
-        col = row.column()
-        col.prop(scene, "pdt_percent", text=PDT_LAB_PERCENTS)
+        col.prop(pdt_pg, "percent", text=PDT_LAB_PERCENTS)
         box = layout.box()
         row = box.row()
         row.label(text=PDT_LAB_TOOLS)
@@ -150,7 +143,7 @@ class PDT_PT_PanelDesign(Panel):
         col.operator("pdt.origin", text=PDT_LAB_ORIGINCURSOR)
         row = box.row()
         col = row.column()
-        col.prop(scene, "pdt_taper", text=PDT_LAB_TAPERAXES)
+        col.prop(pdt_pg, "taper", text=PDT_LAB_TAPERAXES)
         col = row.column()
         col.operator("pdt.taper", text=PDT_LAB_TAPER)
         # New for 1.1.5
@@ -167,14 +160,14 @@ class PDT_PT_PanelDesign(Panel):
         col = row.column()
         col.operator("pdt.fillet", text=PDT_LAB_FILLET)
         col = row.column()
-        col.prop(scene, "pdt_filletnum", text=PDT_LAB_SEGMENTS)
+        col.prop(pdt_pg, "fillet_segments", text=PDT_LAB_SEGMENTS)
         col = row.column()
-        col.prop(scene, "pdt_filletbool", text=PDT_LAB_USEVERTS)
+        col.prop(pdt_pg, "fillet_vertices_only", text=PDT_LAB_USEVERTS)
         row = box.row()
         col = row.column()
-        col.prop(scene, "pdt_filletrad", text=PDT_LAB_RADIUS)
+        col.prop(pdt_pg, "fillet_radius", text=PDT_LAB_RADIUS)
         col = row.column()
-        col.prop(scene, "pdt_filletpro", text=PDT_LAB_PROFILE)
+        col.prop(pdt_pg, "fillet_profile", text=PDT_LAB_PROFILE)
 
 
 class PDT_PT_PanelPivotPoint(Panel):
@@ -185,7 +178,7 @@ class PDT_PT_PanelPivotPoint(Panel):
     bl_category = "PDT"
 
     def draw(self, context):
-        scene = context.scene
+        pdt_pg = context.scene.pdt_pg
         layout = self.layout
         row = layout.row()
         split = row.split(factor=0.4, align=True)
@@ -196,13 +189,13 @@ class PDT_PT_PanelPivotPoint(Panel):
             icon = "PAUSE"
             txt = "Hide"
         split.operator("pdt.modaldraw", icon=icon, text=txt)
-        split.prop(scene, "pdt_pivotsize", text=PDT_LAB_PIVOTSIZE)
-        split.prop(scene, "pdt_pivotwidth", text=PDT_LAB_PIVOTWIDTH)
-        split.prop(scene, "pdt_pivotalpha", text=PDT_LAB_PIVOTALPHA)
+        split.prop(pdt_pg, "pivot_size", text=PDT_LAB_PIVOTSIZE)
+        split.prop(pdt_pg, "pivot_width", text=PDT_LAB_PIVOTWIDTH)
+        split.prop(pdt_pg, "pivot_alpha", text=PDT_LAB_PIVOTALPHA)
         row = layout.row()
         row.label(text=PDT_LAB_PIVOTLOCH)
         row = layout.row()
-        row.prop(scene, "pdt_pivotloc", text=PDT_LAB_PIVOTLOC)
+        row.prop(pdt_pg, "pivot_loc", text=PDT_LAB_PIVOTLOC)
         row = layout.row()
         col = row.column()
         col.operator("pdt.pivotselected", icon="EMPTY_AXIS", text="Selection")
@@ -214,7 +207,7 @@ class PDT_PT_PanelPivotPoint(Panel):
         col = row.column()
         col.operator("pdt.viewplanerot", icon="EMPTY_AXIS", text="Rotate")
         col = row.column()
-        col.prop(scene, "pdt_pivotang", text="Angle")
+        col.prop(pdt_pg, "pivot_ang", text="Angle")
         row = layout.row()
         col = row.column()
         col.operator("pdt.viewscale", icon="EMPTY_AXIS", text="Scale")
@@ -222,13 +215,13 @@ class PDT_PT_PanelPivotPoint(Panel):
         col.operator("pdt.cursorpivot", icon="EMPTY_AXIS", text="Cursor To Pivot")
         row = layout.row()
         col = row.column()
-        col.prop(scene, "pdt_pivotdis", text="Scale Distance")
+        col.prop(pdt_pg, "pivot_dis", text="Scale Distance")
         col = row.column()
-        col.prop(scene, "pdt_distance", text="System Distance")
+        col.prop(pdt_pg, "distance", text="System Distance")
         row = layout.row()
         row.label(text="Pivot Point Scale Factors")
         row = layout.row()
-        row.prop(scene, "pdt_pivotscale", text="")
+        row.prop(pdt_pg, "pivot_scale", text="")
         row = layout.row()
         col = row.column()
         col.operator("pdt.pivotwrite", icon="FILE_TICK", text="PP Write")
@@ -246,38 +239,38 @@ class PDT_PT_PanelPartsLibrary(Panel):
     def draw(self, context):
         layout = self.layout
         cursor = context.scene.cursor
-        scene = context.scene
+        pdt_pg = context.scene.pdt_pg
         row = layout.row()
         col = row.column()
         col.operator("pdt.append", text="Append")
         col = row.column()
         col.operator("pdt.link", text="Link")
         col = row.column()
-        col.prop(scene, "pdt_lib_mode", text="")
+        col.prop(pdt_pg, "lib_mode", text="")
         box = layout.box()
         row = box.row()
         col = row.column()
         col.label(text="Objects")
         col = row.column()
-        col.prop(scene, "pdt_obsearch")
+        col.prop(pdt_pg, "object_search_string")
         row = box.row()
-        row.prop(scene, "pdt_lib_objects", text="")
+        row.prop(pdt_pg, "lib_objects", text="")
         box = layout.box()
         row = box.row()
         col = row.column()
         col.label(text="Collections")
         col = row.column()
-        col.prop(scene, "pdt_cosearch")
+        col.prop(pdt_pg, "collection_search_string")
         row = box.row()
-        row.prop(scene, "pdt_lib_collections", text="")
+        row.prop(pdt_pg, "lib_collections", text="")
         box = layout.box()
         row = box.row()
         col = row.column()
         col.label(text="Materials")
         col = row.column()
-        col.prop(scene, "pdt_masearch")
+        col.prop(pdt_pg, "material_search_string")
         row = box.row()
-        row.prop(scene, "pdt_lib_materials", text="")
+        row.prop(pdt_pg, "lib_materials", text="")
         row = box.row()
         row.operator("pdt.lib_show", text="Show Library File",icon='INFO')
 
@@ -292,7 +285,7 @@ class PDT_PT_PanelViewControl(Panel):
     def draw(self, context):
         layout = self.layout
         cursor = context.scene.cursor
-        scene = context.scene
+        pdt_pg = context.scene.pdt_pg
         box = layout.box()
         row = box.row()
         col = row.column()
@@ -300,15 +293,10 @@ class PDT_PT_PanelViewControl(Panel):
         col = row.column()
         col.operator("pdt.viewrot", text="Rotate Abs")
         row = box.row()
-        col = row.column()
-        col.prop(scene, "pdt_xrot")
-        col = row.column()
-        col.prop(scene, "pdt_yrot")
-        col = row.column()
-        col.prop(scene, "pdt_zrot")
+        row.prop(pdt_pg, "rotation_coords", text="Rotation")
         row = box.row()
         col = row.column()
-        col.prop(scene, "pdt_vrotangle", text="Angle")
+        col.prop(pdt_pg, "vrotangle", text="Angle")
         col = row.column()
         col.operator("pdt.viewleft", text="", icon="TRIA_LEFT")
         col = row.column()
@@ -333,13 +321,13 @@ class PDT_PT_PanelCommandLine(Panel):
     def draw(self, context):
         layout = self.layout
         cursor = context.scene.cursor
-        scene = context.scene
+        pdt_pg = context.scene.pdt_pg
         row = layout.row()
         col = row.column()
-        col.prop(scene, "pdt_plane", text="Plane")
+        col.prop(pdt_pg, "plane", text="Plane")
         col = row.column()
-        col.prop(scene, "pdt_select", text="Mode")
+        col.prop(pdt_pg, "select", text="Mode")
         row = layout.row()
         row.label(text="Comand Line, uses Plane & Mode Options")
         row = layout.row()
-        row.prop(scene, "pdt_command", text="")
+        row.prop(pdt_pg, "command", text="")

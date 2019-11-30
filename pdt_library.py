@@ -18,18 +18,18 @@
 # ***** END GPL LICENCE BLOCK *****
 #
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # ----------------------------------------------------------
 #
 import bpy
 import os
-from pathlib import Path
-from mathutils import Vector
-from bpy.types import Operator
 from bpy.props import FloatProperty
+from bpy.types import Operator
+from mathutils import Vector
+from pathlib import Path
 from .pdt_functions import debug, oops
-
 from .pdt_msg_strings import PDT_ERR_NO_LIBRARY
+
 
 class PDT_OT_LibShow(Operator):
     """Show Library File Details."""
@@ -41,17 +41,18 @@ class PDT_OT_LibShow(Operator):
         """Shows Location Of PDT Library File.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
-        scene.pdt_error = str(Path(file_path))
+        pg.error = str(Path(file_path))
         debug("PDT Parts Library:")
-        debug(f"{scene.pdt_error}")
+        debug(f"{pg.error}")
         bpy.context.window_manager.popup_menu(oops, title="Information - Parts Library File", icon="INFO")
         return {"FINISHED"}
 
@@ -69,26 +70,27 @@ class PDT_OT_Append(Operator):
         Appended Objects are placed at Cursor Location.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+            Uses pg.lib_objects, pg.lib_collections & pg.lib_materials
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj_names = [o.name for o in context.view_layer.objects]
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
         path = Path(file_path)
 
         if path.is_file() and ".blend" in str(path):
-            if scene.pdt_lib_mode == "OBJECTS":
+            if pg.lib_mode == "OBJECTS":
                 # Force object Mode
                 bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.wm.append(
-                    filepath=str(path), directory=str(path) + "/Object", filename=scene.pdt_lib_objects
+                    filepath=str(path), directory=str(path) + "/Object", filename=pg.lib_objects
                 )
                 for obj in context.view_layer.objects:
                     if obj.name not in obj_names:
@@ -97,9 +99,9 @@ class PDT_OT_Append(Operator):
                             (scene.cursor.location.x, scene.cursor.location.y, scene.cursor.location.z)
                         )
                 return {"FINISHED"}
-            elif scene.pdt_lib_mode == "COLLECTIONS":
+            elif pg.lib_mode == "COLLECTIONS":
                 bpy.ops.wm.append(
-                    filepath=str(path), directory=str(path) + "/Collection", filename=scene.pdt_lib_collections
+                    filepath=str(path), directory=str(path) + "/Collection", filename=pg.lib_collections
                 )
                 for obj in context.view_layer.objects:
                     if obj.name not in obj_names:
@@ -108,9 +110,9 @@ class PDT_OT_Append(Operator):
                             (scene.cursor.location.x, scene.cursor.location.y, scene.cursor.location.z)
                         )
                 return {"FINISHED"}
-            elif scene.pdt_lib_mode == "MATERIALS":
+            elif pg.lib_mode == "MATERIALS":
                 bpy.ops.wm.append(
-                    filepath=str(path), directory=str(path) + "/Material", filename=scene.pdt_lib_materials
+                    filepath=str(path), directory=str(path) + "/Material", filename=pg.lib_materials
                 )
                 return {"FINISHED"}
         else:
@@ -135,37 +137,38 @@ class PDT_OT_Link(Operator):
             context
 
         Notes:
-            Uses pdt_lib_objects, pdt_lib_collections & pdt_lib_materials
+            Uses pg.lib_objects, pg.lib_collections & pg.lib_materials
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         file_path = context.preferences.addons[__package__].preferences.pdt_library_path
         path = Path(file_path)
         if path.is_file() and ".blend" in str(path):
-            if scene.pdt_lib_mode == "OBJECTS":
+            if pg.lib_mode == "OBJECTS":
                 # Force object Mode
                 bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.wm.link(
-                    filepath=str(path), directory=str(path) + "/Object", filename=scene.pdt_lib_objects
+                    filepath=str(path), directory=str(path) + "/Object", filename=pg.lib_objects
                 )
                 obj_names = [o.name for o in context.view_layer.objects]
                 for obj in context.view_layer.objects:
                     obj.select_set(False)
                 return {"FINISHED"}
-            elif scene.pdt_lib_mode == "COLLECTIONS":
+            elif pg.lib_mode == "COLLECTIONS":
                 bpy.ops.wm.link(
-                    filepath=str(path), directory=str(path) + "/Collection", filename=scene.pdt_lib_collections
+                    filepath=str(path), directory=str(path) + "/Collection", filename=pg.lib_collections
                 )
                 obj_names = [o.name for o in context.view_layer.objects]
                 for obj in context.view_layer.objects:
                     obj.select_set(False)
                 return {"FINISHED"}
-            elif scene.pdt_lib_mode == "MATERIALS":
+            elif pg.lib_mode == "MATERIALS":
                 bpy.ops.wm.link(
-                    filepath=str(path), directory=str(path) + "/Material", filename=scene.pdt_lib_materials
+                    filepath=str(path), directory=str(path) + "/Material", filename=pg.lib_materials
                 )
                 return {"FINISHED"}
         else:

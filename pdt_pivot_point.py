@@ -18,7 +18,7 @@
 # ***** END GPL LICENCE BLOCK *****
 
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # ----------------------------------------------------------
 #
 import bpy
@@ -36,6 +36,7 @@ from .pdt_msg_strings import (
     PDT_ERR_NO_SEL_GEOM
 )
 
+
 class PDT_OT_ModalDrawOperator(bpy.types.Operator):
     """Show/Hide Pivot Point."""
 
@@ -51,7 +52,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Draws 7 element Pivot Point Graphic
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Nothing.
@@ -70,7 +71,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Removes 7 element Pivot Point Graphic
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Nothing.
@@ -87,7 +88,7 @@ class PDT_OT_ModalDrawOperator(bpy.types.Operator):
         Operational execute function for Show/Hide Pivot Point function
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
@@ -129,16 +130,17 @@ class PDT_OT_ViewPlaneRotate(Operator):
         in View Oriented coordinates, works in any view orientation.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_pivotloc, pdt_pivotang scene variables
+            Uses pg.pivot_loc, pg.pivot_ang scene variables
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = bpy.context.view_layer.objects.active
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
@@ -151,10 +153,10 @@ class PDT_OT_ViewPlaneRotate(Operator):
         v1 = Vector((0, 0, 0))
         v2 = viewCoords(0, 0, 1)
         axis = (v2 - v1).normalized()
-        rot = Matrix.Rotation((scene.pdt_pivotang * pi / 180), 4, axis)
+        rot = Matrix.Rotation((pg.pivot_ang * pi / 180), 4, axis)
         verts = verts = [v for v in bm.verts if v.select]
         bmesh.ops.rotate(
-            bm, cent=scene.pdt_pivotloc - obj.matrix_world.decompose()[0], matrix=rot, verts=verts
+            bm, cent=pg.pivot_loc - obj.matrix_world.decompose()[0], matrix=rot, verts=verts
         )
         bmesh.update_edit_mesh(obj.data)
         return {"FINISHED"}
@@ -181,16 +183,17 @@ class PDT_OT_ViewPlaneScale(Operator):
         in View Oriented coordinates, works in any view orientation
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Note:
-            Uses pdt_pivotloc, pdt_pivotscale scene variables
+            Uses pg.pivot_loc, pg.pivot_scale scene variables
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = bpy.context.view_layer.objects.active
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
@@ -202,14 +205,14 @@ class PDT_OT_ViewPlaneScale(Operator):
         bm = bmesh.from_edit_mesh(obj.data)
         verts = verts = [v for v in bm.verts if v.select]
         for v in verts:
-            dx = (scene.pdt_pivotloc.x - obj.matrix_world.decompose()[0].x - v.co.x) * (
-                1 - scene.pdt_pivotscale.x
+            dx = (pg.pivot_loc.x - obj.matrix_world.decompose()[0].x - v.co.x) * (
+                1 - pg.pivot_scale.x
             )
-            dy = (scene.pdt_pivotloc.y - obj.matrix_world.decompose()[0].y - v.co.y) * (
-                1 - scene.pdt_pivotscale.y
+            dy = (pg.pivot_loc.y - obj.matrix_world.decompose()[0].y - v.co.y) * (
+                1 - pg.pivot_scale.y
             )
-            dz = (scene.pdt_pivotloc.z - obj.matrix_world.decompose()[0].z - v.co.z) * (
-                1 - scene.pdt_pivotscale.z
+            dz = (pg.pivot_loc.z - obj.matrix_world.decompose()[0].z - v.co.z) * (
+                1 - pg.pivot_scale.z
             )
             dv = Vector((dx, dy, dz))
             v.co = v.co + dv
@@ -229,14 +232,15 @@ class PDT_OT_PivotToCursor(Operator):
         Moves Pivot Point to Cursor Location in active scene
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
              Status Set.
         """
 
         scene = context.scene
-        scene.pdt_pivotloc = scene.cursor.location
+        pg = scene.pdt_pg
+        pg.pivot_loc = scene.cursor.location
         return {"FINISHED"}
 
 
@@ -252,14 +256,15 @@ class PDT_OT_CursorToPivot(Operator):
         Moves Cursor to Pivot Point Location in active scene
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
-        scene.cursor.location = scene.pdt_pivotloc
+        pg = scene.pdt_pg
+        scene.cursor.location = pg.pivot_loc
         return {"FINISHED"}
 
 
@@ -284,7 +289,7 @@ class PDT_OT_PivotSelected(Operator):
         using Snap_Cursor_To_Selected, then puts cursor back to original location.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
@@ -305,7 +310,7 @@ class PDT_OT_PivotSelected(Operator):
         if len(verts) > 0:
             old_cursor_loc = scene.cursor.location.copy()
             bpy.ops.view3d.snap_cursor_to_selected()
-            scene.pdt_pivotloc = scene.cursor.location
+            pg.pivot_loc = scene.cursor.location
             scene.cursor.location = old_cursor_loc
             return {"FINISHED"}
         else:
@@ -332,19 +337,20 @@ class PDT_OT_PivotOrigin(Operator):
         Moves Pivot Point to Object Origin in active scene
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = bpy.context.view_layer.objects.active
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         obj_loc = obj.matrix_world.decompose()[0]
-        scene.pdt_pivotloc = obj_loc
+        pg.pivot_loc = obj_loc
         return {"FINISHED"}
 
 
@@ -368,21 +374,22 @@ class PDT_OT_PivotWrite(Operator):
         as Vector to 'PDT_PP_LOC' - Requires Confirmation through dialogue
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Note:
-            Uses pdt_pivotloc scene variable
+            Uses pg.pivot_loc scene variable
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = bpy.context.view_layer.objects.active
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
-        obj["PDT_PP_LOC"] = scene.pdt_pivotloc
+        obj["PDT_PP_LOC"] = pg.pivot_loc
         return {"FINISHED"}
 
     def invoke(self, context, event):
@@ -413,22 +420,23 @@ class PDT_OT_PivotRead(Operator):
         using 'PDT_PP_LOC'
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Note:
-            Uses pdt_pivotloc scene variable
+            Uses pg.pivot_loc scene variable
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         obj = bpy.context.view_layer.objects.active
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
         if "PDT_PP_LOC" in obj:
-            scene.pdt_pivotloc = obj["PDT_PP_LOC"]
+            pg.pivot_loc = obj["PDT_PP_LOC"]
             return {"FINISHED"}
         else:
             self.report({"ERROR"}, PDT_ERR_NOPPLOC)
