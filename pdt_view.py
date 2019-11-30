@@ -18,7 +18,7 @@
 # ***** END GPL LICENCE BLOCK *****
 #
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # ----------------------------------------------------------
 #
 import bpy
@@ -43,20 +43,23 @@ class PDT_OT_ViewRot(Operator):
         This is an Absolute Rotation, not an Incremental Orbit.
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_xrot, pdt_yrot, pdt_zrot scene variables
+            Uses pg.rotation_coords scene variables
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
             roll_value = euler_to_quaternion(
-                scene.pdt_xrot, scene.pdt_yrot, scene.pdt_zrot
+                pg.rotation_coords.x * pi / 180,
+                pg.rotation_coords.y * pi / 180,
+                pg.rotation_coords.z * pi / 180
             )
             areas[0].spaces.active.region_3d.view_rotation = roll_value
         return {"FINISHED"}
@@ -75,18 +78,19 @@ class PDT_OT_vRotL(Operator):
         Orbits view to the left about its vertical axis
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_vrotangle scene variable
+            Uses pg.vrotangle scene variable
 
         Returns: Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
-            bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle * pi / 180), type="ORBITLEFT")
+            bpy.ops.view3d.view_orbit(angle=(pg.vrotangle * pi / 180), type="ORBITLEFT")
         return {"FINISHED"}
 
 
@@ -103,19 +107,20 @@ class PDT_OT_vRotR(Operator):
         Orbits view to the right about its vertical axis
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_vrotangle scene variable
+            Uses pg.vrotangle scene variable
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
-            bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle * pi / 180), type="ORBITRIGHT")
+            bpy.ops.view3d.view_orbit(angle=(pg.vrotangle * pi / 180), type="ORBITRIGHT")
         return {"FINISHED"}
 
 
@@ -132,19 +137,20 @@ class PDT_OT_vRotU(Operator):
         Orbits view up about its horizontal axis
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_vrotangle scene variable
+            Uses pg.vrotangle scene variable
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
-            bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle * pi / 180), type="ORBITUP")
+            bpy.ops.view3d.view_orbit(angle=(pg.vrotangle * pi / 180), type="ORBITUP")
         return {"FINISHED"}
 
 
@@ -161,19 +167,20 @@ class PDT_OT_vRotD(Operator):
         Orbits view down about its horizontal axis
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_vrotangle scene variable
+            Uses pg.vrotangle scene variable
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
-            bpy.ops.view3d.view_orbit(angle=(scene.pdt_vrotangle * pi / 180), type="ORBITDOWN")
+            bpy.ops.view3d.view_orbit(angle=(pg.vrotangle * pi / 180), type="ORBITDOWN")
         return {"FINISHED"}
 
 
@@ -190,19 +197,20 @@ class PDT_OT_vRoll(Operator):
         Rolls view about its normal axis
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Notes:
-            Uses pdt_vrotangle scene variable
+            Uses pg.vrotangle scene variable
 
         Returns:
             Status Set.
         """
 
         scene = context.scene
+        pg = scene.pdt_pg
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
-            bpy.ops.view3d.view_roll(angle=(scene.pdt_vrotangle * pi / 180), type="ANGLE")
+            bpy.ops.view3d.view_roll(angle=(pg.vrotangle * pi / 180), type="ANGLE")
         return {"FINISHED"}
 
 
@@ -219,7 +227,7 @@ class PDT_OT_viso(Operator):
         Set view orientation to Isometric
 
         Args:
-            context: Current Blender bpy.context
+            context: Blender bpy.context instance.
 
         Returns:
             Status Set.

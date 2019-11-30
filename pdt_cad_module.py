@@ -33,10 +33,10 @@ def point_on_edge(p, edge):
 
     Args:
         p:        vector
-        edge:     tuple of 2 vectors
+        edge:     tuple containing 2 vectors.
 
     Returns:
-        True / False if a point happens to lie on an edge
+        True if point p happens to lie on the edge, False otherwise.
     """
 
     pt, _percent = intersect_point_line(p, *edge)
@@ -50,7 +50,7 @@ def line_from_edge_intersect(edge1, edge2):
     Prepares input for sending to intersect_line_line
 
     Args:
-        edge1, edge2: tuples containing 2 vectors
+        edge1, edge2: tuples containing 2 vectors.
 
     Returns:
         Output of intersect_line_line.
@@ -64,7 +64,7 @@ def get_intersection(edge1, edge2):
     """Get Intersections of 2 Edges.
 
     Args:
-        edge1, edge2: tuples containing 2 vectors
+        edge1, edge2: tuples containing 2 vectors.
 
     Returns:
         The point halfway on line. See intersect_line_line.
@@ -83,10 +83,10 @@ def test_coplanar(edge1, edge2):
     coplanar or parallel
 
     Args:
-        edge1, edge2: tuples containing 2 vectors
+        edge1, edge2: tuples containing 2 vectors.
 
     Returns:
-        True / False for co-planarity.
+        True if edge1 and edge2 or coplanar, False otherwise.
     """
 
     line = line_from_edge_intersect(edge1, edge2)
@@ -97,7 +97,7 @@ def test_coplanar(edge1, edge2):
 def closest_idx(pt, e):
     """Get Closest Vertex to input point.
 
-    If both points in e are equally far from pt, then v1 is returned
+    If both points in e are equally far from pt, then v1 is returned.
 
     Args:
         pt:       vector
@@ -127,7 +127,7 @@ def closest_vector(pt, e):
         e:        tuple containing 2 vectors
 
     Returns:
-        pt, 2 vector tuple: returns closest vector to pt.
+        Vector closest to pt.
     """
 
     if isinstance(e, tuple) and all([isinstance(co, Vector) for co in e]):

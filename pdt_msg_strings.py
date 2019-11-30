@@ -18,7 +18,7 @@
 # ***** END GPL LICENCE BLOCK *****
 #
 # ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # ----------------------------------------------------------
 #
 # English Version
@@ -43,11 +43,9 @@ PDT_LAB_FLIPANGLE     = "Flip Angle"
 PDT_LAB_FLIPPERCENT   = "Flip %"
 PDT_LAB_ALLACTIVE     = "All/Active"
 PDT_LAB_VARIABLES     = "Coordinates/Delta Offsets & Other Variables"
-PDT_LAB_XVALUE        = "X"
+PDT_LAB_CVALUE        = "Coords"
 PDT_LAB_DISVALUE      = "Distance"
-PDT_LAB_YVALUE        = "Y"
 PDT_LAB_ANGLEVALUE    = "Angle"
-PDT_LAB_ZVALUE        = "Z"
 PDT_LAB_PERCENTS      = "%"
 PDT_LAB_TOOLS         = "Tools"
 PDT_LAB_JOIN2VERTS    = "Join 2 Verts"
@@ -143,9 +141,7 @@ PDT_CON_AREYOURSURE   = "Are You Sure About This?"
 
 # Descriptions
 #
-PDT_DES_XDELTA        = "X Coord Delta"
-PDT_DES_YDELTA        = "Y Coord Delta"
-PDT_DES_ZDELTA        = "Z Coord Delta"
+PDT_DES_COORDS        = "Cartesian Inputs"
 PDT_DES_OFFDIS        = "Offset Distance"
 PDT_DES_OFFANG        = "Offset Angle"
 PDT_DES_OFFPER        = "Offset Percentage"

@@ -17,9 +17,9 @@
 #
 # ***** END GPL LICENCE BLOCK *****
 #
-# ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
-# ----------------------------------------------------------
+# -----------------------------------------------------------------------
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
+# -----------------------------------------------------------------------
 #
 import bpy
 import bmesh
@@ -107,10 +107,10 @@ def command_run(self, context):
     """Run Command String as input into Command Line.
 
     Args:
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Note:
-        Uses pdt_command, pdt_error & many other 'scene.pdt_' variables to set PDT menu items,
+        Uses pg.command, pg.error & many other 'pg.' variables to set PDT menu items,
         or alter functions
 
         Command Format; Operation(single letter) Mode(single letter) Values(up to 3 values
@@ -121,13 +121,13 @@ def command_run(self, context):
 
         Example; SP35 - Splits active Edge at 35% of separation between edge's vertices
 
-        Valid First Letters (as 'oper' - pdt_command[0])
+        Valid First Letters (as 'oper' - pg.command[0])
             C = Cursor, G = Grab(move), N = New Vertex, V = Extrude Vertices Only,
             E = Extrude geometry, P = Move Pivot Point, D = Duplicate geometry, S = Split Edges
 
             Capitals and lower case letters are both allowed
 
-        Valid Second Letters (as 'mode' - pdt_command[1])
+        Valid Second Letters (as 'mode' - pg.command[1])
 
             A = Absolute XYZ, D = Delta XYZ, I = Distance at Angle, P = Percent
             X = X Delta, Y = Y, Delta Z, = Z Delta (Maths Operation only)
@@ -153,7 +153,8 @@ def command_run(self, context):
     """
 
     scene = context.scene
-    cmd = scene.pdt_command
+    pg = scene.pdt_pg
+    cmd = pg.command
 
     if cmd.strip() == "?" or cmd.lower().strip() == "help":
         # fmt: off
@@ -161,17 +162,17 @@ def command_run(self, context):
         # fmt: on
         return
     if len(cmd) < 3:
-        scene.pdt_error = PDT_ERR_CHARS_NUM
+        pg.error = PDT_ERR_CHARS_NUM
         context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
     oper = cmd[0].upper()
     if oper not in {"C", "D", "E", "F", "G", "N", "M", "P", "V", "S"}:
-        scene.pdt_error = PDT_ERR_BADFLETTER
+        pg.error = PDT_ERR_BADFLETTER
         context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
     mode = cmd[1].lower()
     if mode not in {"a", "d", "e", "g", "i", "p", "v", "x", "y", "z"}:
-        scene.pdt_error = PDT_ERR_BADSLETTER
+        pg.error = PDT_ERR_BADSLETTER
         context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return
 
@@ -179,37 +180,37 @@ def command_run(self, context):
     # Math Operation
     if oper == "M":
         if mode not in {"x", "y", "z", "d", "a", "p"}:
-            scene.pdt_error = f"{mode} {PDT_ERR_NON_VALID} Maths)"
+            pg.error = f"{mode} {PDT_ERR_NON_VALID} Maths)"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         exp = cmd[2:]
         if "," in exp:
-            scene.pdt_error = PDT_ERR_NOCOMMAS
+            pg.error = PDT_ERR_NOCOMMAS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         try:
             # FIXME: The idea is good, but there's no restriction on the expressions allowed?!
             num = eval(exp)
         except ValueError:
-            scene.pdt_error = PDT_ERR_BADMATHS
+            pg.error = PDT_ERR_BADMATHS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if mode == "x":
-            scene.pdt_delta_x = num
+            pg.cartesian_coords.x = num
         elif mode == "y":
-            scene.pdt_delta_y = num
+            pg.cartesian_coords.y = num
         elif mode == "z":
-            scene.pdt_delta_z = num
+            pg.cartesian_coords.z = num
         elif mode == "d":
-            scene.pdt_distance = num
+            pg.distance = num
         elif mode == "a":
-            scene.pdt_angle = num
+            pg.angle = num
         elif mode == "p":
-            scene.pdt_percent = num
+            pg.percent = num
         return
     # "x"/"y"/"z" modes are only legal for Math Operation
     else:
         if mode in {"x", "y", "z"}:
-            scene.pdt_error = PDT_ERR_BADCOORDL
+            pg.error = PDT_ERR_BADCOORDL
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
 
@@ -224,11 +225,11 @@ def command_run(self, context):
         except ValueError:
             vals[ind] = "0"
         ind = ind + 1
-    mode_s = scene.pdt_select
-    flip_a = scene.pdt_flipangle
-    flip_p = scene.pdt_flippercent
-    ext_a = scene.pdt_extend
-    plane = scene.pdt_plane
+    mode_s = pg.select
+    flip_a = pg.flip_angle
+    flip_p = pg.flip_percent
+    ext_a = pg.extend
+    plane = pg.plane
     obj = context.view_layer.objects.active
     #FIXME: What does call this imply in terms of invariants?
     #       There's a lot of places in the code where we rely on bm not being None...
@@ -246,24 +247,24 @@ def command_run(self, context):
     # Cursor or Pivot Point
     if oper in {"C", "P"}:
         if mode not in adip:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
         if mode == "a":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             if oper == "C":
                 scene.cursor.location = vector_delta
             else:
-                scene.pdt_pivotloc = vector_delta
+                pg.pivot_loc = vector_delta
         # Delta/Relative Coordinates
         elif mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -271,7 +272,7 @@ def command_run(self, context):
                 if oper == "C":
                     scene.cursor.location = scene.cursor.location + vector_delta
                 else:
-                    scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
+                    pg.pivot_loc = pg.pivot_loc + vector_delta
             elif mode_s == "SEL":
                 if obj.mode == "EDIT":
                     if oper == "C":
@@ -279,16 +280,16 @@ def command_run(self, context):
                             bm.select_history[-1].co + obj_loc + vector_delta
                         )
                     else:
-                        scene.pdt_pivotloc = bm.select_history[-1].co + obj_loc + vector_delta
+                        pg.pivot_loc = bm.select_history[-1].co + obj_loc + vector_delta
                 elif obj.mode == "OBJECT":
                     if oper == "C":
                         scene.cursor.location = obj_loc + vector_delta
                     else:
-                        scene.pdt_pivotloc = obj_loc + vector_delta
+                        pg.pivot_loc = obj_loc + vector_delta
         # Direction/Polar Coordinates
         elif mode == "i":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
@@ -296,7 +297,7 @@ def command_run(self, context):
                 if oper == "C":
                     scene.cursor.location = scene.cursor.location + vector_delta
                 else:
-                    scene.pdt_pivotloc = scene.pdt_pivotloc + vector_delta
+                    pg.pivot_loc = pg.pivot_loc + vector_delta
             elif mode_s == "SEL":
                 if obj.mode == "EDIT":
                     if oper == "C":
@@ -304,16 +305,16 @@ def command_run(self, context):
                             bm.select_history[-1].co + obj_loc + vector_delta
                         )
                     else:
-                        scene.pdt_pivotloc = bm.select_history[-1].co + obj_loc + vector_delta
+                        pg.pivot_loc = bm.select_history[-1].co + obj_loc + vector_delta
                 elif obj.mode == "OBJECT":
                     if oper == "C":
                         scene.cursor.location = obj_loc + vector_delta
                     else:
-                        scene.pdt_pivotloc = obj_loc + vector_delta
+                        pg.pivot_loc = obj_loc + vector_delta
         # Percent Options
         elif mode == "p":
             if len(vals) != 1:
-                scene.pdt_error = PDT_ERR_BAD1VALS
+                pg.error = PDT_ERR_BAD1VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
@@ -323,32 +324,32 @@ def command_run(self, context):
                 if oper == "C":
                     scene.cursor.location = obj_loc + vector_delta
                 else:
-                    scene.pdt_pivotloc = obj_loc + vector_delta
+                    pg.pivot_loc = obj_loc + vector_delta
             elif obj.mode == "OBJECT":
                 if oper == "C":
                     scene.cursor.location = vector_delta
                 else:
-                    scene.pdt_pivotloc = vector_delta
+                    pg.pivot_loc = vector_delta
         return
 
     # ------------------------
     # Move Vertices or Objects
     elif oper == "G":
         if mode not in adip:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
         if mode == "a":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             if obj.mode == "EDIT":
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                    pg.error = PDT_ERR_NO_SEL_GEOM
                     context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 for v in verts:
@@ -364,7 +365,7 @@ def command_run(self, context):
         # Delta/Relative Coordinates
         elif mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -381,14 +382,14 @@ def command_run(self, context):
         # Direction/Polar Coordinates
         elif mode == "i":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
             if obj.mode == "EDIT":
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
-                    scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                    pg.error = PDT_ERR_NO_SEL_GEOM
                     context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 bmesh.ops.translate(bm, verts=verts, vec=vector_delta)
@@ -401,7 +402,7 @@ def command_run(self, context):
         elif mode == "p":
             if obj.mode == "OBJECT":
                 if len(vals) != 1:
-                    scene.pdt_error = PDT_ERR_BAD1VALS
+                    pg.error = PDT_ERR_BAD1VALS
                     context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                     return
                 vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
@@ -414,17 +415,17 @@ def command_run(self, context):
     # Add New Vertex
     elif oper == "N":
         if mode not in adip:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if not obj.mode == "EDIT":
-            scene.pdt_error = PDT_ERR_ADDVEDIT
+            pg.error = PDT_ERR_ADDVEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
         if mode == "a":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -438,7 +439,7 @@ def command_run(self, context):
         # Delta/Relative Coordinates
         elif mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -452,7 +453,7 @@ def command_run(self, context):
         # Direction/Polar Coordinates
         elif mode == "d":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
@@ -466,7 +467,7 @@ def command_run(self, context):
         # Percent Options
         elif mode == "p":
             if len(vals) != 1:
-                scene.pdt_error = PDT_ERR_BAD1VALS
+                pg.error = PDT_ERR_BAD1VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
@@ -483,23 +484,23 @@ def command_run(self, context):
     # Split Edges
     elif oper == "S":
         if mode not in adip:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if not obj.mode == "EDIT":
-            scene.pdt_error = PDT_ERR_SPLITEDIT
+            pg.error = PDT_ERR_SPLITEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
         if mode == "a":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             edges = [e for e in bm.edges if e.select]
             if len(edges) != 1:
-                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
+                pg.error = f"{PDT_ERR_SEL_1_EDGE} {len(edges)})"
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -514,18 +515,18 @@ def command_run(self, context):
         # Delta/Relative Coordinates
         elif mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             edges = [e for e in bm.edges if e.select]
             faces = [f for f in bm.faces if f.select]
             if len(faces) != 0:
-                scene.pdt_error = PDT_ERR_FACE_SEL
+                pg.error = PDT_ERR_FACE_SEL
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             if len(edges) < 1:
-                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
+                pg.error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -544,18 +545,18 @@ def command_run(self, context):
         # Directional/Polar Coordinates
         elif mode == "i":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
             edges = [e for e in bm.edges if e.select]
             faces = [f for f in bm.faces if f.select]
             if len(faces) != 0:
-                scene.pdt_error = PDT_ERR_FACE_SEL
+                pg.error = PDT_ERR_FACE_SEL
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             if len(edges) < 1:
-                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
+                pg.error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -570,7 +571,7 @@ def command_run(self, context):
         # Percent Options
         elif mode == "p":
             if len(vals) != 1:
-                scene.pdt_error = PDT_ERR_BAD1VALS
+                pg.error = PDT_ERR_BAD1VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
@@ -579,11 +580,11 @@ def command_run(self, context):
             edges = [e for e in bm.edges if e.select]
             faces = [f for f in bm.faces if f.select]
             if len(faces) != 0:
-                scene.pdt_error = PDT_ERR_FACE_SEL
+                pg.error = PDT_ERR_FACE_SEL
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             if len(edges) < 1:
-                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
+                pg.error = f"{PDT_ERR_SEL_1_EDGEM} {len(edges)})"
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             geom = bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1)
@@ -601,17 +602,17 @@ def command_run(self, context):
     # Extrude Vertices
     elif oper == "V":
         if mode not in adip:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if not obj.mode == "EDIT":
-            scene.pdt_error = PDT_ERR_EXTEDIT
+            pg.error = PDT_ERR_EXTEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Absolute/Global Coordinates
         if mode == "a":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
@@ -629,13 +630,13 @@ def command_run(self, context):
         # Delta/Relative Coordinates
         elif mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             for v in verts:
@@ -649,13 +650,13 @@ def command_run(self, context):
         # Direction/Polar Coordinates
         elif mode == "i":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             for v in verts:
@@ -671,7 +672,7 @@ def command_run(self, context):
             vector_delta = getPercent(obj, flip_p, float(vals[0]), oper, scene)
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             nVert = bm.verts.new(vector_delta)
@@ -690,23 +691,23 @@ def command_run(self, context):
     # Extrude Geometry
     elif oper == "E":
         if mode not in {"d", "i"}:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if not obj.mode == "EDIT":
-            scene.pdt_error = PDT_ERR_EXTEDIT
+            pg.error = PDT_ERR_EXTEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Delta/Relative Coordinates
         if mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             ret = bmesh.ops.extrude_face_region(
@@ -730,13 +731,13 @@ def command_run(self, context):
         # Direction/Polar Coordinates
         elif mode == "i":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             ret = bmesh.ops.extrude_face_region(
@@ -763,23 +764,23 @@ def command_run(self, context):
     # Duplicate Geometry
     elif oper == "D":
         if mode not in {"d", "i"}:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if not obj.mode == "EDIT":
-            scene.pdt_error = PDT_ERR_DUPEDIT
+            pg.error = PDT_ERR_DUPEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Delta/Relative Coordinates
         if mode == "d":
             if len(vals) != 3:
-                scene.pdt_error = PDT_ERR_BAD3VALS
+                pg.error = PDT_ERR_BAD3VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = Vector((float(vals[0]), float(vals[1]), float(vals[2])))
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             ret = bmesh.ops.duplicate(
@@ -803,13 +804,13 @@ def command_run(self, context):
         # Direction/Polar Coordinates
         elif mode == "i":
             if len(vals) != 2:
-                scene.pdt_error = PDT_ERR_BAD2VALS
+                pg.error = PDT_ERR_BAD2VALS
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             vector_delta = disAng(vals, flip_a, plane, scene)
             verts = [v for v in bm.verts if v.select]
             if len(verts) == 0:
-                scene.pdt_error = PDT_ERR_NO_SEL_GEOM
+                pg.error = PDT_ERR_NO_SEL_GEOM
                 context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return
             ret = bmesh.ops.duplicate(
@@ -836,19 +837,19 @@ def command_run(self, context):
     # Fillet Geometry
     elif oper == "F":
         if mode not in {"v", "e"}:
-            scene.pdt_error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
+            pg.error = f"'{mode}' {PDT_ERR_NON_VALID} '{oper}'"
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if obj is None:
-            scene.pdt_error = PDT_ERR_NO_ACT_OBJ
+            pg.error = PDT_ERR_NO_ACT_OBJ
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if not obj.mode == "EDIT":
-            scene.pdt_error = PDT_ERR_FILEDIT
+            pg.error = PDT_ERR_FILEDIT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if len(vals) != 3:
-            scene.pdt_error = PDT_ERR_BAD3VALS
+            pg.error = PDT_ERR_BAD3VALS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         if mode == "v":
@@ -857,7 +858,7 @@ def command_run(self, context):
             vert_bool = False
         verts = [v for v in bm.verts if v.select]
         if len(verts) == 0:
-            scene.pdt_error = PDT_ERR_SEL_1_VERT
+            pg.error = PDT_ERR_SEL_1_VERT
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         # Note that passing an empty parameter results in that parameter being seen as "0"

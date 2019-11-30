@@ -17,9 +17,9 @@
 #
 # ***** END GPL LICENCE BLOCK *****
 
-# ----------------------------------------------------------
-# Author: Alan Odom (Clockmender) Copyright (c) 2019
-# ----------------------------------------------------------
+# -----------------------------------------------------------------------
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
+# -----------------------------------------------------------------------
 #
 # Common Functions used in more than one place in PDT Operations
 
@@ -61,7 +61,7 @@ def debug(msg, prefix=""):
             # something went wrong
             if len(filename) < 1:
                 return fullpath
-            # since this is a singleton list, just return the filename as a string
+            # since this is a string, just return it
             return filename
 
         # stack frame corresponding to the line where debug(msg) was called
@@ -77,14 +77,15 @@ def oops(self, context):
     Displays error message in a popup.
 
     Args:
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Note:
-        Uses pdt_error scene variable
+        Uses pg.error scene variable
     """
 
     scene = context.scene
-    self.layout.label(text=scene.pdt_error)
+    pg = scene.pdt_pg
+    self.layout.label(text=pg.error)
 
 
 def setMode(mode_pl):
@@ -416,12 +417,14 @@ def getPercent(obj, flip_p, per_v, data, scene):
         obj: The Object under consideration
         flip_p: Setting this to True measures the percentage starting from the second vector
         per_v: Percentage Input Value
-        data: pdt_flip, pdt_percent scene variables & Operational Mode
+        data: pg.flip, pg.percent scene variables & Operational Mode
         scene: Context Scene
 
     Returns:
         World Vector.
     """
+
+    pg = scene.pdt_pg
 
     if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
@@ -430,11 +433,11 @@ def getPercent(obj, flip_p, per_v, data, scene):
             actV = verts[0].co
             othV = verts[1].co
             if actV is None:
-                scene.pdt_error = PDT_ERR_VERT_MODE
+                pg.error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None
         else:
-            scene.pdt_error = PDT_ERR_SEL_2_V_1_E + str(len(verts)) + " Vertices"
+            pg.error = PDT_ERR_SEL_2_V_1_E + str(len(verts)) + " Vertices"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
         p1 = np.array([actV.x, actV.y, actV.z])
@@ -442,7 +445,7 @@ def getPercent(obj, flip_p, per_v, data, scene):
     if obj.mode == "OBJECT":
         objs = bpy.context.view_layer.objects.selected
         if len(objs) != 2:
-            scene.pdt_error = PDT_ERR_SEL_2_OBJS + str(len(objs)) + ")"
+            pg.error = PDT_ERR_SEL_2_OBJS + str(len(objs)) + ")"
             bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
         p1 = np.array(
@@ -480,17 +483,18 @@ def objCheck(obj, scene, oper):
         Object Bmesh and Validity Boolean.
     """
 
+    pg = scene.pdt_pg
     _oper = oper.upper()
 
     if obj is None:
-        scene.pdt_error = PDT_ERR_NO_ACT_OBJ
+        pg.error = PDT_ERR_NO_ACT_OBJ
         bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         return None, False
     if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
         if _oper == "S":
             if len(bm.edges) < 1:
-                scene.pdt_error = f"{PDT_ERR_SEL_1_EDGEM} {len(bm.edges)})"
+                pg.error = f"{PDT_ERR_SEL_1_EDGEM} {len(bm.edges)})"
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
             else:
@@ -505,7 +509,7 @@ def objCheck(obj, scene, oper):
                 else:
                     actV = None
             if actV is None:
-                scene.pdt_error = PDT_ERR_VERT_MODE
+                pg.error = PDT_ERR_VERT_MODE
                 bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None, False
         if _oper == "C":
@@ -528,6 +532,7 @@ def disAng(vals, flip_a, plane, scene):
         Directional Offset as a Vector.
     """
 
+    pg = scene.pdt_pg
     dis_v = float(vals[0])
     ang_v = float(vals[1])
     if flip_a:
@@ -535,7 +540,7 @@ def disAng(vals, flip_a, plane, scene):
             ang_v = ang_v - 180
         else:
             ang_v = ang_v + 180
-        scene.pdt_angle = ang_v
+        pg.angle = ang_v
     if plane == "LO":
         vector_delta = viewDir(dis_v, ang_v)
     else:
@@ -563,7 +568,7 @@ def draw3D(coords, gtype, rgba, context):
         coords: Input Coordinates List
         gtype: Graphic Type
         rgba: Colour in RGBA format
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Returns:
         Nothing.
@@ -590,24 +595,25 @@ def drawCallback3D(self, context):
     and a yellow point based upon screen scale
 
     Args:
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Returns:
         Nothing.
     """
 
     scene = context.scene
+    pg = scene.pdt_pg
     w = context.region.width
-    x = scene.pdt_pivotloc.x
-    y = scene.pdt_pivotloc.y
-    z = scene.pdt_pivotloc.z
+    x = pg.pivot_loc.x
+    y = pg.pivot_loc.y
+    z = pg.pivot_loc.z
     # Scale it from view
     areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
     if len(areas) > 0:
         sf = abs(areas[0].spaces.active.region_3d.window_matrix.decompose()[2][1])
-    a = w / sf / 10000 * scene.pdt_pivotsize
+    a = w / sf / 10000 * pg.pivot_size
     b = a * 0.65
-    c = a * 0.05 + (scene.pdt_pivotwidth * a * 0.02)
+    c = a * 0.05 + (pg.pivot_width * a * 0.02)
     o = c / 3
 
     # fmt: off
@@ -621,7 +627,7 @@ def drawCallback3D(self, context):
         (x+b, y-c, z),
     ]
     # fmt: on
-    colour = (1.0, 0.0, 0.0, scene.pdt_pivotalpha)
+    colour = (1.0, 0.0, 0.0, pg.pivot_alpha)
     draw3D(coords, "TRIS", colour, context)
     coords = [(x, y, z), (x+a, y, z)]
     draw3D(coords, "LINES", colour, context)
@@ -636,7 +642,7 @@ def drawCallback3D(self, context):
         (x-c, y+b, z),
     ]
     # fmt: on
-    colour = (0.0, 1.0, 0.0, scene.pdt_pivotalpha)
+    colour = (0.0, 1.0, 0.0, pg.pivot_alpha)
     draw3D(coords, "TRIS", colour, context)
     coords = [(x, y, z), (x, y + a, z)]
     draw3D(coords, "LINES", colour, context)
@@ -651,13 +657,13 @@ def drawCallback3D(self, context):
         (x-c, y, z+b),
     ]
     # fmt: on
-    colour = (0.2, 0.5, 1.0, scene.pdt_pivotalpha)
+    colour = (0.2, 0.5, 1.0, pg.pivot_alpha)
     draw3D(coords, "TRIS", colour, context)
     coords = [(x, y, z), (x, y, z + a)]
     draw3D(coords, "LINES", colour, context)
     # Centre
     coords = [(x, y, z)]
-    colour = (1.0, 1.0, 0.0, scene.pdt_pivotalpha)
+    colour = (1.0, 1.0, 0.0, pg.pivot_alpha)
     draw3D(coords, "POINTS", colour, context)
 
 
@@ -667,18 +673,19 @@ def scale_set(self, context):
     Sets Pivot Point Scale Factors by Measurement
 
     Args:
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Note:
-        Uses pdt_pivotdis & pdt_distance scene variables
+        Uses pg.pivotdis & pg.distance scene variables
 
     Returns:
         Status Set.
     """
 
     scene = context.scene
-    sys_dis = scene.pdt_distance
-    scale_dis = scene.pdt_pivotdis
+    pg = scene.pdt_pg
+    sys_dis = pg.distance
+    scale_dis = pg.pivot_dis
     if scale_dis > 0:
         scale_fac = scale_dis / sys_dis
-        scene.pdt_pivotscale = Vector((scale_fac, scale_fac, scale_fac))
+        pg.pivot_scale = Vector((scale_fac, scale_fac, scale_fac))
