@@ -48,7 +48,7 @@ def remove_permutations_that_share_a_vertex(bm, permutations):
     final_permutations = []
     for edges in permutations:
         raw_vert_indices = cm.vertex_indices_from_edges_tuple(bm, edges)
-        if cm.duplicates(raw_vert_indices):
+        if len(set(raw_vert_indices)) < 4:
             continue
 
         # reaches this point if they do not share.

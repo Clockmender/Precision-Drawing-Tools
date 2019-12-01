@@ -205,10 +205,6 @@ def find_intersecting_edges(bm, pt, idx1, idx2):
     return [idx for edge, idx in zip(edges, idxs) if point_on_edge(pt, edge)]
 
 
-def duplicates(indices):
-    return len(set(indices)) < 4
-
-
 def vert_idxs_from_edge_idx(bm, idx):
     edge = bm.edges[idx]
     return edge.verts[0].index, edge.verts[1].index
