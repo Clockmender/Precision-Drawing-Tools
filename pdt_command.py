@@ -24,8 +24,7 @@
 import bpy
 import bmesh
 from mathutils import Vector
-# glob import necessary for command line math functionality to work
-from math import *
+import math
 from .pdt_functions import (
     debug,
     disAng,
@@ -184,12 +183,13 @@ def command_run(self, context):
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return
         exp = cmd[2:]
+        namespace = {}
+        namespace.update(vars(math))
         if "," in exp:
             pg.error = PDT_ERR_NOCOMMAS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
         try:
-            # FIXME: The idea is good, but there's no restriction on the expressions allowed?!
-            num = eval(exp)
+            num = eval(exp, namespace, namespace)
         except ValueError:
             pg.error = PDT_ERR_BADMATHS
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
