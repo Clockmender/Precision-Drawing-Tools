@@ -22,8 +22,6 @@
 # ----------------------------------------------------------
 #
 import bpy
-import os
-from bpy.props import FloatProperty
 from bpy.types import Operator
 from mathutils import Vector
 from pathlib import Path
@@ -154,7 +152,6 @@ class PDT_OT_Link(Operator):
                 bpy.ops.wm.link(
                     filepath=str(path), directory=str(path) + "/Object", filename=pg.lib_objects
                 )
-                obj_names = [o.name for o in context.view_layer.objects]
                 for obj in context.view_layer.objects:
                     obj.select_set(False)
                 return {"FINISHED"}
@@ -162,7 +159,6 @@ class PDT_OT_Link(Operator):
                 bpy.ops.wm.link(
                     filepath=str(path), directory=str(path) + "/Collection", filename=pg.lib_collections
                 )
-                obj_names = [o.name for o in context.view_layer.objects]
                 for obj in context.view_layer.objects:
                     obj.select_set(False)
                 return {"FINISHED"}

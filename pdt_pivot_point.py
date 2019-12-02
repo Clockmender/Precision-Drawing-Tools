@@ -23,10 +23,10 @@
 #
 import bpy
 import bmesh
-from bpy.types import Operator, Panel, PropertyGroup, SpaceView3D
+from bpy.types import Operator, SpaceView3D
 from mathutils import Vector, Matrix
 from math import pi
-from .pdt_functions import viewCoords, draw3D, drawCallback3D
+from .pdt_functions import viewCoords, drawCallback3D
 from .pdt_msg_strings import (
     PDT_CON_AREYOURSURE,
     PDT_ERR_EDIT_MODE,
@@ -300,7 +300,6 @@ class PDT_OT_PivotSelected(Operator):
         if obj is None:
             self.report({"ERROR"}, PDT_ERR_NO_ACT_OBJ)
             return {"FINISHED"}
-        obj_loc = obj.matrix_world.decompose()[0]
         if obj.mode != "EDIT":
             errmsg = f"{PDT_ERR_EDIT_MODE} {obj.mode})"
             self.report({"ERROR"}, errmsg)

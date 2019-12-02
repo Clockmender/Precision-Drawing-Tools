@@ -220,7 +220,7 @@ def command_run(self, context):
     ind = 0
     for r in vals:
         try:
-            number = float(r)
+            _ = float(r)
             good = True
         except ValueError:
             vals[ind] = "0"
@@ -619,7 +619,7 @@ def command_run(self, context):
             vNew = vector_delta - obj_loc
             nVert = bm.verts.new(vNew)
             for v in [v for v in bm.verts if v.select]:
-                nEdge = bm.edges.new([v, nVert])
+                bm.edges.new([v, nVert])
                 v.select_set(False)
             nVert.select_set(True)
             bmesh.ops.remove_doubles(
@@ -642,7 +642,7 @@ def command_run(self, context):
             for v in verts:
                 nVert = bm.verts.new(v.co)
                 nVert.co = nVert.co + vector_delta
-                nEdge = bm.edges.new([v, nVert])
+                bm.edges.new([v, nVert])
                 v.select_set(False)
                 nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
@@ -662,7 +662,7 @@ def command_run(self, context):
             for v in verts:
                 nVert = bm.verts.new(v.co)
                 nVert.co = nVert.co + vector_delta
-                nEdge = bm.edges.new([v, nVert])
+                bm.edges.new([v, nVert])
                 v.select_set(False)
                 nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
@@ -678,10 +678,10 @@ def command_run(self, context):
             nVert = bm.verts.new(vector_delta)
             if ext_a:
                 for v in [v for v in bm.verts if v.select]:
-                    nEdge = bm.edges.new([v, nVert])
+                    bm.edges.new([v, nVert])
                     v.select_set(False)
             else:
-                nEdge = bm.edges.new([bm.select_history[-1], nVert])
+                bm.edges.new([bm.select_history[-1], nVert])
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()

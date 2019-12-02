@@ -24,11 +24,10 @@
 import bmesh
 import bpy
 import numpy as np
-from bpy.props import FloatProperty
-from bpy.types import Operator, Panel, PropertyGroup
-from mathutils import Vector, Quaternion
+from bpy.types import Operator
+from mathutils import Vector
 from mathutils.geometry import intersect_point_line
-from math import sin, cos, tan, acos, pi, sqrt
+from math import sin, cos, tan, pi, sqrt
 from .pdt_functions import (
     setMode,
     checkSelection,
@@ -37,7 +36,6 @@ from .pdt_functions import (
     viewCoords,
     viewCoordsI,
     viewDir,
-    euler_to_quaternion,
     arcCentre,
     intersection,
     getPercent,
@@ -179,7 +177,7 @@ class PDT_OT_PlacementAbs(Operator):
             vNew = vector_delta - obj_loc
             nVert = bm.verts.new(vNew)
             for v in [v for v in bm.verts if v.select]:
-                nEdge = bm.edges.new([v, nVert])
+                bm.edges.new([v, nVert])
                 v.select_set(False)
             nVert.select_set(True)
             bm.select_history.clear()
@@ -318,7 +316,7 @@ class PDT_OT_PlacementDelta(Operator):
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
                     nVert.co = nVert.co + vector_delta
-                    nEdge = bm.edges.new([v, nVert])
+                    bm.edges.new([v, nVert])
                     v.select_set(False)
                     nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
@@ -416,7 +414,7 @@ class PDT_OT_PlacementDis(Operator):
         if plane == "LO":
             vector_delta = viewDir(dis_v, ang_v)
         else:
-            a1, a2, a3 = setMode(plane)
+            a1, a2, _ = setMode(plane)
             vector_delta = Vector((0, 0, 0))
             vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi / 180))
             vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v * pi / 180))
@@ -503,7 +501,7 @@ class PDT_OT_PlacementDis(Operator):
                 for v in [v for v in bm.verts if v.select]:
                     nVert = bm.verts.new(v.co)
                     nVert.co = nVert.co + vector_delta
-                    nEdge = bm.edges.new([v, nVert])
+                    bm.edges.new([v, nVert])
                     v.select_set(False)
                     nVert.select_set(True)
                 bmesh.update_edit_mesh(obj.data)
@@ -649,10 +647,10 @@ class PDT_OT_PlacementPer(Operator):
             nVert = bm.verts.new(vector_delta)
             if ext_a:
                 for v in [v for v in bm.verts if v.select]:
-                    nEdge = bm.edges.new([v, nVert])
+                    bm.edges.new([v, nVert])
                     v.select_set(False)
             else:
-                nEdge = bm.edges.new([bm.select_history[-1], nVert])
+                bm.edges.new([bm.select_history[-1], nVert])
             nVert.select_set(True)
             bmesh.update_edit_mesh(obj.data)
             bm.select_history.clear()
@@ -769,9 +767,9 @@ class PDT_OT_PlacementNormal(Operator):
             nVert = bm.verts.new(vNew)
             if ext_a:
                 for v in [v for v in bm.verts if v.select]:
-                    nEdge = bm.edges.new([v, nVert])
+                    bm.edges.new([v, nVert])
             else:
-                nEdge = bm.edges.new([bm.select_history[-1], nVert])
+                bm.edges.new([bm.select_history[-1], nVert])
             for v in [v for v in bm.verts if v.select]:
                 v.select_set(False)
             nVert.select_set(True)
@@ -888,25 +886,25 @@ class PDT_OT_PlacementInt(Operator):
                         proc = True
                     elif oper == "EV":
                         nVert = bm.verts.new(vector_delta)
-                        nEdge = bm.edges.new([va, nVert])
+                        bm.edges.new([va, nVert])
                         proc = True
                 else:
                     if oper == "MV" and ext_a:
                         vo.co = vector_delta
                     elif oper == "EV" and ext_a:
                         nVert = bm.verts.new(vector_delta)
-                        nEdge = bm.edges.new([vo, nVert])
+                        bm.edges.new([vo, nVert])
 
                 if (lstV - vector_delta).length < (fstV - vector_delta).length:
                     if oper == "MV" and ext_a:
                         vl.co = vector_delta
                     elif oper == "EV" and ext_a:
-                        nEdge = bm.edges.new([vl, nVert])
+                        bm.edges.new([vl, nVert])
                 else:
                     if oper == "MV" and ext_a:
                         vf.co = vector_delta
                     elif oper == "EV" and ext_a:
-                        nEdge = bm.edges.new([vf, nVert])
+                        bm.edges.new([vf, nVert])
                 bm.select_history.clear()
                 bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
 
@@ -1069,7 +1067,7 @@ class PDT_OT_PlacementCen(Operator):
                 nVert = bm.verts.new(vector_delta)
                 if ext_a:
                     for v in [v for v in bm.verts if v.select]:
-                        nEdge = bm.edges.new([v, nVert])
+                        bm.edges.new([v, nVert])
                         v.select_set(False)
                     nVert.select_set(True)
                     bm.select_history.clear()
@@ -1078,7 +1076,7 @@ class PDT_OT_PlacementCen(Operator):
                     )
                     bmesh.update_edit_mesh(obj.data)
                 else:
-                    nEdge = bm.edges.new([bm.select_history[-1], nVert])
+                    bm.edges.new([bm.select_history[-1], nVert])
                     bmesh.update_edit_mesh(obj.data)
                     bm.select_history.clear()
             else:
@@ -1136,14 +1134,12 @@ class PDT_OT_JoinVerts(Operator):
             Status Set.
         """
 
-        scene = context.scene
-        pg = scene.pdt_pg
         obj = context.view_layer.objects.active
         bm = bmesh.from_edit_mesh(obj.data)
         verts = [v for v in bm.verts if v.select]
         if len(verts) == 2:
             try:
-                nEdge = bm.edges.new([verts[-1], verts[-2]])
+                bm.edges.new([verts[-1], verts[-2]])
                 bmesh.update_edit_mesh(obj.data)
                 bm.select_history.clear()
                 return {"FINISHED"}
@@ -1272,7 +1268,7 @@ class PDT_OT_Angle2(Operator):
             v0 = np.array([actV.x + 1, actV.y]) - np.array([actV.x, actV.y])
             v1 = np.array([othV.x, othV.y]) - np.array([actV.x, actV.y])
         else:
-            a1, a2, a3 = setMode(plane)
+            a1, a2, _ = setMode(plane)
             v0 = np.array([actV[a1] + 1, actV[a2]]) - np.array([actV[a1], actV[a2]])
             v1 = np.array([othV[a1], othV[a2]]) - np.array([actV[a1], actV[a2]])
         ang = np.rad2deg(np.arctan2(np.linalg.det([v0, v1]), np.dot(v0, v1)))
@@ -1312,9 +1308,7 @@ class PDT_OT_Angle3(Operator):
             Status Set.
         """
 
-        scene = context.scene
-        pg = scene.pdt_pg
-        plane = pg.plane
+        pg = context.scene.pdt_pg
         flip_a = pg.flip_angle
         obj = context.view_layer.objects.active
         if obj is None:
@@ -1460,7 +1454,7 @@ class PDT_OT_Taper(Operator):
             errmsg = PDT_ERR_NO_ACT_OBJ
             self.report({"ERROR"}, errmsg)
             return {"FINISHED"}
-        a1, a2, a3 = setAxis(tap_ax)
+        _, a2, a3 = setAxis(tap_ax)
         bm = bmesh.from_edit_mesh(obj.data)
         if len(bm.select_history) >= 1:
             rotV = bm.select_history[-1]

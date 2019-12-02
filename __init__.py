@@ -138,7 +138,7 @@ def enumlist_objects(self, context):
     _pdt_obj_items.clear()
 
     if path.is_file() and ".blend" in str(path):
-        with bpy.data.libraries.load(str(path)) as (data_from, data_to):
+        with bpy.data.libraries.load(str(path)) as (data_from, _):
             if len(pg.object_search_string) == 0:
                 object_names = [ob for ob in data_from.objects]
             else:
@@ -170,7 +170,7 @@ def enumlist_collections(self, context):
     _pdt_col_items.clear()
 
     if path.is_file() and ".blend" in str(path):
-        with bpy.data.libraries.load(str(path)) as (data_from, data_to):
+        with bpy.data.libraries.load(str(path)) as (data_from, _):
             if len(pg.collection_search_string) == 0:
                 object_names = [ob for ob in data_from.collections]
             else:
@@ -202,7 +202,7 @@ def enumlist_materials(self, context):
     _pdt_mat_items.clear()
 
     if path.is_file() and ".blend" in str(path):
-        with bpy.data.libraries.load(str(path)) as (data_from, data_to):
+        with bpy.data.libraries.load(str(path)) as (data_from, _):
             if len(pg.material_search_string) == 0:
                 object_names = [ob for ob in data_from.materials]
             else:
