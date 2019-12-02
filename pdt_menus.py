@@ -21,11 +21,7 @@
 # Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # ----------------------------------------------------------
 #
-import bpy
-import os
 from bpy.types import Panel
-from pathlib import Path
-from .pdt_functions import debug
 from .pdt_msg_strings import (
     PDT_LAB_ABS,
     PDT_LAB_AD2D,
@@ -80,7 +76,6 @@ class PDT_PT_PanelDesign(Panel):
 
     def draw(self, context):
         layout = self.layout
-        cursor = context.scene.cursor
         pdt_pg = context.scene.pdt_pg
         row = layout.row()
         col = row.column()
@@ -238,7 +233,6 @@ class PDT_PT_PanelPartsLibrary(Panel):
 
     def draw(self, context):
         layout = self.layout
-        cursor = context.scene.cursor
         pdt_pg = context.scene.pdt_pg
         row = layout.row()
         col = row.column()
@@ -272,7 +266,7 @@ class PDT_PT_PanelPartsLibrary(Panel):
         row = box.row()
         row.prop(pdt_pg, "lib_materials", text="")
         row = box.row()
-        row.operator("pdt.lib_show", text="Show Library File",icon='INFO')
+        row.operator("pdt.lib_show", text="Show Library File", icon='INFO')
 
 
 class PDT_PT_PanelViewControl(Panel):
@@ -284,7 +278,6 @@ class PDT_PT_PanelViewControl(Panel):
 
     def draw(self, context):
         layout = self.layout
-        cursor = context.scene.cursor
         pdt_pg = context.scene.pdt_pg
         box = layout.box()
         row = box.row()
@@ -320,7 +313,6 @@ class PDT_PT_PanelCommandLine(Panel):
 
     def draw(self, context):
         layout = self.layout
-        cursor = context.scene.cursor
         pdt_pg = context.scene.pdt_pg
         row = layout.row()
         col = row.column()

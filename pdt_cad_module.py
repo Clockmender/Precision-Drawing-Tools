@@ -24,7 +24,7 @@
 # ----------------------------------------------------------
 #
 import bmesh
-from mathutils import Vector, geometry
+from mathutils import Vector
 from mathutils.geometry import intersect_line_line, intersect_point_line
 from .pdt_functions import debug
 

@@ -542,7 +542,7 @@ def disAng(vals, flip_a, plane, scene):
     if plane == "LO":
         vector_delta = viewDir(dis_v, ang_v)
     else:
-        a1, a2, a3 = setMode(plane)
+        a1, a2, _ = setMode(plane)
         vector_delta = Vector((0, 0, 0))
         # fmt: off
         vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi/180))
@@ -572,7 +572,6 @@ def draw3D(coords, gtype, rgba, context):
         Nothing.
     """
 
-    scene = context.scene
     batch = batch_for_shader(shader, gtype, {"pos": coords})
 
     try:

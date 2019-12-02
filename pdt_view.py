@@ -23,7 +23,6 @@
 #
 import bpy
 from bpy.types import Operator
-from bpy.props import FloatProperty
 from math import pi
 from mathutils import Quaternion
 from .pdt_functions import euler_to_quaternion
@@ -233,7 +232,6 @@ class PDT_OT_viso(Operator):
             Status Set.
         """
 
-        scene = context.scene
         areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
         if len(areas) > 0:
             # Try working this out in your head!

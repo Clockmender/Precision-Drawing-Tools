@@ -124,7 +124,7 @@ def update_mesh(bm, int_dict):
 
     new_verts = []
     collect = new_verts.extend
-    for old_edge, point_list in int_dict.items():
+    for _, point_list in int_dict.items():
         num_edges_to_add = len(point_list) - 1
         for i in range(num_edges_to_add):
             a = ov.new(point_list[i])
