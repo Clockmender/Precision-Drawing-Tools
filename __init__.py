@@ -371,7 +371,7 @@ class PDTSceneProperties(PropertyGroup):
         name="Pivot Scale", default=(1.0, 1.0, 1.0), subtype="XYZ", description=PDT_DES_PPSCALEFAC
     )
     pivot_size : FloatProperty(
-        name="Pivot Factor", min=0.4, max=2, default=1, precision=1, description=PDT_DES_PPSIZE
+        name="Pivot Factor", min=0.4, max=10, default=1, precision=1, description=PDT_DES_PPSIZE
     )
     pivot_width : IntProperty(
         name="Width", min=1, max=5, default=2, description=PDT_DES_PPWIDTH
