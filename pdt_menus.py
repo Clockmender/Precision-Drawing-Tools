@@ -73,6 +73,7 @@ class PDT_PT_PanelDesign(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
@@ -171,6 +172,7 @@ class PDT_PT_PanelPivotPoint(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         pdt_pg = context.scene.pdt_pg
@@ -230,6 +232,7 @@ class PDT_PT_PanelPartsLibrary(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
@@ -275,6 +278,7 @@ class PDT_PT_PanelViewControl(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
@@ -310,6 +314,7 @@ class PDT_PT_PanelCommandLine(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "PDT"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
