@@ -121,11 +121,11 @@ class PDT_OT_PlacementAbs(Operator):
             obj_loc = obj.matrix_world.decompose()[0]
             if obj.mode == "EDIT":
                 bm = bmesh.from_edit_mesh(obj.data)
-            verts = [v for v in bm.verts if v.select]
-            if len(verts) == 0:
-                errmsg = PDT_ERR_NO_ACT_VERTS
-                self.report({"ERROR"}, errmsg)
-                return {"FINISHED"}
+                verts = [v for v in bm.verts if v.select]
+                if len(verts) == 0:
+                    errmsg = PDT_ERR_NO_ACT_VERTS
+                    self.report({"ERROR"}, errmsg)
+                    return {"FINISHED"}
         if oper == "CU":
             scene.cursor.location = vector_delta
             scene.cursor.rotation_euler = (0, 0, 0)
@@ -257,7 +257,7 @@ class PDT_OT_PlacementDelta(Operator):
                         errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
-            if oper not in {"CU", "PP", "NV"}:
+            if oper not in {"CU", "PP", "NV"} and obj.mode == "EDIT":
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     errmsg = PDT_ERR_NO_ACT_VERTS
@@ -442,7 +442,7 @@ class PDT_OT_PlacementDis(Operator):
                         errmsg = f"{PDT_ERR_SEL_1_VERTI} {len(bm.select_history)})"
                         self.report({"ERROR"}, errmsg)
                         return {"FINISHED"}
-            if oper not in {"CU", "PP", "NV"}:
+            if oper not in {"CU", "PP", "NV"} and obj.mode == "EDIT":
                 verts = [v for v in bm.verts if v.select]
                 if len(verts) == 0:
                     errmsg = PDT_ERR_NO_ACT_VERTS
