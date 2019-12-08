@@ -17,21 +17,59 @@
 #
 # ***** END GPL LICENCE BLOCK *****
 
-# ----------------------------------------------------------
-# Author: Alan Odom (Clockmender)
-# ----------------------------------------------------------
+# -----------------------------------------------------------------------
+# Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
+# -----------------------------------------------------------------------
 #
 # Common Functions used in more than one place in PDT Operations
 
 import bpy
 import bmesh
 import bgl
-import blf
 import gpu
+import numpy as np
 from mathutils import Vector, Quaternion
 from gpu_extras.batch import batch_for_shader
 from math import cos, sin, pi
-import numpy as np
+from .pdt_msg_strings import (
+    PDT_ERR_VERT_MODE,
+    PDT_ERR_SEL_2_V_1_E,
+    PDT_ERR_SEL_2_OBJS,
+    PDT_ERR_NO_ACT_OBJ,
+    PDT_ERR_SEL_1_EDGEM
+)
+
+
+def debug(msg, prefix=""):
+    """Print a debug message to the console if PDT's or Blender's debug flags are set.
+
+    The printed message will be of the form:
+
+    {prefix}{caller file name:line number}| {msg}
+    """
+
+    pdt_debug = bpy.context.preferences.addons[__package__].preferences.debug
+    if  bpy.app.debug or bpy.app.debug_python or pdt_debug:
+        import traceback
+
+        def extract_filename(fullpath):
+            """Return only the filename part of fullpath (excluding its path)."""
+            # Expected to end up being a string containing only the filename
+            # (i.e. excluding its preceding '/' separated path)
+            filename = fullpath.split('/')[-1]
+            #print(filename)
+            # something went wrong
+            if len(filename) < 1:
+                return fullpath
+            # since this is a string, just return it
+            return filename
+
+        # stack frame corresponding to the line where debug(msg) was called
+        #print(traceback.extract_stack()[-2])
+        laststack = traceback.extract_stack()[-2]
+        #print(laststack[0])
+        # laststack[0] is the caller's full file name, laststack[1] is the line number
+        print(f"{prefix}{extract_filename(laststack[0])}:{laststack[1]}| {msg}")
 
 def oops(self, context):
     """Error Routine.
@@ -39,14 +77,15 @@ def oops(self, context):
     Displays error message in a popup.
 
     Args:
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
-    Notes:
-        Uses pdt_error scene variable
+    Note:
+        Uses pg.error scene variable
     """
 
     scene = context.scene
-    self.layout.label(text=scene.pdt_error)
+    pg = scene.pdt_pg
+    self.layout.label(text=pg.error)
 
 
 def setMode(mode_pl):
@@ -61,15 +100,16 @@ def setMode(mode_pl):
         3 Integer indices.
     """
 
-    if mode_pl == 'XY':
+    if mode_pl == "XY":
         # a1 = x a2 = y a3 = z
         return 0, 1, 2
-    elif mode_pl == 'XZ':
+    if mode_pl == "XZ":
         # a1 = x a2 = z a3 = y
         return 0, 2, 1
-    elif mode_pl == 'YZ':
+    if mode_pl == "YZ":
         # a1 = y a2 = z a3 = x
         return 1, 2, 0
+    #FIXME: This needs a proper specification and a default
 
 
 def setAxis(mode_pl):
@@ -80,25 +120,26 @@ def setAxis(mode_pl):
     Args:
         mode_pl: Taper Axis Selector variable as input
 
-    Notes:
+    Note:
         Axis order: Rotate Axis, Move Axis, Height Axis
 
     Returns:
         3 Integer Indicies.
     """
 
-    if mode_pl == 'RX-MY':
+    if mode_pl == "RX-MY":
         return 0, 1, 2
-    elif mode_pl == 'RX-MZ':
+    if mode_pl == "RX-MZ":
         return 0, 2, 1
-    elif mode_pl == 'RY-MX':
+    if mode_pl == "RY-MX":
         return 1, 0, 2
-    elif mode_pl == 'RY-MZ':
+    if mode_pl == "RY-MZ":
         return 1, 2, 0
-    elif mode_pl == 'RZ-MX':
+    if mode_pl == "RZ-MX":
         return 2, 0, 1
-    elif mode_pl == 'RZ-MY':
+    if mode_pl == "RZ-MY":
         return 2, 1, 0
+    #FIXME: This needs a proper specification and a default
 
 
 def checkSelection(num, bm, obj):
@@ -144,10 +185,10 @@ def checkSelection(num, bm, obj):
             v.select_set(False)
         bmesh.update_edit_mesh(obj.data)
         bm.select_history.clear()
-        return None
+    return None
 
 
-def updateSel(bm,verts,edges,faces):
+def updateSel(bm, verts, edges, faces):
     """Updates Vertex, Edge and Face Selections following a function.
 
     Args:
@@ -171,10 +212,9 @@ def updateSel(bm,verts,edges,faces):
         e.select_set(True)
     for f in faces:
         f.select_set(True)
-    return
 
 
-def viewCoords(x_loc,y_loc,z_loc):
+def viewCoords(x_loc, y_loc, z_loc):
     """Converts input Vector values to new Screen Oriented Vector.
 
     Args:
@@ -186,18 +226,18 @@ def viewCoords(x_loc,y_loc,z_loc):
         Vector adjusted to View's Inverted Tranformation Matrix.
     """
 
-    areas = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
+    areas = [a for a in bpy.context.screen.areas if a.type == "VIEW_3D"]
     if len(areas) > 0:
         vm = areas[0].spaces.active.region_3d.view_matrix
         vm = vm.to_3x3().normalized().inverted()
-        vl = Vector((x_loc,y_loc,z_loc))
+        vl = Vector((x_loc, y_loc, z_loc))
         vw = vm @ vl
         return vw
     else:
-        return Vector((0,0,0))
+        return Vector((0, 0, 0))
 
 
-def viewCoordsI(x_loc,y_loc,z_loc):
+def viewCoordsI(x_loc, y_loc, z_loc):
     """Converts Screen Oriented input Vector values to new World Vector.
 
     Converts View tranformation Matrix to Rotational Matrix
@@ -211,18 +251,18 @@ def viewCoordsI(x_loc,y_loc,z_loc):
         Vector adjusted to View's Transformation Matrix.
     """
 
-    areas = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
+    areas = [a for a in bpy.context.screen.areas if a.type == "VIEW_3D"]
     if len(areas) > 0:
         vm = areas[0].spaces.active.region_3d.view_matrix
         vm = vm.to_3x3().normalized()
-        vl = Vector((x_loc,y_loc,z_loc))
+        vl = Vector((x_loc, y_loc, z_loc))
         vw = vm @ vl
         return vw
     else:
-        return Vector((0,0,0))
+        return Vector((0, 0, 0))
 
 
-def viewDir(dis_v,ang_v):
+def viewDir(dis_v, ang_v):
     """Converts Distance and Angle to View Oriented Vector.
 
     Converts View Transformation Matrix to Rotational Matrix (3x3)
@@ -236,17 +276,17 @@ def viewDir(dis_v,ang_v):
         World Vector.
     """
 
-    areas = [a for a in bpy.context.screen.areas if a.type == 'VIEW_3D']
+    areas = [a for a in bpy.context.screen.areas if a.type == "VIEW_3D"]
     if len(areas) > 0:
         vm = areas[0].spaces.active.region_3d.view_matrix
         vm = vm.to_3x3().normalized().inverted()
-        vl = Vector((0,0,0))
-        vl.x = (dis_v * cos(ang_v*pi/180))
-        vl.y = (dis_v * sin(ang_v*pi/180))
+        vl = Vector((0, 0, 0))
+        vl.x = dis_v * cos(ang_v * pi / 180)
+        vl.y = dis_v * sin(ang_v * pi / 180)
         vw = vm @ vl
         return vw
     else:
-        return Vector((0,0,0))
+        return Vector((0, 0, 0))
 
 
 def euler_to_quaternion(roll, pitch, yaw):
@@ -261,18 +301,21 @@ def euler_to_quaternion(roll, pitch, yaw):
         Quaternion Rotation.
     """
 
-    qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-    qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
-    qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
-    qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
-
+    # fmt: off
+    qx = (np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2)
+          - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2))
+    qy = (np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+          + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2))
+    qz = (np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+          - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2))
+    qw = (np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2)
+          + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2))
+    # fmt: on
     return Quaternion((qw, qx, qy, qz))
 
 
-def arcCentre(actV,othV,lstV):
-    """Calculates Centre of Arc from 3 Vector Locations.
-
-    Uses standard Numpy routine.
+def arcCentre(actV, othV, lstV):
+    """Calculates Centre of Arc from 3 Vector Locations using standard Numpy routine
 
     Args:
         actV: Active vector location
@@ -289,17 +332,19 @@ def arcCentre(actV,othV,lstV):
     a = np.linalg.norm(C - B)
     b = np.linalg.norm(C - A)
     c = np.linalg.norm(B - A)
-    s = (a + b + c) / 2
-    R = a*b*c / 4 / np.sqrt(s * (s - a) * (s - b) * (s - c))
+    # fmt: off
+    s = (a+b+c) / 2
+    R = a*b*c/4 / np.sqrt(s * (s-a) * (s-b) * (s-c))
     b1 = a*a * (b*b + c*c - a*a)
     b2 = b*b * (a*a + c*c - b*b)
     b3 = c*c * (a*a + b*b - c*c)
+    # fmt: on
     P = np.column_stack((A, B, C)).dot(np.hstack((b1, b2, b3)))
     P /= b1 + b2 + b3
-    return Vector((P[0],P[1],P[2])), R
+    return Vector((P[0], P[1], P[2])), R
 
 
-def intersection(actV,othV,lstV,fstV,plane):
+def intersection(actV, othV, lstV, fstV, plane):
     """Calculates Intersection Point of 2 Imagined Lines from 4 Vectors.
 
     Calculates Converging Intersect Location and indication of
@@ -316,47 +361,47 @@ def intersection(actV,othV,lstV,fstV,plane):
         Intersection Vector and Boolean for convergent state.
     """
 
-    if plane == 'LO':
-        disV = othV-actV
-        othV = viewCoordsI(disV.x,disV.y,disV.z)
-        disV = lstV-actV
-        lstV = viewCoordsI(disV.x,disV.y,disV.z)
-        disV = fstV-actV
-        fstV = viewCoordsI(disV.x,disV.y,disV.z)
-        refV = Vector((0,0,0))
-        ap1 = (fstV.x,fstV.y)
-        ap2 = (lstV.x,lstV.y)
-        bp1 = (othV.x,othV.y)
-        bp2 = (refV.x,refV.y)
+    if plane == "LO":
+        disV = othV - actV
+        othV = viewCoordsI(disV.x, disV.y, disV.z)
+        disV = lstV - actV
+        lstV = viewCoordsI(disV.x, disV.y, disV.z)
+        disV = fstV - actV
+        fstV = viewCoordsI(disV.x, disV.y, disV.z)
+        refV = Vector((0, 0, 0))
+        ap1 = (fstV.x, fstV.y)
+        ap2 = (lstV.x, lstV.y)
+        bp1 = (othV.x, othV.y)
+        bp2 = (refV.x, refV.y)
     else:
-        a1,a2,a3 = setMode(plane)
-        ap1 = (fstV[a1],fstV[a2])
-        ap2 = (lstV[a1],lstV[a2])
-        bp1 = (othV[a1],othV[a2])
-        bp2 = (actV[a1],actV[a2])
-    s = np.vstack([ap1,ap2,bp1,bp2])
+        a1, a2, a3 = setMode(plane)
+        ap1 = (fstV[a1], fstV[a2])
+        ap2 = (lstV[a1], lstV[a2])
+        bp1 = (othV[a1], othV[a2])
+        bp2 = (actV[a1], actV[a2])
+    s = np.vstack([ap1, ap2, bp1, bp2])
     h = np.hstack((s, np.ones((4, 1))))
     l1 = np.cross(h[0], h[1])
     l2 = np.cross(h[2], h[3])
     x, y, z = np.cross(l1, l2)
     if z == 0:
-        return Vector((0,0,0)),False
-    nx = x/z
-    nz = y/z
-    if plane == 'LO':
+        return Vector((0, 0, 0)), False
+    nx = x / z
+    nz = y / z
+    if plane == "LO":
         ly = 0
     else:
         ly = actV[a3]
     # Order Vector Delta
-    if plane == 'XZ':
-        vector_delta = Vector((nx,ly,nz))
-    elif plane == 'XY':
-        vector_delta = Vector((nx,nz,ly))
-    elif plane == 'YZ':
-        vector_delta = Vector((ly,nx,nz))
-    elif plane == 'LO':
-        vector_delta = viewCoords(nx,nz,ly) + actV
-    return vector_delta,True
+    if plane == "XZ":
+        vector_delta = Vector((nx, ly, nz))
+    elif plane == "XY":
+        vector_delta = Vector((nx, nz, ly))
+    elif plane == "YZ":
+        vector_delta = Vector((ly, nx, nz))
+    elif plane == "LO":
+        vector_delta = viewCoords(nx, nz, ly) + actV
+    return vector_delta, True
 
 
 def getPercent(obj, flip_p, per_v, data, scene):
@@ -368,89 +413,94 @@ def getPercent(obj, flip_p, per_v, data, scene):
     Works for either 2 vertices for an object in Edit mode
     or 2 selected objects in Object mode.
 
-    Setting pdt_flip to True causes percentage to be measured from second vector.
-
     Args:
         obj: The Object under consideration
-        per_v: FIXME
-        data: pdt_flip, pdt_percent scene variables & Operational Mode
+        flip_p: Setting this to True measures the percentage starting from the second vector
+        per_v: Percentage Input Value
+        data: pg.flip, pg.percent scene variables & Operational Mode
         scene: Context Scene
 
     Returns:
         World Vector.
     """
 
-    if obj.mode == 'EDIT':
+    pg = scene.pdt_pg
+
+    if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
         verts = [v for v in bm.verts if v.select]
         if len(verts) == 2:
             actV = verts[0].co
             othV = verts[1].co
-            if actV == None:
-                scene.pdt_error = "Work in Vertex Mode"
-                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+            if actV is None:
+                pg.error = PDT_ERR_VERT_MODE
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
                 return None
         else:
-            "Select 2 Vertices Individually, or 1 Edge, you selected "+str(len(verts))+" Vertices"
-            bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+            pg.error = PDT_ERR_SEL_2_V_1_E + str(len(verts)) + " Vertices"
+            bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
-        p1 = np.array([actV.x,actV.y,actV.z])
-        p2 = np.array([othV.x,othV.y,othV.z])
-    elif obj.mode == 'OBJECT':
+        p1 = np.array([actV.x, actV.y, actV.z])
+        p2 = np.array([othV.x, othV.y, othV.z])
+    if obj.mode == "OBJECT":
         objs = bpy.context.view_layer.objects.selected
         if len(objs) != 2:
-            scene.pdt_error = "Select Only 2 Objects"
-            bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
+            pg.error = PDT_ERR_SEL_2_OBJS + str(len(objs)) + ")"
+            bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             return None
-        else:
-            p1 = np.array([objs[-1].matrix_world.decompose()[0].x,
-                    objs[-1].matrix_world.decompose()[0].y,
-                    objs[-1].matrix_world.decompose()[0].z])
-            p2 = np.array([objs[-2].matrix_world.decompose()[0].x,
-                    objs[-2].matrix_world.decompose()[0].y,
-                    objs[-2].matrix_world.decompose()[0].z])
-    p4 = np.array([0,0,0])
-    p3 = p2-p1
-    if flip_p:
-        if data != 'MV':
-            tst = ((p4 + p3) * ((100 - per_v) / 100)) + p1
-        else:
-            tst = ((p4 + p3) * (per_v / 100)) + p1
-    else:
-        if data != 'MV':
-            tst = ((p4 + p3) * (per_v / 100)) + p1
-        else:
-            tst = ((p4 + p3) * ((100 - per_v) / 100)) + p1
-    return Vector((tst[0],tst[1],tst[2]))
+        p1 = np.array(
+            [
+                objs[-1].matrix_world.decompose()[0].x,
+                objs[-1].matrix_world.decompose()[0].y,
+                objs[-1].matrix_world.decompose()[0].z,
+            ]
+        )
+        p2 = np.array(
+            [
+                objs[-2].matrix_world.decompose()[0].x,
+                objs[-2].matrix_world.decompose()[0].y,
+                objs[-2].matrix_world.decompose()[0].z,
+            ]
+        )
+    p4 = np.array([0, 0, 0])
+    p3 = p2 - p1
+    _per_v = per_v
+    if (flip_p and data != "MV") or data == "MV":
+        _per_v = 100 - per_v
+    V = (p4+p3) * (_per_v / 100) + p1
+    return Vector((V[0], V[1], V[2]))
 
 
-def objCheck(obj,scene,data):
+def objCheck(obj, scene, oper):
     """Check Object & Selection Validity.
 
     Args:
         obj: Active Object
         scene: Active Scene
-        data: Operation to check
+        oper: Operation to check
 
     Returns:
         Object Bmesh and Validity Boolean.
     """
 
-    if obj == None:
-        scene.pdt_error = "Select at least 1 Object"
-        bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-        return None,False
-    if obj.mode == 'EDIT':
+    pg = scene.pdt_pg
+    _oper = oper.upper()
+
+    if obj is None:
+        pg.error = PDT_ERR_NO_ACT_OBJ
+        bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+        return None, False
+    if obj.mode == "EDIT":
         bm = bmesh.from_edit_mesh(obj.data)
-        if data in ['s','S']:
-            if len([e for e in bm.edges]) < 1:
-                scene.pdt_error = "Select at Least 1 Edge"
-                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-                return None,False
+        if _oper == "S":
+            if len(bm.edges) < 1:
+                pg.error = f"{PDT_ERR_SEL_1_EDGEM} {len(bm.edges)})"
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return None, False
             else:
-                return bm,True
+                return bm, True
         if len(bm.select_history) >= 1:
-            if data not in ['e','E','g','G','d','D','s','S']:
+            if _oper not in {"D", "E", "G", "N", "S"}:
                 actV = checkSelection(1, bm, obj)
             else:
                 verts = [v for v in bm.verts if v.select]
@@ -458,20 +508,16 @@ def objCheck(obj,scene,data):
                     actV = verts[0]
                 else:
                     actV = None
-            if actV == None:
-                scene.pdt_error = "Work in Vertex Mode"
-                bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-                return None,False
-        elif data in ['c','C','n','N']:
-            scene.pdt_error = "Select at least 1 Vertex Individually"
-            bpy.context.window_manager.popup_menu(oops, title="Error", icon='ERROR')
-            return None,False
-        return bm,True
-    elif obj.mode == 'OBJECT':
-        return None,True
+            if actV is None:
+                pg.error = PDT_ERR_VERT_MODE
+                bpy.context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
+                return None, False
+        return bm, True
+    elif obj.mode == "OBJECT":
+        return None, True
 
 
-def disAng(vals,flip_a,plane,scene):
+def disAng(vals, flip_a, plane, scene):
     """Set Working Axes when using Direction command.
 
     Args:
@@ -484,6 +530,7 @@ def disAng(vals,flip_a,plane,scene):
         Directional Offset as a Vector.
     """
 
+    pg = scene.pdt_pg
     dis_v = float(vals[0])
     ang_v = float(vals[1])
     if flip_a:
@@ -491,38 +538,41 @@ def disAng(vals,flip_a,plane,scene):
             ang_v = ang_v - 180
         else:
             ang_v = ang_v + 180
-        scene.pdt_angle = ang_v
-    if plane == 'LO':
-        vector_delta = viewDir(dis_v,ang_v)
+        pg.angle = ang_v
+    if plane == "LO":
+        vector_delta = viewDir(dis_v, ang_v)
     else:
-        a1,a2,a3 = setMode(plane)
-        vector_delta = Vector((0,0,0))
-        vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v*pi/180))
-        vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v*pi/180))
+        a1, a2, _ = setMode(plane)
+        vector_delta = Vector((0, 0, 0))
+        # fmt: off
+        vector_delta[a1] = vector_delta[a1] + (dis_v * cos(ang_v * pi/180))
+        vector_delta[a2] = vector_delta[a2] + (dis_v * sin(ang_v * pi/180))
+        # FIXME: Is a3 just ignored?
+        # fmt: on
     return vector_delta
 
 
 # Shader for displaying the Pivot Point as Graphics.
 #
-shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR') if not bpy.app.background else None
+shader = gpu.shader.from_builtin("3D_UNIFORM_COLOR") if not bpy.app.background else None
 
-def draw3D(coords, type, rgba, context):
+
+def draw3D(coords, gtype, rgba, context):
     """Draw Pivot Point Graphics.
 
     Draws either Lines Points, or Tris using defined shader
 
     Args:
         coords: Input Coordinates List
-        type: Graphic Type
+        gtype: Graphic Type
         rgba: Colour in RGBA format
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Returns:
         Nothing.
     """
 
-    scene = context.scene
-    batch = batch_for_shader(shader, type, {"pos": coords})
+    batch = batch_for_shader(shader, gtype, {"pos": coords})
 
     try:
         if coords is not None:
@@ -542,45 +592,97 @@ def drawCallback3D(self, context):
     and a yellow point based upon screen scale
 
     Args:
-        context: Current Blender bpy.context
+        context: Blender bpy.context instance.
 
     Returns:
         Nothing.
     """
 
     scene = context.scene
+    pg = scene.pdt_pg
     w = context.region.width
-    x = scene.pdt_pivotloc.x
-    y = scene.pdt_pivotloc.y
-    z = scene.pdt_pivotloc.z
+    x = pg.pivot_loc.x
+    y = pg.pivot_loc.y
+    z = pg.pivot_loc.z
     # Scale it from view
-    areas = [a for a in context.screen.areas if a.type == 'VIEW_3D']
+    areas = [a for a in context.screen.areas if a.type == "VIEW_3D"]
     if len(areas) > 0:
         sf = abs(areas[0].spaces.active.region_3d.window_matrix.decompose()[2][1])
-    a = w/sf/10000 * scene.pdt_pivotsize
+    a = w / sf / 10000 * pg.pivot_size
     b = a * 0.65
-    c = a * 0.05 + (scene.pdt_pivotwidth * a * 0.02)
+    c = a * 0.05 + (pg.pivot_width * a * 0.02)
     o = c / 3
 
+    # fmt: off
     # X Axis
-    coords = [(x,y,z), (x+b,y-o,z), (x+b,y+o,z), (x+a,y,z), (x+b,y+c,z), (x+b,y-c,z)]
-    colour = (1.0, 0.0, 0.0, scene.pdt_pivotalpha)
-    draw3D(coords, 'TRIS', colour, context)
-    coords = [(x,y,z),(x+a,y,z)]
-    draw3D(coords, 'LINES', colour, context)
+    coords = [
+        (x, y, z),
+        (x+b, y-o, z),
+        (x+b, y+o, z),
+        (x+a, y, z),
+        (x+b, y+c, z),
+        (x+b, y-c, z),
+    ]
+    # fmt: on
+    colour = (1.0, 0.0, 0.0, pg.pivot_alpha)
+    draw3D(coords, "TRIS", colour, context)
+    coords = [(x, y, z), (x+a, y, z)]
+    draw3D(coords, "LINES", colour, context)
+    # fmt: off
     # Y Axis
-    coords = [(x,y,z), (x-o,y+b,z), (x+o,y+b,z), (x,y+a,z), (x+c,y+b,z), (x-c,y+b,z)]
-    colour = (0.0, 1.0, 0.0, scene.pdt_pivotalpha)
-    draw3D(coords, 'TRIS', colour, context)
-    coords = [(x,y,z),(x,y+a,z)]
-    draw3D(coords, 'LINES', colour, context)
+    coords = [
+        (x, y, z),
+        (x-o, y+b, z),
+        (x+o, y+b, z),
+        (x, y+a, z),
+        (x+c, y+b, z),
+        (x-c, y+b, z),
+    ]
+    # fmt: on
+    colour = (0.0, 1.0, 0.0, pg.pivot_alpha)
+    draw3D(coords, "TRIS", colour, context)
+    coords = [(x, y, z), (x, y + a, z)]
+    draw3D(coords, "LINES", colour, context)
+    # fmt: off
     # Z Axis
-    coords = [(x,y,z), (x-o,y,z+b), (x+o,y,z+b), (x,y,z+a), (x+c,y,z+b), (x-c,y,z+b)]
-    colour = (0.2, 0.5, 1.0, scene.pdt_pivotalpha)
-    draw3D(coords, 'TRIS', colour, context)
-    coords = [(x,y,z),(x,y,z+a)]
-    draw3D(coords, 'LINES', colour, context)
+    coords = [
+        (x, y, z),
+        (x-o, y, z+b),
+        (x+o, y, z+b),
+        (x, y, z+a),
+        (x+c, y, z+b),
+        (x-c, y, z+b),
+    ]
+    # fmt: on
+    colour = (0.2, 0.5, 1.0, pg.pivot_alpha)
+    draw3D(coords, "TRIS", colour, context)
+    coords = [(x, y, z), (x, y, z + a)]
+    draw3D(coords, "LINES", colour, context)
     # Centre
-    coords = [(x,y,z)]
-    colour = (1.0, 1.0, 0.0, scene.pdt_pivotalpha)
-    draw3D(coords, 'POINTS', colour, context)
+    coords = [(x, y, z)]
+    colour = (1.0, 1.0, 0.0, pg.pivot_alpha)
+    draw3D(coords, "POINTS", colour, context)
+
+
+def scale_set(self, context):
+    """Sets Scale by dividing Pivot Distance by System Distance.
+
+    Sets Pivot Point Scale Factors by Measurement
+
+    Args:
+        context: Blender bpy.context instance.
+
+    Note:
+        Uses pg.pivotdis & pg.distance scene variables
+
+    Returns:
+        Status Set.
+    """
+
+    scene = context.scene
+    pg = scene.pdt_pg
+    sys_dis = pg.distance
+    scale_dis = pg.pivot_dis
+    if scale_dis > 0:
+        scale_fac = scale_dis / sys_dis
+        pg.pivot_scale = Vector((scale_fac, scale_fac, scale_fac))
