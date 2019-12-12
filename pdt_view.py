@@ -274,25 +274,26 @@ class PDT_OT_Reset3DView(Operator):
             (0.0, 0.0, -17.9866, 1.0)
         )
 
-        for area in bpy.context.screen.areas:
+        for area in context.screen.areas:
             if area.type == 'VIEW_3D':
-                rv3d = area.spaces[0].region_3d
-                if rv3d is not None:
-                    # We only need to check against the is_orthographic_side_view property
-                    # since Blender is well aware of whether we're in a orthographic view or not
-                    debug(f"is_orthographic_side_view: {rv3d.is_orthographic_side_view}")
-                    if rv3d.is_orthographic_side_view:
-                        # When the view is orthographic, it is only necessary to reset the distance,
-                        # since the rotation already fits.
-                        debug(f"view_distance before reset: {rv3d.view_distance}")
-                        rv3d.view_distance = default_distance
-                        rv3d.update()
-                        debug(f"view_distance AFTER reset: {rv3d.view_distance}")
+                view = area.spaces[0].region_3d
+                if view is not None:
+                    debug(f"is_orthographic_side_view: {view.is_orthographic_side_view}")
+                    if view.is_orthographic_side_view:
+                        # When the view is orthographic, reset the distance and location.
+                        # The rotation already fits.
+                        debug(f"view_distance before reset: {view.view_distance}")
+                        debug(f"view_location before reset: {view.view_location}")
+                        view.view_distance = default_distance
+                        view.view_location = (-0.0, -0.0, -0.0)
+                        view.update()
+                        debug(f"view_distance AFTER reset: {view.view_distance}")
+                        debug(f"view_location AFTER reset: {view.view_location}")
                     else:
                         # Otherwise, the view matrix needs to be reset (includes distance).
-                        debug(f"view_matrix before reset:\n{rv3d.view_matrix}")
-                        rv3d.view_matrix = default_view_matrix
-                        rv3d.update()
-                        debug(f"view_matrix AFTER reset:\n{rv3d.view_matrix}")
+                        debug(f"view_matrix before reset:\n{view.view_matrix}")
+                        view.view_matrix = default_view_matrix
+                        view.update()
+                        debug(f"view_matrix AFTER reset:\n{view.view_matrix}")
 
         return {'FINISHED'}
