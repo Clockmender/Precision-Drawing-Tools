@@ -78,52 +78,99 @@ class PDT_PT_PanelDesign(Panel):
     def draw(self, context):
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
+
+        # Working Plane
         row = layout.row()
-        col = row.column()
-        col.prop(pdt_pg, "plane", text=PDT_LAB_PLANE)
-        col = row.column()
-        col.prop(pdt_pg, "select", text=PDT_LAB_MODE)
-        box = layout.box()
-        row = box.row()
-        row.prop(pdt_pg, "operation", text=PDT_LAB_OPERATION)
-        row = box.row()
-        col = row.column()
-        col.operator("pdt.absolute", icon="EMPTY_AXIS", text=PDT_LAB_ABS)
-        col = row.column()
-        col.operator("pdt.delta", icon="EMPTY_AXIS", text=PDT_LAB_DEL)
-        col = row.column()
-        col.operator("pdt.distance", icon="EMPTY_AXIS", text=PDT_LAB_DIR)
-        row = box.row()
-        col = row.column()
-        col.operator("pdt.percent", text=PDT_LAB_PERCENT)
-        col = row.column()
-        col.operator("pdt.normal", text=PDT_LAB_NOR)
-        col = row.column()
-        col.operator("pdt.centre", text=PDT_LAB_ARCCENTRE)
-        row = box.row()
-        col = row.column()
-        col.operator("pdt.intersect", text=PDT_LAB_INTERSECT)
-        col = row.column()
-        col.prop(pdt_pg, "object_search_string", text=PDT_LAB_ORDER)
-        row = box.row()
-        col = row.column()
-        col.prop(pdt_pg, "flip_angle", text=PDT_LAB_FLIPANGLE)
-        col = row.column()
-        col.prop(pdt_pg, "flip_percent", text=PDT_LAB_FLIPPERCENT)
-        col = row.column()
-        col.prop(pdt_pg, "extend", text=PDT_LAB_ALLACTIVE)
-        box = layout.box()
-        row = box.row()
-        row.label(text=PDT_LAB_VARIABLES)
+        row.label(text=f"Working {PDT_LAB_PLANE}:")
+        row.prop(pdt_pg, "plane", text="")
+
+        # Move Mode
+        row = layout.row()
+        row.label(text=f"Move {PDT_LAB_MODE}:")
+        row.prop(pdt_pg, "select", text="")
+
+        # -------------------
+        # 1) Select Operation
+        row = layout.row()
+        box_1 = row.box()
+        row = box_1.row()
+        row.label(text=f"1) Select {PDT_LAB_OPERATION}:")
+        row.prop(pdt_pg, "operation", text="")
+
+        # -----------------------
+        # a) Set Coordinates box
+        row = box_1.row()
+        box_1a = row.box()
+        box_1a.label(text=f"a) Either Set Coordinates & click [Target >>]")
+        # ^ was PDT_LAB_VARIABLES
+
+        # cartesian input coordinates in a box
+        row = box_1a.row()
+        box = row.box()
+        #box.label(text="Cartesian Coordinates:")
         row = box.row()
         row.prop(pdt_pg, "cartesian_coords", text=PDT_LAB_CVALUE)
+        row = box.row()
+        col = row.column()
+        col.operator("pdt.absolute", icon="EMPTY_AXIS", text=f"{PDT_LAB_ABS} >>")
+        col = row.column()
+        col.operator("pdt.delta", icon="EMPTY_AXIS", text=f"{PDT_LAB_DEL} >>")
+
+        # directional input coordinates in a box
+        row = box_1a.row()
+        box = row.box()
+        #box.label(text="Directional/Polar Coordinates:")
         row = box.row()
         col = row.column()
         col.prop(pdt_pg, "distance", text=PDT_LAB_DISVALUE)
         col = row.column()
         col.prop(pdt_pg, "angle", text=PDT_LAB_ANGLEVALUE)
+        row = box.row()
+        col = row.column()
+        col.prop(pdt_pg, "flip_angle", text=PDT_LAB_FLIPANGLE)
+        col = row.column()
+        col.operator("pdt.distance", icon="EMPTY_AXIS", text=f"{PDT_LAB_DIR} >>")
+
+        # --------------------
+        # b) Miscellaneous box
+        row = box_1.row()
+        box_1b = row.box()
+        box_1b.label(text=f"b) Or Select (n) Vertices & click [Target >>]")
+
+        # normal or arc centre
+        #box = box_1b.box()
+        row = box_1b.row()
+        col = row.column()
+        col.operator("pdt.normal", text=f"(3) {PDT_LAB_NOR} >>")
+        col = row.column()
+        col.operator("pdt.centre", text=f"(3) {PDT_LAB_ARCCENTRE} >>")
+
+        # Intersect
+        box = box_1b.box()
+        row = box.row()
+        col = row.column()
+        col.label(text=PDT_LAB_ORDER)
+        col.prop(pdt_pg, "object_order", text="")
+        col = row.column()
+        row = col.row()
+        row.prop(pdt_pg, "extend", text=PDT_LAB_ALLACTIVE)
+        row = col.row()
+        row.operator("pdt.intersect", text=f"(4) {PDT_LAB_INTERSECT} >>")
+
+        # percentage row
+        row = box_1b.row()
+        box = row.box()
+        box.label(text=f"Do 1) at % of selected edge's length")
+        row = box.row()
+        col = row.column()
+        col.prop(pdt_pg, "flip_percent", text=PDT_LAB_FLIPPERCENT)
         col = row.column()
         col.prop(pdt_pg, "percent", text=PDT_LAB_PERCENTS)
+        col = row.column()
+        col.operator("pdt.percent", text=f"(2) % >>")
+
+        # -----
+        # Tools
         box = layout.box()
         row = box.row()
         row.label(text=PDT_LAB_TOOLS)
@@ -152,9 +199,8 @@ class PDT_PT_PanelDesign(Panel):
         col.operator("pdt.edge_to_face", text=PDT_LAB_EDGETOEFACE)
         #
         # Add Fillet Tool
+        box = box.box()
         row = box.row()
-        col = row.column()
-        col.operator("pdt.fillet", text=PDT_LAB_FILLET)
         col = row.column()
         col.prop(pdt_pg, "fillet_segments", text=PDT_LAB_SEGMENTS)
         col = row.column()
@@ -164,6 +210,8 @@ class PDT_PT_PanelDesign(Panel):
         col.prop(pdt_pg, "fillet_radius", text=PDT_LAB_RADIUS)
         col = row.column()
         col.prop(pdt_pg, "fillet_profile", text=PDT_LAB_PROFILE)
+        col = row.column()
+        col.operator("pdt.fillet", text=f"{PDT_LAB_FILLET} >>")
 
 
 class PDT_PT_PanelPivotPoint(Panel):

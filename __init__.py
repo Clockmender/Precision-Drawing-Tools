@@ -255,11 +255,11 @@ class PDTSceneProperties(PropertyGroup):
     )
     select : EnumProperty(
         items=(
-            ("REL", "Current", "Moved Relative to Current Position"),
+            ("REL", "Current Pos.", "Move Relative to Current Position"),
             (
                 "SEL",
-                "Selected",
-                "Moved Relative to Selected Object, or Vertex, Cursor & Pivot Only",
+                "Selected Obj./Vert.",
+                "Move Relative to Selected Object or Vertex (Cursor & Pivot Only)",
             ),
         ),
         name="Move Mode",
@@ -268,10 +268,10 @@ class PDTSceneProperties(PropertyGroup):
     )
     operation : EnumProperty(
         items=(
-            ("CU", "Cursor", "This Function will Move the Cursor"),
-            ("PP", "Pivot", "This Function will Move the Pivot Point"),
-            ("MV", "Move", "This function will Move Vertices, or Objects"),
-            ("NV", "New Vertex", "This function will Add a New Vertex"),
+            ("CU", "Place Cursor", "This function will Move the Cursor"),
+            ("PP", "Place Pivot Point", "This function will Move the Pivot Point"),
+            ("MV", "Move per Move Mode", "This function will Move Vertices, or Objects"),
+            ("NV", "Add New Vertex", "This function will Add a New Vertex"),
             ("EV", "Extrude Vertices", "This function will Extrude Vertices Only in EDIT Mode"),
             ("SE", "Split Edges", "This function will Split Edges Only in EDIT Mode"),
             (
