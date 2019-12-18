@@ -280,7 +280,7 @@ class PDT_OT_PlacementDelta(Operator):
                     bm.select_history.clear()
                 elif obj.mode == "OBJECT":
                     for ob in context.view_layer.objects.selected:
-                        ob.location = obj_loc + vector_delta
+                        ob.location = ob.location + vector_delta
             elif oper == "SE" and obj.mode == "EDIT":
                 edges = [e for e in bm.edges if e.select]
                 faces = [f for f in bm.faces if f.select]
