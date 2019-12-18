@@ -268,11 +268,11 @@ class PDTSceneProperties(PropertyGroup):
     )
     operation : EnumProperty(
         items=(
-            ("CU", "Place Cursor", "This function will Move the Cursor"),
-            ("PP", "Place Pivot Point", "This function will Move the Pivot Point"),
-            ("MV", "Move per Move Mode", "This function will Move Vertices, or Objects"),
+            ("CU", "Move Cursor", "This function will Move the Cursor"),
+            ("PP", "Move Pivot Point", "This function will Move the Pivot Point"),
+            ("MV", "Move (per Move Mode)", "This function will Move selected Vertices or Objects"),
             ("NV", "Add New Vertex", "This function will Add a New Vertex"),
-            ("EV", "Extrude Vertices", "This function will Extrude Vertices Only in EDIT Mode"),
+            ("EV", "Extrude Vertex/Vertices", "This function will Extrude Vertex/Vertices Only in EDIT Mode"),
             ("SE", "Split Edges", "This function will Split Edges Only in EDIT Mode"),
             (
                 "DG",
