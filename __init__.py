@@ -258,7 +258,7 @@ class PDTSceneProperties(PropertyGroup):
             ("REL", "Current Pos.", "Move Relative to Current Position"),
             (
                 "SEL",
-                "Selected Obj./Vert.",
+                "Selected Entities",
                 "Move Relative to Selected Object or Vertex (Cursor & Pivot Only)",
             ),
         ),
