@@ -129,6 +129,7 @@ class PDT_PT_PanelDesign(Panel):
         row = box.row()
         row.operator("pdt.distance", icon="EMPTY_AXIS", text=f"{PDT_LAB_DIR} »")
         row.prop(pdt_pg, "flip_angle", text=PDT_LAB_FLIPANGLE)
+
         # ---------------------
         # (b) Miscellaneous box
         row = box_1.row()
@@ -142,6 +143,7 @@ class PDT_PT_PanelDesign(Panel):
         #
         # Intersect
         box = box_1b.box()
+        row = box.row()
         row.operator("pdt.intersect", text=f"|4| {PDT_LAB_INTERSECT} »")
         row.prop(pdt_pg, "object_order", text=PDT_LAB_ORDER)
         #
@@ -153,7 +155,6 @@ class PDT_PT_PanelDesign(Panel):
         row.operator("pdt.percent", text=f"|2| % »")
         row.prop(pdt_pg, "percent", text=PDT_LAB_PERCENTS)
         row.prop(pdt_pg, "flip_percent", text=PDT_LAB_FLIPPERCENT)
-
 
         # -----
         # Tools
