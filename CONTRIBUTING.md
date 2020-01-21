@@ -10,6 +10,8 @@ I will not accept "Change this because I don't like it" type requests, but thoug
 
 Please make all code changes pep8 compliant and supply comments explaining what, why and how.
 
+Contributors are expected to run their code through `pylint` before submitting pull requests or committing code.
+
 ## Code Formatting
 
 Run you code through the [black](https://github.com/psf/black/) code formatting tool with `black -l100`
