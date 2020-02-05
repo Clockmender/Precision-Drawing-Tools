@@ -38,7 +38,7 @@
     Returns:
         None.
     """
-    
+
 # Menu Labels
 #
 PDT_LAB_ABS = "Absolute"  # "Global"
@@ -84,11 +84,12 @@ PDT_LAB_PIVOTLOCH = "Location"
 # Error Message
 #
 PDT_ERR_NO_ACT_OBJ = "No Active Object - Please Select an Object"
+PDT_ERR_OBJECTMODE = "Library Append/Link Tools Work Only in Object Mode"
 PDT_OBJ_MODE_ERROR = "Only Mesh Object in Edit or Object Mode Supported"
 PDT_ERR_NO_ACT_VERT = "No Active Vertex - Select One Vertex Individually"
 PDT_ERR_NO_SEL_GEOM = "No Geometry/Objects Selected"
 PDT_ERR_NO_ACT_VERTS = "No Selected Geometry - Please Select some Geometry"
-PDT_ERR_NON_VALID = "is Not a Valid Option in Selected Object's Mode for Command:"
+PDT_ERR_NON_VALID = "is Not a Valid Option in Selected The object's location in 3D space's Mode for Command:"
 PDT_ERR_VERT_MODE = "Work in Vertex Mode for this Function"
 PDT_ERR_NOPPLOC = (
     "Custom Property PDT_PP_LOC for this object not found, have you Written it yet?"
