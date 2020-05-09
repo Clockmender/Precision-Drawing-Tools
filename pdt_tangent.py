@@ -113,6 +113,7 @@ def get_tangent_points(context, hloc_0, vloc_0, radius_0, hloc_p, vloc_p):
         vloc_t1: Vertical Location of First Tangent Point
         vloc_t2: Vertical Location of Second Tangent Point
     """
+
     # Uses basic Pythagorus' theorem to compute locations
     #
     numerator = (radius_0 ** 2 * (hloc_p - hloc_0)) + (
