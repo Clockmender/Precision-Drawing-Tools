@@ -113,7 +113,7 @@ def get_tangent_points(context, hloc_0, vloc_0, radius_0, hloc_p, vloc_p):
         vloc_t1: Vertical Location of First Tangent Point
         vloc_t2: Vertical Location of Second Tangent Point
     """
-    # Uses basic Pythogorus' theorum to compute locations
+    # Uses basic Pythagorus' theorem to compute locations
     #
     numerator = (radius_0 ** 2 * (hloc_p - hloc_0)) + (
         radius_0
@@ -296,7 +296,7 @@ def tangent_setup(context, pg, plane, obj_data, centre_0, centre_1, centre_2, ra
     """
 
     if mode in {"outer", "both"}:
-        # Uses basic trigonometry and Pythogorus' theorum to compute locations
+        # Uses basic trigonometry and Pythagorus' theorem to compute locations
         #
         if radius_0 == radius_1:
             # No intersection point for outer tangents
@@ -354,7 +354,7 @@ def tangent_setup(context, pg, plane, obj_data, centre_0, centre_1, centre_2, ra
     """
 
     if mode in {"inner", "both"}:
-        # Uses basic trigonometry and Pythogorus' theorum to compute locations
+        # Uses basic trigonometry and Pythagorus' theorem to compute locations
         #
         hloc_pi, vloc_pi = get_tangent_intersect_inner(
             centre_0[a1], centre_0[a2], centre_1[a1], centre_1[a2], radius_0, radius_1

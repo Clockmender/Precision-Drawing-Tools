@@ -48,7 +48,7 @@ class PDT_OT_WaveGenerator(bpy.types.Operator):
             Uses all the PDT trig_* variables.
 
             This function will draw a trigonometrical wave based upon cycle length
-            One cycle is assumed to be 180 degrees, so haf a revolution of an imaginary
+            One cycle is assumed to be 180 degrees, so half a revolution of an imaginary
             rotating object. If a full cycle from 0 to 360 degrees is required, the cycles
             number should be set to 2.
 
