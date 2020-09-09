@@ -1090,10 +1090,19 @@ def fillet_geometry(context, pg, mode, obj, bm, verts, values):
             context.window_manager.popup_menu(oops, title="Error", icon="ERROR")
             raise PDT_SelectionError
 
-    bpy.ops.mesh.bevel(
-        offset_type="OFFSET",
-        offset=_offset,
-        segments=_segments,
-        profile=_profile,
-        vertex_only=vert_bool
-    )
+    if vert_bool:
+        bpy.ops.mesh.bevel(
+            offset_type="OFFSET",
+            offset=_offset,
+            segments=_segments,
+            profile=_profile,
+            affect='VERTICES'
+        )
+    else:
+        bpy.ops.mesh.bevel(
+            offset_type="OFFSET",
+            offset=_offset,
+            segments=_segments,
+            profile=_profile,
+            affect='EDGES'
+        )
