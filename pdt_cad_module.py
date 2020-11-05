@@ -189,6 +189,13 @@ def vertex_indices_from_edges_tuple(bm, edge_tuple):
     """
 
     def find_verts(ind_v, ind_w):
+        """
+        Return the indices of the vertices of the graph.
+
+        Args:
+            ind_v: (int): write your description
+            ind_w: (int): write your description
+        """
         return bm.edges[edge_tuple[ind_v]].verts[ind_w].index
 
     return [find_verts(i >> 1, i % 2) for i in range(4)]
