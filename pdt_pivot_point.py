@@ -459,9 +459,24 @@ class PDT_OT_PivotWrite(Operator):
         return {"FINISHED"}
 
     def invoke(self, context, event):
+        """
+        Invoke the context manager.
+
+        Args:
+            self: (todo): write your description
+            context: (todo): write your description
+            event: (todo): write your description
+        """
         return context.window_manager.invoke_props_dialog(self)
 
     def draw(self, context):
+        """
+        Draw context menu
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         row = self.layout
         row.label(text=PDT_CON_AREYOURSURE)
 

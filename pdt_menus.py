@@ -94,6 +94,13 @@ class PDT_PT_PanelDesign(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
+        """
+        Draws layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         ui_cutoff = bpy.context.preferences.addons[__package__].preferences.pdt_ui_width
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
@@ -189,6 +196,13 @@ class PDT_PT_PanelTools(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
+        """
+        Draw the layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         ui_cutoff = bpy.context.preferences.addons[__package__].preferences.pdt_ui_width
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
@@ -236,6 +250,13 @@ class PDT_PT_PanelPivotPoint(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
+        """
+        Draw the layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         ui_cutoff = bpy.context.preferences.addons[__package__].preferences.pdt_ui_width
         pdt_pg = context.scene.pdt_pg
         layout = self.layout
@@ -302,6 +323,13 @@ class PDT_PT_PanelPartsLibrary(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
+        """
+        Draw the layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         ui_cutoff = context.preferences.addons[__package__].preferences.pdt_ui_width
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
@@ -356,6 +384,13 @@ class PDT_PT_PanelViewControl(Panel):
     _ui_groups = [False, False]
 
     def draw(self, context):
+        """
+        Draw layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         ui_cutoff = context.preferences.addons[__package__].preferences.pdt_ui_width
         layout = self.layout
         ui_groups = self._ui_groups
@@ -401,6 +436,13 @@ class PDT_PT_PanelCommandLine(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
+        """
+        Draws the layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
         row = layout.row()
@@ -426,6 +468,13 @@ class PDT_PT_PanelTangent(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self,context):
+        """
+        Draws the layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
 
@@ -486,6 +535,13 @@ class PDT_PT_PanelTrig(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self,context):
+        """
+        Draws layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         layout = self.layout
         pdt_pg = context.scene.pdt_pg
         row = layout.row()

@@ -38,6 +38,13 @@ class PDT_OT_WaveGenerator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns a pdt.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         pg = context.scene.pdt_pg
         return pg.trig_obj is not None
 

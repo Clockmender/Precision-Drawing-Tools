@@ -160,6 +160,13 @@ class PDTPreferences(AddonPreferences):
     )
 
     def draw(self, context):
+        """
+        Draws the layout
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         layout = self.layout
 
         box = layout.box()

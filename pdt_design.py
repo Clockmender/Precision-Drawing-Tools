@@ -505,6 +505,13 @@ class PDT_OT_JoinVerts(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given type.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         ob = context.object
         if ob is None:
             return False
@@ -539,6 +546,13 @@ class PDT_OT_Fillet(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given type.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         ob = context.object
         if ob is None:
             return False
@@ -676,6 +690,13 @@ class PDT_OT_Taper(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given type.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         ob = context.object
         if ob is None:
             return False

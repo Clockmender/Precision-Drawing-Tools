@@ -476,6 +476,13 @@ class PDT_OT_TangentOperate(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given type.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         ob = context.object
         if ob is None:
             return False
@@ -543,6 +550,13 @@ class PDT_OT_TangentOperateSel(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given type.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         ob = context.object
         if ob is None:
             return False
@@ -644,6 +658,13 @@ class PDT_OT_TangentSet1(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given type.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         ob = context.object
         if ob is None:
             return False
@@ -676,6 +697,13 @@ class PDT_OT_TangentSet2(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given object is a valid mode.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         obj = context.object
         if obj is None:
             return False
@@ -708,6 +736,13 @@ class PDT_OT_TangentSet3(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given object is a valid mode.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         obj = context.object
         if obj is None:
             return False
@@ -738,6 +773,13 @@ class PDT_OT_TangentSet4(Operator):
 
     @classmethod
     def poll(cls, context):
+        """
+        Returns true if the given object is a valid mode.
+
+        Args:
+            cls: (todo): write your description
+            context: (dict): write your description
+        """
         obj = context.object
         if obj is None:
             return False
