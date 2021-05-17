@@ -33,7 +33,7 @@ from .pdt_msg_strings import (
 
 
 class PDT_OT_PlacementAbs(Operator):
-    """Use Absolute, or Global Placement."""
+    """Use Absolute, or Global Placement"""
 
     bl_idname = "pdt.absolute"
     bl_label = "Absolute Mode"
@@ -114,7 +114,7 @@ class PDT_OT_PlacementAbs(Operator):
 
 
 class PDT_OT_PlacementDelta(Operator):
-    """Use Delta, or Incremental Placement."""
+    """Use Delta, or Incremental Placement"""
 
     bl_idname = "pdt.delta"
     bl_label = "Delta Mode"
@@ -211,7 +211,7 @@ class PDT_OT_PlacementDelta(Operator):
 
 
 class PDT_OT_PlacementDis(Operator):
-    """Use Directional, or Distance @ Angle Placement."""
+    """Use Directional, or Distance @ Angle Placement"""
 
     bl_idname = "pdt.distance"
     bl_label = "Distance@Angle Mode"
@@ -299,8 +299,84 @@ class PDT_OT_PlacementDis(Operator):
         return {"FINISHED"}
 
 
+class PDT_OT_PlacementView(Operator):
+    """Use Distance Input for View Normal Axis Operations"""
+
+    bl_idname = "pdt.view_axis"
+    bl_label = "View Normal Axis Mode"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        """Manipulates Geometry, or Objects by View Normal Axis Offset (Increment).
+
+        Note:
+            - Reads pg.operation from Operation Mode Selector as 'operation'
+            - Reads pg.select, pg.plane, pg.cartesian_coords scene variables to:
+            -- set position of CUrsor       (CU)
+            -- set position of Pivot Point  (PP)
+            -- MoVe geometry/objects        (MV)
+            -- Extrude Vertices             (EV)
+            -- Split Edges                  (SE)
+            -- add a New Vertex             (NV)
+            -- Duplicate Geometry           (DG)
+            -- Extrude Geometry             (EG)
+
+            Invalid Options result in self.report Error.
+
+        Args:
+            context: Blender bpy.context instance.
+
+        Returns:
+            Status Set.
+        """
+
+        pg = context.scene.pdt_pg
+        operation = pg.operation
+        decimal_places = context.preferences.addons[__package__].preferences.pdt_input_round
+
+        if operation == "CU":
+            # Cursor
+            pg.command = (
+                f"cv{str(round(pg.distance, decimal_places))}"
+            )
+        elif operation == "PP":
+            # Pivot Point
+            pg.command = (
+                f"pv{str(round(pg.distance, decimal_places))}"
+            )
+        elif operation == "MV":
+            # Move Entities
+            pg.command = (
+                f"gv{str(round(pg.distance, decimal_places))}"
+            )
+        elif operation == "NV":
+            # New Vertex
+            pg.command = (
+                f"nv{str(round(pg.distance, decimal_places))}"
+            )
+        elif operation == "EV":
+            # Extrue Vertices
+            pg.command = (
+                f"vv{str(round(pg.distance, decimal_places))}"
+            )
+        elif operation == "DG":
+            # Duplicate Entities
+            pg.command = (
+                f"dv{str(round(pg.distance, decimal_places))}"
+            )
+        elif operation == "EG":
+            # Extrue Geometry
+            pg.command = (
+                f"ev{str(round(pg.distance, decimal_places))}"
+            )
+        else:
+            error_message = f"{operation} {PDT_ERR_NON_VALID} {PDT_LAB_DEL}"
+            self.report({"ERROR"}, error_message)
+        return {"FINISHED"}
+
+
 class PDT_OT_PlacementPer(Operator):
-    """Use Percentage Placement."""
+    """Use Percentage Placement"""
 
     bl_idname = "pdt.percent"
     bl_label = "Percentage Mode"
@@ -357,7 +433,7 @@ class PDT_OT_PlacementPer(Operator):
 
 
 class PDT_OT_PlacementNormal(Operator):
-    """Use Normal, or Perpendicular Placement."""
+    """Use Normal, or Perpendicular Placement"""
 
     bl_idname = "pdt.normal"
     bl_label = "Normal Mode"
@@ -406,7 +482,7 @@ class PDT_OT_PlacementNormal(Operator):
 
 
 class PDT_OT_PlacementCen(Operator):
-    """Use Placement at Arc Centre."""
+    """Use Placement at Arc Centre"""
 
     bl_idname = "pdt.centre"
     bl_label = "Centre Mode"
@@ -451,7 +527,7 @@ class PDT_OT_PlacementCen(Operator):
 
 
 class PDT_OT_PlacementInt(Operator):
-    """Use Intersection, or Convergence Placement."""
+    """Use Intersection, or Convergence Placement"""
 
     bl_idname = "pdt.intersect"
     bl_label = "Intersect Mode"
@@ -497,7 +573,7 @@ class PDT_OT_PlacementInt(Operator):
 
 
 class PDT_OT_JoinVerts(Operator):
-    """Join 2 Free Vertices into an Edge."""
+    """Join 2 Free Vertices into an Edge"""
 
     bl_idname = "pdt.join"
     bl_label = "Join 2 Vertices"
@@ -531,7 +607,7 @@ class PDT_OT_JoinVerts(Operator):
 
 
 class PDT_OT_Fillet(Operator):
-    """Fillet Edges by Vertex, Set Use Verts to False for Extruded Structure."""
+    """Fillet Edges by Vertex, Set Use Verts to False for Extruded Structure"""
 
     bl_idname = "pdt.fillet"
     bl_label = "Fillet"
@@ -587,7 +663,7 @@ class PDT_OT_Fillet(Operator):
 
 
 class PDT_OT_Angle2(Operator):
-    """Measure Distance and Angle in Working Plane, Also sets Deltas."""
+    """Measure Distance and Angle in Working Plane, Also sets Deltas"""
 
     bl_idname = "pdt.angle2"
     bl_label = "Measure 2D"
@@ -614,7 +690,7 @@ class PDT_OT_Angle2(Operator):
 
 
 class PDT_OT_Angle3(Operator):
-    """Measure Distance and Angle in 3D Space."""
+    """Measure Distance and Angle in 3D Space"""
 
     bl_idname = "pdt.angle3"
     bl_label = "Measure 3D"
@@ -641,7 +717,7 @@ class PDT_OT_Angle3(Operator):
 
 
 class PDT_OT_Origin(Operator):
-    """Move Object Origin to Cursor Location."""
+    """Move Object Origin to Cursor Location"""
 
     bl_idname = "pdt.origin"
     bl_label = "Move Origin"
@@ -668,7 +744,7 @@ class PDT_OT_Origin(Operator):
 
 
 class PDT_OT_Taper(Operator):
-    """Taper Vertices at Angle in Chosen Axis Mode."""
+    """Taper Vertices at Angle in Chosen Axis Mode"""
 
     bl_idname = "pdt.taper"
     bl_label = "Taper"
@@ -703,3 +779,9 @@ class PDT_OT_Taper(Operator):
         pg = context.scene.pdt_pg
         pg.command = f"tap"
         return {"FINISHED"}
+
+#class PDT_Extrude_Modal(Operator):
+#    """Extrude Modal Plane Along Normal Axis"""
+#    bl_idname = "pdt.extrude_modal"
+#    bl_label = "Extrude Modal Normal"
+#    bl_options = {"REGISTER", "UNDO"}
