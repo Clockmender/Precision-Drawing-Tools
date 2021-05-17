@@ -1,5 +1,5 @@
 ## Precision-Drawing-Tools
-Precision Drawing Tools (PDT) Add-on for Blender 2.8
+Precision Drawing Tools (PDT) Add-on for Blender 2.8 and above.
 
 ![Main Image](https://raw.githubusercontent.com/wiki/Clockmender/Precision-Drawing-Tools/wiki-images/pdt_main.png)
 
