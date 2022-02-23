@@ -1,22 +1,5 @@
-# ***** BEGIN GPL LICENSE BLOCK *****
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ***** END GPL LICENCE BLOCK *****
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # -----------------------------------------------------------------------
 # Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # -----------------------------------------------------------------------
@@ -45,8 +28,8 @@ class PDT_OT_PlacementAbs(Operator):
         Note:
             - Reads pg.operate from Operation Mode Selector as 'operation'
             - Reads pg.cartesian_coords scene variables to:
-            -- set position of CUrsor      (CU)
-            -- set postion of Pivot Point  (PP)
+            -- set position of Cursor      (CU)
+            -- set position of Pivot Point (PP)
             -- MoVe geometry/objects       (MV)
             -- Extrude Vertices            (EV)
             -- Split Edges                 (SE)
@@ -534,7 +517,7 @@ class PDT_OT_PlacementInt(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        """Manipulates Geometry, or Objects by Convergance Intersection between 4 points, or 2 Edges.
+        """Manipulates Geometry, or Objects by Convergence Intersection between 4 points, or 2 Edges.
 
         Note:
             - Reads pg.operation from Operation Mode Selector as 'operation'

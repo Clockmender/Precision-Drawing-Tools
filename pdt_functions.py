@@ -1,21 +1,4 @@
-# ***** BEGIN GPL LICENSE BLOCK *****
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ***** END GPL LICENCE BLOCK *****
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # -----------------------------------------------------------------------
 # Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
@@ -51,7 +34,7 @@ def debug(msg, prefix=""):
         {prefix}{caller file name:line number}| {msg}
 
     Args:
-        msg: Incomming message to display
+        msg: Incoming message to display
         prefix: Always Blank
 
     Returns:
@@ -238,7 +221,7 @@ def view_coords(x_loc, y_loc, z_loc):
         z_loc: Z coordinate from vector
 
     Returns:
-        Vector adjusted to View's Inverted Tranformation Matrix.
+        Vector adjusted to View's Inverted Transformation Matrix.
     """
 
     areas = [a for a in bpy.context.screen.areas if a.type == "VIEW_3D"]
@@ -256,7 +239,7 @@ def view_coords_i(x_loc, y_loc, z_loc):
     """Converts Screen Oriented input Vector values to new World Vector.
 
     Note:
-        Converts View tranformation Matrix to Rotational Matrix
+        Converts View transformation Matrix to Rotational Matrix
 
     Args:
         x_loc: X coordinate from vector

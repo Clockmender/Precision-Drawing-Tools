@@ -1,22 +1,5 @@
-# ***** BEGIN GPL LICENSE BLOCK *****
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ***** END GPL LICENCE BLOCK *****
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # -----------------------------------------------------------------------
 # Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # -----------------------------------------------------------------------
@@ -50,7 +33,7 @@ PDT_LAB_PLANE = "Plane"
 PDT_LAB_MODE = "Mode"
 PDT_LAB_OPERATION = "Operation"
 PDT_LAB_PERCENT = "Percent"
-PDT_LAB_INTERSECT = "Intersect"  # "Convergance"
+PDT_LAB_INTERSECT = "Intersect"  # "Convergence"
 PDT_LAB_ORDER = "Order"
 PDT_LAB_FLIPANGLE = "Flip Angle"
 PDT_LAB_FLIPPERCENT = "Flip %"
@@ -190,7 +173,7 @@ PDT_DES_PPSCALEFAC = "Scale Factors"
 PDT_DES_PPSIZE = "Pivot Size Factor"
 PDT_DES_PPWIDTH = "Pivot Line Width in Pixels"
 PDT_DES_PPTRANS = "Pivot Point Transparency"
-PDT_DES_PIVOTDIS = "Input Distance to Compare with Sytem Distance to set Scales"
+PDT_DES_PIVOTDIS = "Input Distance to Compare with System Distance to set Scales"
 PDT_DES_FILLETRAD = "Fillet Radius"
 PDT_DES_FILLETSEG = "Number of Fillet Segments"
 PDT_DES_FILLETPROF = "Fillet Profile"

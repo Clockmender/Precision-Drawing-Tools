@@ -1,22 +1,5 @@
-# ***** BEGIN GPL LICENSE BLOCK *****
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ***** END GPL LICENCE BLOCK *****
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # -----------------------------------------------------------------------
 # Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # -----------------------------------------------------------------------
@@ -90,7 +73,7 @@ def vector_build(context, pg, obj, operation, values, num_values):
         pg: PDT Parameters Group - our variables
         obj: The Active Object
         operation: The Operation e.g. Create New Vertex
-        values: The paramters passed e.g. 1,4,3 for Cartesian Coordinates
+        values: The parameters passed e.g. 1,4,3 for Cartesian Coordinates
         num_values: The number of values passed - determines the function
 
     Returns:
@@ -320,7 +303,7 @@ def placement_arc_centre(context, operation):
 
 
 def placement_intersect(context, operation):
-    """Manipulates Geometry, or Objects by Convergance Intersection between 4 points, or 2 Edges.
+    """Manipulates Geometry, or Objects by Convergence Intersection between 4 points, or 2 Edges.
 
     Args:
         context: Blender bpy.context instance.

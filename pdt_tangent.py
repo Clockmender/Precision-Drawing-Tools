@@ -1,22 +1,5 @@
-# ***** BEGIN GPL LICENSE BLOCK *****
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ***** END GPL LICENCE BLOCK *****
-#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # -----------------------------------------------------------------------
 # Author: Alan Odom (Clockmender), Rune Morling (ermo) Copyright (c) 2019
 # -----------------------------------------------------------------------
@@ -227,7 +210,7 @@ def tangent_setup(context, pg, plane, obj_data, centre_0, centre_1, centre_2, ra
     a1, a2, a3 = set_mode(plane)
     mode = pg.tangent_mode
     if plane == "LO":
-        # Translate world cordinates into view local (horiz, vert, depth)
+        # Translate world coordinates into view local (horiz, vert, depth)
         #
         centre_0 = view_coords_i(centre_0[a1], centre_0[a2], centre_0[a3])
         centre_1 = view_coords_i(centre_1[a1], centre_1[a2], centre_1[a3])
@@ -399,11 +382,11 @@ def draw_tangents(tangent_vectors, obj_data):
     """Add Edges Representing the Tangents.
 
     Note:
-        The length of the tanget_vectors determins whcih tangents will be
+        The length of the tanget_vectors determines which tangents will be
         drawn, 3 gives Point Tangents, 4 gives Inner/Outer tangents
 
     Args:
-        tangent_vectors: A list of vectores representing the tangents
+        tangent_vectors: A list of vectors representing the tangents
         obj_data: A list giving Object, Object Location and Object Bmesh
 
     Returns:
@@ -490,7 +473,7 @@ class PDT_OT_TangentOperate(Operator):
 
             Analyses distance between arc centres, or arc centre and tangent point
             to determine which mode is possible (Inner, Outer, or Point). If centres are
-            both contianed within 1 inferred circle, Inner tangents are not possible.
+            both contained within 1 inferred circle, Inner tangents are not possible.
 
             Arcs of same radius will have no intersection for outer tangents so these
             are calculated differently.
@@ -557,7 +540,7 @@ class PDT_OT_TangentOperateSel(Operator):
 
             Analyses distance between arc centres, or arc centre and tangent point
             to determine which mode is possible (Inner, Outer, or Point). If centres are
-            both contianed within 1 inferred circle, Inner tangents are not possible.
+            both contained within 1 inferred circle, Inner tangents are not possible.
 
             Arcs of same radius will have no intersection for outer tangents so these
             are calculated differently.
