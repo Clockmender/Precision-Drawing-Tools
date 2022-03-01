@@ -18,7 +18,7 @@ bl_info = {
     "location": "View3D > UI > PDT",
     "description": "Precision Drawing Tools for Accurate Modelling",
     "warning": "",
-    "doc_url": "https://docs.blender.org/manual/en/3.2/addons/3d_view/precision_drawing_tools/index.html",
+    "doc_url": "{BLENDER_MANUAL_URL}/addons/3d_view/precision_drawing_tools/index.html",
     "category": "3D View",
 }
 
